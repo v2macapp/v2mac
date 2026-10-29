@@ -16,7 +16,7 @@ settings:
     MARKETING_VERSION: "0.1.0"
     CURRENT_PROJECT_VERSION: "1"
     # "owner/name" of the app's GitHub repository; enables the app update check.
-    V2MAC_REPOSITORY: "LordVersA/v2mac"
+    V2MAC_REPOSITORY: "v2macapp/v2mac"
 packages:
   V2MacCore:
     path: Packages/V2MacCore

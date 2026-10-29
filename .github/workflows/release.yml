@@ -81,7 +81,7 @@ jobs:
             echo
             echo "## Install"
             echo
-            echo "With Homebrew: \`brew install --cask lordversa/tap/v2mac\` (or \`brew upgrade --cask v2mac\`)."
+            echo "With Homebrew: \`brew install --cask v2macapp/tap/v2mac\` (or \`brew upgrade --cask v2mac\`)."
             echo
             echo "Or download \`V2Mac-${{ steps.v.outputs.version }}.dmg\`, check it against the \`.sha256\` file, and follow the first-launch steps in the README (the app is ad-hoc signed)."
             [[ -n "$PREVIOUS" ]] && echo && echo "Full changelog: https://github.com/${{ github.repository }}/compare/$PREVIOUS...$TAG"
@@ -96,7 +96,7 @@ jobs:
           gh release create "${{ steps.v.outputs.tag }}" dist/*.dmg dist/*.sha256 dist/*.sig dist/update/* \
             --title "V2Mac ${{ steps.v.outputs.version }}" --notes-file notes.md
 
-      # Points the Homebrew cask (LordVersA/homebrew-tap) at the new DMG. Needs a TAP_TOKEN
+      # Points the Homebrew cask (v2macapp/homebrew-tap) at the new DMG. Needs a TAP_TOKEN
       # secret with write access to that repo; fails without one so a skipped bump is noticed.
       - name: Update Homebrew tap
         if: github.ref_type == 'tag'
@@ -105,11 +105,11 @@ jobs:
           VERSION: ${{ steps.v.outputs.version }}
         run: |
           if [[ -z "$TAP_TOKEN" ]]; then
-            echo "::error::TAP_TOKEN is not set; the release is out but Casks/v2mac.rb in LordVersA/homebrew-tap was not bumped"
+            echo "::error::TAP_TOKEN is not set; the release is out but Casks/v2mac.rb in v2macapp/homebrew-tap was not bumped"
             exit 1
           fi
           SHA="$(shasum -a 256 "dist/V2Mac-$VERSION.dmg" | cut -d' ' -f1)"
-          git clone -q "https://x-access-token:$TAP_TOKEN@github.com/LordVersA/homebrew-tap.git" tap
+          git clone -q "https://x-access-token:$TAP_TOKEN@github.com/v2macapp/homebrew-tap.git" tap
           cd tap
           sed -i '' -e "s/^  version \".*\"/  version \"$VERSION\"/" -e "s/^  sha256 \".*\"/  sha256 \"$SHA\"/" Casks/v2mac.rb
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \

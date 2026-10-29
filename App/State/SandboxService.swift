@@ -63,7 +63,7 @@ final class SandboxService {
         }
         #endif
         // The sandbox release this V2Mac is locked to: its release's pin.json (url: its files.json).
-        return SandboxPin(url: URL(string: "https://github.com/LordVersA/v2mac-sandbox/releases/download/v1.1.1/files.json")!,
+        return SandboxPin(url: URL(string: "https://github.com/v2macapp/v2mac-sandbox/releases/download/v1.1.1/files.json")!,
                           sha256: "77afdc492451273369a3d51594e19d97286222b76fbbc7c32a9ce0f613e3ccf1",
                           executableSHA256: "1e44b583db24f56c68d321b576b92df6dc89c2ee11797e0bfd64a8788efc570d",
                           size: 361877577, version: "1.1.1")

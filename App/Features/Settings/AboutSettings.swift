@@ -98,10 +98,10 @@ struct AboutSettings: View {
 /// Where the About tab and the About panel point. Add a row in `AboutSettings` for every new link.
 enum AboutLinks {
     static var tagline: String { String(localized: "A free, open-source Xray client for macOS.") }
-    static let repositoryText = "github.com/LordVersA/v2mac"
-    static let repository = URL(string: "https://github.com/LordVersA/v2mac")!
-    static let releases = URL(string: "https://github.com/LordVersA/v2mac/releases")!
-    static let newIssue = URL(string: "https://github.com/LordVersA/v2mac/issues/new?template=bug_report.md")!
+    static let repositoryText = "github.com/v2macapp/v2mac"
+    static let repository = URL(string: "https://github.com/v2macapp/v2mac")!
+    static let releases = URL(string: "https://github.com/v2macapp/v2mac/releases")!
+    static let newIssue = URL(string: "https://github.com/v2macapp/v2mac/issues/new?template=bug_report.md")!
     static let author = URL(string: "https://github.com/LordVersA")!
     static let noleaker = URL(string: "https://github.com/LordVersA/noleaker")!
 

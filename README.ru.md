@@ -6,14 +6,14 @@
 VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 и WireGuard в быстром приложении для строки меню на SwiftUI для Apple Silicon.</p>
 
 <p align="center">
-  <a href="https://github.com/LordVersA/v2mac/releases/latest"><img src="https://img.shields.io/github/v/release/LordVersA/v2mac?label=release&color=0A84FF" alt="Последний релиз"></a>
-  <a href="https://github.com/LordVersA/v2mac/releases"><img src="https://img.shields.io/github/downloads/LordVersA/v2mac/total?color=34C759" alt="Загрузки"></a>
-  <a href="https://github.com/LordVersA/v2mac/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/LordVersA/v2mac/ci.yml?branch=main&label=CI" alt="Статус CI"></a>
+  <a href="https://github.com/v2macapp/v2mac/releases/latest"><img src="https://img.shields.io/github/v/release/v2macapp/v2mac?label=release&color=0A84FF" alt="Последний релиз"></a>
+  <a href="https://github.com/v2macapp/v2mac/releases"><img src="https://img.shields.io/github/downloads/v2macapp/v2mac/total?color=34C759" alt="Загрузки"></a>
+  <a href="https://github.com/v2macapp/v2mac/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/v2macapp/v2mac/ci.yml?branch=main&label=CI" alt="Статус CI"></a>
   <img src="https://img.shields.io/badge/macOS-26%2B-000000?logo=apple" alt="macOS 26 или новее">
   <img src="https://img.shields.io/badge/Apple%20Silicon-arm64-555555" alt="Apple Silicon">
   <img src="https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white" alt="Swift 6">
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/LordVersA/v2mac?color=blue" alt="Лицензия GPL-3.0"></a>
-  <a href="https://github.com/LordVersA/v2mac/stargazers"><img src="https://img.shields.io/github/stars/LordVersA/v2mac?style=flat&color=FFCC00" alt="Звёзды на GitHub"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/v2macapp/v2mac?color=blue" alt="Лицензия GPL-3.0"></a>
+  <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="Звёзды на GitHub"></a>
 </p>
 
 <p align="center"><a href="README.md">English</a> | <a href="README.fa.md">فارسی</a> | <a href="README.zh.md">简体中文</a> | Русский</p>
@@ -21,7 +21,7 @@ VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 и WireGuard в быстр
 <p align="center">
   <a href="#установка">Установка</a> ·
   <a href="#возможности">Возможности</a> ·
-  <a href="https://github.com/LordVersA/v2mac/wiki/ru-Home"><b>Документация</b></a> ·
+  <a href="https://github.com/v2macapp/v2mac/wiki/ru-Home"><b>Документация</b></a> ·
   <a href="#сборка-из-исходников">Сборка</a>
 </p>
 
@@ -34,10 +34,10 @@ VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 и WireGuard в быстр
 Нужна **macOS 26 или новее** на **Apple Silicon**.
 
 ```sh
-brew install --cask lordversa/tap/v2mac
+brew install --cask v2macapp/tap/v2mac
 ```
 
-Или скачайте DMG из [последнего релиза](https://github.com/LordVersA/v2mac/releases/latest). Приложение не нотаризовано: при первом запуске нажмите **Всё равно открыть** в Системные настройки → Конфиденциальность и безопасность. Подробнее в [руководстве по установке](https://github.com/LordVersA/v2mac/wiki/ru-Installation). Дальше V2Mac обновляется сама: загружает только изменившиеся файлы и устанавливает их при выходе.
+Или скачайте DMG из [последнего релиза](https://github.com/v2macapp/v2mac/releases/latest). Приложение не нотаризовано: при первом запуске нажмите **Всё равно открыть** в Системные настройки → Конфиденциальность и безопасность. Подробнее в [руководстве по установке](https://github.com/v2macapp/v2mac/wiki/ru-Installation). Дальше V2Mac обновляется сама: загружает только изменившиеся файлы и устанавливает их при выходе.
 
 **Быстрый старт:** нажмите **Add Subscription** и вставьте ссылку, дважды щёлкните сервер, затем используйте `127.0.0.1:10808` (SOCKS5 / HTTP) или включите **System Proxy** или **TUN**.
 
@@ -70,19 +70,19 @@ brew install --cask lordversa/tap/v2mac
 
 ## Документация
 
-**[Вики V2Mac](https://github.com/LordVersA/v2mac/wiki/ru-Home)** описывает всё подробно:
+**[Вики V2Mac](https://github.com/v2macapp/v2mac/wiki/ru-Home)** описывает всё подробно:
 
 | | |
 |---|---|
-| [Установка](https://github.com/LordVersA/v2mac/wiki/ru-Installation) | Homebrew, DMG, первый запуск, обновления |
-| [Серверы и подписки](https://github.com/LordVersA/v2mac/wiki/ru-Servers-and-Subscriptions) | Добавление, обновление, редактирование, тесты задержки |
-| [Подключение](https://github.com/LordVersA/v2mac/wiki/ru-Connecting) | TUN, системный прокси, kill switch, проверка выхода, WARP |
-| [Маршрутизация](https://github.com/LordVersA/v2mac/wiki/ru-Routing) | Режимы, окно «Правила», серверы Via, импорт из Proxifier |
-| [Соединения](https://github.com/LordVersA/v2mac/wiki/ru-Connections) | Живой список соединений и карта |
-| [Безопасная песочница](https://github.com/LordVersA/v2mac/wiki/ru-Sandbox) | Мини-ВМ, приложения песочницы, выходы, магазин |
-| [Строка меню и быстрые команды](https://github.com/LordVersA/v2mac/wiki/ru-Menu-Bar-and-Shortcuts) | Панель, клавиатура, Команды, уведомления |
-| [Справочник настроек](https://github.com/LordVersA/v2mac/wiki/ru-Settings-Reference) | Все настройки, резервная копия, приватность |
-| [Решение проблем и FAQ](https://github.com/LordVersA/v2mac/wiki/ru-Troubleshooting-and-FAQ) | Частые проблемы и вопросы |
+| [Установка](https://github.com/v2macapp/v2mac/wiki/ru-Installation) | Homebrew, DMG, первый запуск, обновления |
+| [Серверы и подписки](https://github.com/v2macapp/v2mac/wiki/ru-Servers-and-Subscriptions) | Добавление, обновление, редактирование, тесты задержки |
+| [Подключение](https://github.com/v2macapp/v2mac/wiki/ru-Connecting) | TUN, системный прокси, kill switch, проверка выхода, WARP |
+| [Маршрутизация](https://github.com/v2macapp/v2mac/wiki/ru-Routing) | Режимы, окно «Правила», серверы Via, импорт из Proxifier |
+| [Соединения](https://github.com/v2macapp/v2mac/wiki/ru-Connections) | Живой список соединений и карта |
+| [Безопасная песочница](https://github.com/v2macapp/v2mac/wiki/ru-Sandbox) | Мини-ВМ, приложения песочницы, выходы, магазин |
+| [Строка меню и быстрые команды](https://github.com/v2macapp/v2mac/wiki/ru-Menu-Bar-and-Shortcuts) | Панель, клавиатура, Команды, уведомления |
+| [Справочник настроек](https://github.com/v2macapp/v2mac/wiki/ru-Settings-Reference) | Все настройки, резервная копия, приватность |
+| [Решение проблем и FAQ](https://github.com/v2macapp/v2mac/wiki/ru-Troubleshooting-and-FAQ) | Частые проблемы и вопросы |
 
 Для защиты от утечек в Chrome используйте V2Mac вместе с [**noleaker**](https://github.com/LordVersA/noleaker), бесплатным расширением того же автора.
 
@@ -94,7 +94,7 @@ xcodegen generate
 xcodebuild -project v2mac.xcodeproj -scheme v2mac -configuration Debug build
 ```
 
-Нужны Xcode 26+ и [XcodeGen](https://github.com/yonaskolb/XcodeGen). Дизайн: [docs/SPEC.md](docs/SPEC.md). Тесты: `cd Packages/V2MacCore && swift test`. Сообщения об ошибках и pull request — в [Issues](https://github.com/LordVersA/v2mac/issues).
+Нужны Xcode 26+ и [XcodeGen](https://github.com/yonaskolb/XcodeGen). Дизайн: [docs/SPEC.md](docs/SPEC.md). Тесты: `cd Packages/V2MacCore && swift test`. Сообщения об ошибках и pull request — в [Issues](https://github.com/v2macapp/v2mac/issues).
 
 ## Лицензия
 

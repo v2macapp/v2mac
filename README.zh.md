@@ -6,14 +6,14 @@
 VLESS、REALITY、VMess、Trojan、Shadowsocks、Hysteria2 和 WireGuard，集成在一个为 Apple Silicon 打造的快速 SwiftUI 菜单栏应用中。</p>
 
 <p align="center">
-  <a href="https://github.com/LordVersA/v2mac/releases/latest"><img src="https://img.shields.io/github/v/release/LordVersA/v2mac?label=release&color=0A84FF" alt="最新版本"></a>
-  <a href="https://github.com/LordVersA/v2mac/releases"><img src="https://img.shields.io/github/downloads/LordVersA/v2mac/total?color=34C759" alt="下载量"></a>
-  <a href="https://github.com/LordVersA/v2mac/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/LordVersA/v2mac/ci.yml?branch=main&label=CI" alt="CI 状态"></a>
+  <a href="https://github.com/v2macapp/v2mac/releases/latest"><img src="https://img.shields.io/github/v/release/v2macapp/v2mac?label=release&color=0A84FF" alt="最新版本"></a>
+  <a href="https://github.com/v2macapp/v2mac/releases"><img src="https://img.shields.io/github/downloads/v2macapp/v2mac/total?color=34C759" alt="下载量"></a>
+  <a href="https://github.com/v2macapp/v2mac/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/v2macapp/v2mac/ci.yml?branch=main&label=CI" alt="CI 状态"></a>
   <img src="https://img.shields.io/badge/macOS-26%2B-000000?logo=apple" alt="macOS 26 或更高">
   <img src="https://img.shields.io/badge/Apple%20Silicon-arm64-555555" alt="Apple Silicon">
   <img src="https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white" alt="Swift 6">
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/LordVersA/v2mac?color=blue" alt="GPL-3.0 许可证"></a>
-  <a href="https://github.com/LordVersA/v2mac/stargazers"><img src="https://img.shields.io/github/stars/LordVersA/v2mac?style=flat&color=FFCC00" alt="GitHub 星标"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/v2macapp/v2mac?color=blue" alt="GPL-3.0 许可证"></a>
+  <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="GitHub 星标"></a>
 </p>
 
 <p align="center"><a href="README.md">English</a> | <a href="README.fa.md">فارسی</a> | 简体中文 | <a href="README.ru.md">Русский</a></p>
@@ -21,7 +21,7 @@ VLESS、REALITY、VMess、Trojan、Shadowsocks、Hysteria2 和 WireGuard，集�
 <p align="center">
   <a href="#安装">安装</a> ·
   <a href="#功能">功能</a> ·
-  <a href="https://github.com/LordVersA/v2mac/wiki/zh-Home"><b>文档</b></a> ·
+  <a href="https://github.com/v2macapp/v2mac/wiki/zh-Home"><b>文档</b></a> ·
   <a href="#从源码构建">构建</a>
 </p>
 
@@ -34,10 +34,10 @@ VLESS、REALITY、VMess、Trojan、Shadowsocks、Hysteria2 和 WireGuard，集�
 需要 **Apple Silicon** 上的 **macOS 26 或更高版本**。
 
 ```sh
-brew install --cask lordversa/tap/v2mac
+brew install --cask v2macapp/tap/v2mac
 ```
 
-也可从[最新版本](https://github.com/LordVersA/v2mac/releases/latest)下载 DMG。应用未经公证：首次启动时在 系统设置 → 隐私与安全性 中点击 **仍要打开**。详见[安装指南](https://github.com/LordVersA/v2mac/wiki/zh-Installation)。之后 V2Mac 会自动更新：只下载有变化的文件，并在退出时安装。
+也可从[最新版本](https://github.com/v2macapp/v2mac/releases/latest)下载 DMG。应用未经公证：首次启动时在 系统设置 → 隐私与安全性 中点击 **仍要打开**。详见[安装指南](https://github.com/v2macapp/v2mac/wiki/zh-Installation)。之后 V2Mac 会自动更新：只下载有变化的文件，并在退出时安装。
 
 **快速开始：** 点击 **Add Subscription** 粘贴链接，双击服务器，然后使用 `127.0.0.1:10808`（SOCKS5 / HTTP），或打开 **System Proxy** 或 **TUN**。
 
@@ -70,19 +70,19 @@ brew install --cask lordversa/tap/v2mac
 
 ## 文档
 
-**[V2Mac Wiki](https://github.com/LordVersA/v2mac/wiki/zh-Home)** 详细介绍了所有内容：
+**[V2Mac Wiki](https://github.com/v2macapp/v2mac/wiki/zh-Home)** 详细介绍了所有内容：
 
 | | |
 |---|---|
-| [安装](https://github.com/LordVersA/v2mac/wiki/zh-Installation) | Homebrew、DMG、首次启动、更新 |
-| [服务器与订阅](https://github.com/LordVersA/v2mac/wiki/zh-Servers-and-Subscriptions) | 添加、更新、编辑、延迟测试 |
-| [连接](https://github.com/LordVersA/v2mac/wiki/zh-Connecting) | TUN、系统代理、Kill Switch、出口检测、WARP |
-| [路由](https://github.com/LordVersA/v2mac/wiki/zh-Routing) | 模式、规则窗口、Via 服务器、导入 Proxifier |
-| [连接列表](https://github.com/LordVersA/v2mac/wiki/zh-Connections) | 实时连接列表和地图 |
-| [安全沙盒](https://github.com/LordVersA/v2mac/wiki/zh-Sandbox) | 迷你虚拟机、沙盒应用、出口、商店 |
-| [菜单栏与快捷方式](https://github.com/LordVersA/v2mac/wiki/zh-Menu-Bar-and-Shortcuts) | 面板、键盘、快捷指令、通知 |
-| [设置参考](https://github.com/LordVersA/v2mac/wiki/zh-Settings-Reference) | 所有设置、备份、隐私 |
-| [故障排除与常见问题](https://github.com/LordVersA/v2mac/wiki/zh-Troubleshooting-and-FAQ) | 常见问题与解答 |
+| [安装](https://github.com/v2macapp/v2mac/wiki/zh-Installation) | Homebrew、DMG、首次启动、更新 |
+| [服务器与订阅](https://github.com/v2macapp/v2mac/wiki/zh-Servers-and-Subscriptions) | 添加、更新、编辑、延迟测试 |
+| [连接](https://github.com/v2macapp/v2mac/wiki/zh-Connecting) | TUN、系统代理、Kill Switch、出口检测、WARP |
+| [路由](https://github.com/v2macapp/v2mac/wiki/zh-Routing) | 模式、规则窗口、Via 服务器、导入 Proxifier |
+| [连接列表](https://github.com/v2macapp/v2mac/wiki/zh-Connections) | 实时连接列表和地图 |
+| [安全沙盒](https://github.com/v2macapp/v2mac/wiki/zh-Sandbox) | 迷你虚拟机、沙盒应用、出口、商店 |
+| [菜单栏与快捷方式](https://github.com/v2macapp/v2mac/wiki/zh-Menu-Bar-and-Shortcuts) | 面板、键盘、快捷指令、通知 |
+| [设置参考](https://github.com/v2macapp/v2mac/wiki/zh-Settings-Reference) | 所有设置、备份、隐私 |
+| [故障排除与常见问题](https://github.com/v2macapp/v2mac/wiki/zh-Troubleshooting-and-FAQ) | 常见问题与解答 |
 
 如需在 Chrome 中防止泄漏，可搭配同一作者的免费扩展 [**noleaker**](https://github.com/LordVersA/noleaker)。
 
@@ -94,7 +94,7 @@ xcodegen generate
 xcodebuild -project v2mac.xcodeproj -scheme v2mac -configuration Debug build
 ```
 
-需要 Xcode 26+ 和 [XcodeGen](https://github.com/yonaskolb/XcodeGen)。设计文档：[docs/SPEC.md](docs/SPEC.md)。测试：`cd Packages/V2MacCore && swift test`。欢迎在 [Issues](https://github.com/LordVersA/v2mac/issues) 提交问题和 PR。
+需要 Xcode 26+ 和 [XcodeGen](https://github.com/yonaskolb/XcodeGen)。设计文档：[docs/SPEC.md](docs/SPEC.md)。测试：`cd Packages/V2MacCore && swift test`。欢迎在 [Issues](https://github.com/v2macapp/v2mac/issues) 提交问题和 PR。
 
 ## 许可证
 

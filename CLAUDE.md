@@ -41,7 +41,7 @@ comments cite it as "spec 6.4" etc.; read the section before changing the behavi
   with the version taken from the tag, and publishes a GitHub Release with the generated notes,
   the DMG and its `.sha256`, and the in-app updater's file-by-file release (`Scripts/package-update.sh`:
   per-file zips, bsdiff patches from the last 3 releases, signed `files.json`). It then bumps `version` and `sha256` in the Homebrew cask
-  (`LordVersA/homebrew-tap`, `Casks/v2mac.rb`), which needs the `TAP_TOKEN` secret: a fine-grained
+  (`v2macapp/homebrew-tap`, `Casks/v2mac.rb`), which needs the `TAP_TOKEN` secret: a fine-grained
   token for `homebrew-tap` only, Contents read and write, expiring 2027-01-23. Renew it before then.
 - Never create or push release tags on your own. Run `Scripts/release.sh` only when asked.
 - "Actions → Release → Run workflow" is a dry run: it builds and attaches the DMG and notes as an
