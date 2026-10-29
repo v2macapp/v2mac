@@ -103,7 +103,7 @@ enum AboutLinks {
     static let releases = URL(string: "https://github.com/v2macapp/v2mac/releases")!
     static let newIssue = URL(string: "https://github.com/v2macapp/v2mac/issues/new?template=bug_report.md")!
     static let author = URL(string: "https://github.com/LordVersA")!
-    static let noleaker = URL(string: "https://github.com/LordVersA/noleaker")!
+    static let noleaker = URL(string: "https://github.com/v2macapp/noleaker")!
 
     /// The app menu's About panel, with the same tagline and links as the About tab.
     @MainActor static func showAboutPanel() {
