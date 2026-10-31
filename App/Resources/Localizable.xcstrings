@@ -26,6 +26,28 @@
         }
       }
     },
+    "Could not check for the sandbox. Check your connection and try again." : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بررسی سندباکس ممکن نشد. اتصال خود را بررسی کنید و دوباره امتحان کنید."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось проверить песочницу. Проверьте подключение и повторите попытку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法检查沙盒。请检查网络连接后重试。"
+          }
+        }
+      }
+    },
     "Server names and addresses, subscription links, keys, sites you visit and your account name were removed. Nothing is sent: V2Mac copies this text and opens GitHub, where you paste it. Read it first, and delete anything you don't want to share." : {
       "localizations" : {
         "fa" : {
@@ -44,6 +66,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "服务器名称和地址、订阅链接、密钥、您访问的网站以及您的账户名称均已移除。不会发送任何内容:V2Mac 会复制此文本并打开 GitHub,由您在那里粘贴。请先阅读,并删除任何您不想分享的内容。"
+          }
+        }
+      }
+    },
+    "The sandbox for this version of V2Mac isn't available yet. Try again later." : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "سندباکس این نسخه از V2Mac هنوز در دسترس نیست. بعداً دوباره امتحان کنید."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Песочница для этой версии V2Mac пока недоступна. Повторите попытку позже."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "适用于此版本 V2Mac 的沙盒尚不可用。请稍后再试。"
+          }
+        }
+      }
+    },
+    "This sandbox needs a newer V2Mac. Update V2Mac to use it." : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "این سندباکس به نسخهٔ جدیدتری از V2Mac نیاز دارد. برای استفاده از آن، V2Mac را به‌روزرسانی کنید."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этой песочнице нужна более новая версия V2Mac. Обновите V2Mac, чтобы использовать её."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此沙盒需要更新版本的 V2Mac。请更新 V2Mac 后使用。"
           }
         }
       }

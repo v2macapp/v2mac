@@ -193,3 +193,75 @@ import Testing
         #expect(SandboxLink.exitOutbound(["outbounds": [["protocol": "freedom"]]], kind: .custom) == nil)
     }
 }
+
+@Suite struct SandboxCompatibilityTests {
+    static func pin(_ version: String, link: Int?) -> SandboxPin {
+        SandboxPin(url: URL(string: "https://example.com/files.json")!, sha256: "a", executableSHA256: "b", size: 1, version: version, link: link)
+    }
+
+    @Test func eachSideUpdatesOnItsOwnWhileTheLinkMatches() {
+        let same = SandboxCompatibility(installed: Self.pin("1.1.4", link: 3), latest: Self.pin("1.1.4", link: 3), link: 3)
+        #expect(same.canOpen && !same.offersUpdate && !same.needsNewerApp && !same.needsNewerSandbox)
+        let newer = SandboxCompatibility(installed: Self.pin("1.1.4", link: 3), latest: Self.pin("1.1.10", link: 3), link: 3)
+        #expect(newer.canOpen && newer.offersUpdate) // numeric: 1.1.10 is after 1.1.4
+        #expect(SandboxCompatibility(installed: nil, latest: Self.pin("1.1.4", link: 3), link: 3).offersUpdate)
+    }
+
+    @Test func neverOffersAStepBack() {
+        let older = SandboxCompatibility(installed: Self.pin("1.2.0", link: 3), latest: Self.pin("1.1.9", link: 3), link: 3)
+        #expect(older.canOpen && !older.offersUpdate)
+    }
+
+    @Test func aDifferentLinkIsNamed() {
+        // The sandbox moved ahead: what is installed keeps working, nothing incompatible is offered.
+        let ahead = SandboxCompatibility(installed: Self.pin("1.1.4", link: 3), latest: Self.pin("2.0.0", link: 4), link: 3)
+        #expect(ahead.canOpen && !ahead.offersUpdate && ahead.needsNewerApp)
+        // V2Mac moved ahead: the old sandbox stops opening, and updates once a matching one is out.
+        let behind = SandboxCompatibility(installed: Self.pin("1.1.4", link: 3), latest: Self.pin("1.1.4", link: 3), link: 4)
+        #expect(!behind.canOpen && !behind.offersUpdate && behind.needsNewerSandbox)
+        let ready = SandboxCompatibility(installed: Self.pin("1.1.4", link: 3), latest: Self.pin("2.0.0", link: 4), link: 4)
+        #expect(!ready.canOpen && ready.offersUpdate)
+        // A release from before the link was recorded is never run.
+        #expect(!SandboxCompatibility(installed: Self.pin("1.1.3", link: nil), latest: nil, link: 3).canOpen)
+    }
+
+    @Test func fetchesTheLatestSignedPin() async throws {
+        let key = Curve25519.Signing.PrivateKey()
+        let data = try JSONEncoder().encode(Self.pin("1.1.4", link: 3))
+        let signature = Data(try key.signature(for: data).base64EncodedString().utf8)
+        let server = try await TestHTTPServer.start { path in
+            path == "/pin.json" ? .init(body: data) : path == "/pin.json.sig" ? .init(body: signature) : .init(status: 404)
+        }
+        defer { server.stop() }
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let files = SandboxFiles(root: root)
+        let url = URL(string: "http://127.0.0.1:\(server.port)/pin.json")!
+        let download = ResumableDownload(routes: [.direct])
+        #expect(try await files.fetchLatest(download: download, from: url, key: key.publicKey).pin.version == "1.1.4")
+        // Signed by anyone else, it is refused; nothing is left behind either way.
+        await #expect(throws: SandboxInstallError.self) {
+            try await files.fetchLatest(download: download, from: url, key: Curve25519.Signing.PrivateKey().publicKey)
+        }
+        #expect(try FileManager.default.contentsOfDirectory(atPath: root.path).isEmpty)
+    }
+
+    @Test func onlyASignedPinIsTrusted() throws {
+        let key = Curve25519.Signing.PrivateKey()
+        let data = try JSONEncoder().encode(Self.pin("1.1.4", link: 3))
+        let signature = Data(try key.signature(for: data).base64EncodedString().utf8)
+        #expect(try SignedSandboxPin(data: data, signature: signature, key: key.publicKey).pin.version == "1.1.4")
+        #expect(throws: SandboxInstallError.self) { try SignedSandboxPin(data: data + Data([32]), signature: signature, key: key.publicKey) }
+        #expect(throws: SandboxInstallError.self) { try SignedSandboxPin(data: data, signature: signature, key: Curve25519.Signing.PrivateKey().publicKey) }
+
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let files = SandboxFiles(root: root)
+        #expect(files.installedPin(key: key.publicKey) == nil) // installed before updates were signed
+        try files.remember(SignedSandboxPin(data: data, signature: signature, key: key.publicKey))
+        #expect(files.installedPin(key: key.publicKey)?.version == "1.1.4")
+        try Data(try JSONEncoder().encode(Self.pin("9.9.9", link: 3))).write(to: root.appendingPathComponent("pin.json"))
+        #expect(files.installedPin(key: key.publicKey) == nil) // a changed record counts for nothing
+    }
+}

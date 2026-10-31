@@ -12,14 +12,12 @@ struct SidebarTools: View {
                     model.openConnections(openWindow)
                 }
                 SidebarGlassButton(title: "Rules", systemImage: "arrow.triangle.branch") { model.openRules(openWindow) }
-                if model.sandbox.pin != nil {
-                    HStack(spacing: 8) {
-                        SidebarGlassButton(title: "Sandbox (beta)", systemImage: "shield.lefthalf.filled", loading: model.sandbox.isOpening,
-                                           badge: model.sandbox.phase == .installed ? nil : "arrow.down.circle.fill") { model.sandbox.open() }
-                        // The same update button as V2Mac's own, for the sandbox's update.
-                        if model.sandbox.updateAvailable {
-                            UpdateButton(title: "Sandbox Update Available", opensTrailing: true, tab: .sandbox)
-                        }
+                HStack(spacing: 8) {
+                    SidebarGlassButton(title: "Sandbox (beta)", systemImage: "shield.lefthalf.filled", loading: model.sandbox.isOpening,
+                                       badge: model.sandbox.phase == .installed ? nil : "arrow.down.circle.fill") { model.sandbox.open() }
+                    // The same update button as V2Mac's own, for the sandbox's update.
+                    if model.sandbox.updateAvailable {
+                        UpdateButton(title: "Sandbox Update Available", opensTrailing: true, tab: .sandbox)
                     }
                 }
             }

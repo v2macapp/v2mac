@@ -323,22 +323,20 @@ struct MenuBarPanel: View {
             HStack {
                 Button("Open V2Mac", systemImage: "macwindow") { model.openMainWindow(openWindow) }
                 Spacer()
-                if model.sandbox.pin != nil {
-                    Button {
-                        // The entry sheet belongs to the main window.
-                        if model.sandbox.phase != .installed { model.openMainWindow(openWindow) }
-                        model.sandbox.open()
-                    } label: {
-                        if model.sandbox.isOpening {
-                            ProgressView().controlSize(.small).accessibilityLabel("Loading…")
-                        } else {
-                            Label("Sandbox (beta)", systemImage: "shield.lefthalf.filled")
-                        }
+                Button {
+                    // The entry sheet belongs to the main window.
+                    if model.sandbox.phase != .installed { model.openMainWindow(openWindow) }
+                    model.sandbox.open()
+                } label: {
+                    if model.sandbox.isOpening {
+                        ProgressView().controlSize(.small).accessibilityLabel("Loading…")
+                    } else {
+                        Label("Sandbox (beta)", systemImage: "shield.lefthalf.filled")
                     }
-                    .labelStyle(.iconOnly)
-                    .disabled(model.sandbox.isOpening)
-                    .help("Open the Secure Sandbox (beta)")
                 }
+                .labelStyle(.iconOnly)
+                .disabled(model.sandbox.isOpening)
+                .help("Open the Secure Sandbox (beta)")
                 Button("Settings", systemImage: "gearshape") { model.openSettings(openSettings) }
                     .labelStyle(.iconOnly)
                     .help("Settings")

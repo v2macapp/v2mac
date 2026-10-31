@@ -1857,11 +1857,14 @@ The sandbox's design and plan live in the sandbox repo (`../sandbox/docs/PLAN.md
 section covers only V2Mac's part, which is all the sandbox code V2Mac has (`SandboxService`,
 `SandboxLink`, `SandboxFiles`).
 
-- **Pin.** A V2Mac build accepts exactly one sandbox release, a `SandboxPin` (the URL and
-  SHA-256 of the release's manifest `files.json`, the full download size, and the SHA-256 of the
-  helper's executable). V2Mac 1.0.x pinned a whole-bundle zip instead and cannot read manifests. Without a pin nothing of the
-  sandbox is shown. The pin is set in `SandboxService.loadPin` (V2Mac 1.0.0: sandbox v1.0.0); Debug builds can take
-  one from `-debugSandboxPin <pin.json>` (written by the sandbox repo's `Scripts/package.sh`).
+- **Versions.** V2Mac and the sandbox update on their own. Each sandbox release publishes a `SandboxPin` as `pin.json`
+  (the URL and SHA-256 of its manifest `files.json`, the full download size, the SHA-256 of the helper's executable,
+  its version and `link`, the `SandboxLink.version` it speaks) with an Ed25519 signature by the app's update key.
+  V2Mac fetches `releases/latest` at launch, hourly and when the entry sheet opens, and keeps the installed release's signed
+  `pin.json` in `<data>/sandbox/`. Only a sandbox with this V2Mac's link opens and only a newer one with that link is offered
+  (`SandboxCompatibility`); otherwise the sheet says which side must update. A sandbox installed before signing has no
+  record and updates once. Debug builds can take an unsigned pin from `-debugSandboxPin <pin.json>` (written by the
+  sandbox repo's `Scripts/package.sh`).
 - **Entry.** "Sandbox" in the main window toolbar and the menu bar panel. Before it is installed
   (or when it needs an update) a sheet in the main window says what it is, the download size and the memory it may use, with
   Download (progress, Cancel). Once installed, the button opens the helper's Sandbox window.

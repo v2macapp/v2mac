@@ -1,8 +1,8 @@
 import CryptoKit
 import Foundation
 
-/// The one sandbox release a V2Mac build accepts (sandbox plan: "Versions"). The pin is the trust:
-/// the release's manifest and, before every launch, the helper's executable must match it.
+/// One sandbox release, as its signed `pin.json` describes it (sandbox plan: "Versions"). Once its signature
+/// holds, the release's manifest and, before every launch, the helper's executable must match it.
 public struct SandboxPin: Codable, Sendable, Equatable {
     /// The release's `files.json` (`BundleManifest`).
     public var url: URL
@@ -14,13 +14,60 @@ public struct SandboxPin: Codable, Sendable, Equatable {
     public var size: Int64
     /// The release's version, shown when it updates an installed sandbox.
     public var version: String?
+    /// The `SandboxLink.version` it speaks: a V2Mac runs only a sandbox with its own.
+    public var link: Int?
 
-    public init(url: URL, sha256: String, executableSHA256: String, size: Int64, version: String? = nil) {
+    /// Where each V2Mac looks for the newest release, with `<url>.sig` beside it.
+    public static let latestURL = URL(string: "https://github.com/v2macapp/v2mac-sandbox/releases/latest/download/pin.json")!
+
+    public init(url: URL, sha256: String, executableSHA256: String, size: Int64, version: String? = nil, link: Int? = nil) {
         self.url = url
         self.sha256 = sha256
         self.executableSHA256 = executableSHA256
         self.size = size
         self.version = version
+        self.link = link
+    }
+}
+
+/// A `pin.json` with its signature by the project's update key; the signature is why it can be trusted,
+/// whether it just came from the network or from the sandbox folder.
+public struct SignedSandboxPin: Sendable, Equatable {
+    public let pin: SandboxPin
+    let data: Data
+    let signature: Data
+
+    public init(data: Data, signature: Data, key: Curve25519.Signing.PublicKey = AppInstaller.updateKey) throws {
+        guard AppInstaller.isSigned(data, signature: signature, by: key) else { throw SandboxInstallError.checksumMismatch }
+        pin = try JSONDecoder().decode(SandboxPin.self, from: data)
+        self.data = data
+        self.signature = signature
+    }
+}
+
+/// What this V2Mac can do with the installed and the newest sandbox. `SandboxLink.version` is the only thing
+/// they must share; apart from that each updates on its own.
+public struct SandboxCompatibility: Sendable, Equatable {
+    /// The installed sandbox speaks this V2Mac's link.
+    public let canOpen: Bool
+    /// The newest release runs on this V2Mac and is newer than what is installed (never a step back).
+    public let offersUpdate: Bool
+    /// The newest release needs a newer V2Mac.
+    public let needsNewerApp: Bool
+    /// This V2Mac is ahead of every published sandbox.
+    public let needsNewerSandbox: Bool
+
+    public init(installed: SandboxPin?, latest: SandboxPin?, link: Int) {
+        canOpen = installed?.link == link
+        offersUpdate = latest?.link == link && (installed == nil || Self.isNewer(latest?.version, than: installed?.version))
+        needsNewerApp = (latest?.link ?? 0) > link
+        needsNewerSandbox = latest.map { ($0.link ?? 0) < link } ?? false
+    }
+
+    static func isNewer(_ a: String?, than b: String?) -> Bool {
+        guard let a else { return false }
+        guard let b else { return true }
+        return a.compare(b, options: .numeric) == .orderedDescending
     }
 }
 
@@ -49,8 +96,37 @@ public struct SandboxFiles: Sendable {
     /// Partial and finished downloads, named by their SHA-256, kept between attempts for resuming.
     public var downloads: URL { root.appendingPathComponent("download", isDirectory: true) }
     public var isInstalled: Bool { FileManager.default.isExecutableFile(atPath: executable.path) }
+    private var storedPin: URL { root.appendingPathComponent("pin.json") }
+    private var storedSignature: URL { root.appendingPathComponent("pin.json.sig") }
 
-    /// Fetches the pinned manifest.
+    /// The newest release's signed `pin.json`.
+    public func fetchLatest(download: ResumableDownload, from url: URL = SandboxPin.latestURL,
+                            key: Curve25519.Signing.PublicKey = AppInstaller.updateKey) async throws -> SignedSandboxPin {
+        let fm = FileManager.default
+        try fm.createDirectory(at: root, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
+        func fetch(_ url: URL) async throws -> Data {
+            let file = root.appendingPathComponent("latest-\(UUID().uuidString)")
+            defer { try? fm.removeItem(at: file) }
+            try await download.fetch(url, to: file, expectedSize: 1 << 16)
+            return try Data(contentsOf: file)
+        }
+        return try await SignedSandboxPin(data: fetch(url), signature: fetch(URL(string: url.absoluteString + ".sig")!), key: key)
+    }
+
+    /// Records the release just installed; `installedPin` checks its signature each time it is read.
+    public func remember(_ signed: SignedSandboxPin) throws {
+        try signed.data.write(to: storedPin, options: .atomic)
+        try signed.signature.write(to: storedSignature, options: .atomic)
+    }
+
+    /// The installed release, nil when it was never recorded (installed before updates were signed) or its record
+    /// fails its signature; the app then treats the sandbox as needing an update.
+    public func installedPin(key: Curve25519.Signing.PublicKey = AppInstaller.updateKey) -> SandboxPin? {
+        guard let data = try? Data(contentsOf: storedPin), let signature = try? Data(contentsOf: storedSignature) else { return nil }
+        return (try? SignedSandboxPin(data: data, signature: signature, key: key))?.pin
+    }
+
+    /// Fetches the release's manifest.
     func manifest(_ pin: SandboxPin, download: ResumableDownload) async throws -> BundleManifest {
         let fm = FileManager.default
         try fm.createDirectory(at: root, withIntermediateDirectories: true)
@@ -62,13 +138,13 @@ public struct SandboxFiles: Sendable {
         return try BundleManifest(data: Data(contentsOf: file))
     }
 
-    /// Fetches the pinned manifest and plans every file against the installed bundle.
+    /// Fetches the release's manifest and plans every file against the installed bundle.
     public func plan(_ pin: SandboxPin, download: ResumableDownload) async throws -> [(file: BundleManifest.File, step: BundleManifest.Step)] {
         let manifest = try await manifest(pin, download: download)
         return manifest.plan(installed: manifest.current(in: app).mapValues(\.sha256))
     }
 
-    /// Builds the pinned release in `staging/` file by file (`BundleManifest.build`), checks it and puts it
+    /// Builds the release in `staging/` file by file (`BundleManifest.build`), checks it and puts it
     /// in place of the installed helper, which stays until every check has passed.
     public func install(_ pin: SandboxPin, download: ResumableDownload,
                         onProgress: (@Sendable (DownloadProgress) -> Void)? = nil) async throws {
@@ -87,7 +163,7 @@ public struct SandboxFiles: Sendable {
         try? fm.removeItem(at: root.appendingPathComponent("download.part")) // from the whole-zip releases
     }
 
-    /// Run before every launch: the executable on disk must still be the pinned one.
+    /// Run before every launch: the executable on disk must still be the release's.
     public func verify(_ pin: SandboxPin) throws {
         guard (try? Self.sha256(of: executable)) == pin.executableSHA256 else { throw SandboxInstallError.helperChanged }
     }

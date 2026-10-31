@@ -1018,14 +1018,15 @@ final class AppModel {
     }
 
     /// `-debugSandbox install|boot|stop|probe|update|remove` (with `-debugSandboxPin <pin.json>`): downloads and
-    /// installs the pinned sandbox; boots its VM (and keeps it running); boots and then stops it;
+    /// installs the newest sandbox; boots its VM (and keeps it running); boots and then stops it;
     /// runs the leak probes (the report arrives as a `probe` link line); or removes it. Prints each step and the VM's states; the helper's own lines share stdout.
     private func sandboxHook(_ action: String) {
         let sandbox = self.sandbox
         let start = ContinuousClock.now
         sandbox.onEvent = { event in print("[v2mac-debug] sandbox link: \(event) after \(ContinuousClock.now - start)") }
         Task {
-            guard sandbox.pin != nil else { return print("[v2mac-debug] sandbox: no pin") }
+            await sandbox.refresh()
+            guard sandbox.pin != nil else { return print("[v2mac-debug] sandbox: no release found") }
             switch action {
             case "install":
                 sandbox.download()

@@ -2,7 +2,7 @@ import AppKit
 import Observation
 import V2MacCore
 
-/// Spec 12.11: the only sandbox code in V2Mac. Downloads the pinned sandbox, checks it, launches the
+/// Spec 12.11: the only sandbox code in V2Mac. Downloads the newest compatible sandbox, checks it, launches the
 /// helper with one end of a socketpair as fd 3 and talks to it over `SandboxLink`. Everything else
 /// (the VM, the Sandbox window) is the helper's.
 @MainActor @Observable
@@ -14,8 +14,15 @@ final class SandboxService {
         case failed(String)
     }
 
-    /// The one sandbox release this build accepts; nil hides the sandbox.
-    let pin: SandboxPin? = SandboxService.loadPin()
+    /// The newest published release, once it has been fetched.
+    private(set) var pin: SandboxPin?
+    private var signedPin: SignedSandboxPin?
+    /// The release on disk; nil until a signed one has been installed or if its helper was changed.
+    private(set) var installed: SandboxPin?
+    var compatibility: SandboxCompatibility { SandboxCompatibility(installed: installed, latest: pin, link: SandboxLink.version) }
+    /// A newer compatible release is out, or the installed one can't be used until it updates.
+    /// Mini VMs and their data stay.
+    var updateAvailable: Bool { files.isInstalled && compatibility.offersUpdate }
     let files = SandboxFiles(root: AppPaths.dataDirectory.appendingPathComponent("sandbox", isDirectory: true))
     private(set) var phase = Phase.notInstalled
     /// The helper's VM: "stopped", "booting", "running" or "stopping".
@@ -23,9 +30,6 @@ final class SandboxService {
     var isRunning: Bool { helper != nil }
     /// From a click that has to launch the helper until it says hello (its window opens right after).
     private(set) var isOpening = false
-    /// The installed sandbox is not the one this V2Mac pins (V2Mac was updated): it must be updated
-    /// before it opens. Mini VMs and their data stay.
-    private(set) var updateAvailable = false
     /// The running download, for `DownloadProgressView`.
     private(set) var progress: DownloadProgress?
     private(set) var downloadRate: Double?
@@ -52,22 +56,21 @@ final class SandboxService {
 
     init() {
         if files.isInstalled { phase = .installed }
-    }
-
-    private static func loadPin() -> SandboxPin? {
+        installed = files.installedPin()
         #if DEBUG
-        // `-debugSandboxPin <pin.json>` (sandbox repo, Scripts/package.sh): a locally served sandbox.
-        if let path = UserDefaults.standard.string(forKey: "debugSandboxPin"),
-           let data = try? Data(contentsOf: URL(fileURLWithPath: path)) {
-            return try? JSONDecoder().decode(SandboxPin.self, from: data)
+        if let pin = Self.debugPin {
+            self.pin = pin
+            installed = (try? files.verify(pin)) == nil ? nil : pin
         }
         #endif
-        // The sandbox release this V2Mac is locked to: its release's pin.json (url: its files.json).
-        return SandboxPin(url: URL(string: "https://github.com/v2macapp/v2mac-sandbox/releases/download/v1.1.3/files.json")!,
-                          sha256: "0492e37e5e757070c8e3ab6a8f6b545a2dfc9a513f64fec9966be0834dceeb33",
-                          executableSHA256: "2a11b578d91eee686048164cc8762825cab59b27383610602a8b84b52a4cddfa",
-                          size: 361877548, version: "1.1.3")
     }
+
+    #if DEBUG
+    /// `-debugSandboxPin <pin.json>` (sandbox repo, Scripts/package.sh): a locally served, unsigned sandbox.
+    private static let debugPin: SandboxPin? = UserDefaults.standard.string(forKey: "debugSandboxPin")
+        .flatMap { try? Data(contentsOf: URL(fileURLWithPath: $0)) }
+        .flatMap { try? JSONDecoder().decode(SandboxPin.self, from: $0) }
+    #endif
 
     /// The entry sheet's Download size for an update: fetches the manifest and checks the installed files.
     func planUpdate() async {
@@ -81,7 +84,7 @@ final class SandboxService {
     /// The Sandbox button: opens the helper's window, or the entry sheet when nothing is installed
     /// or it needs an update.
     func open() {
-        guard phase == .installed, !updateAvailable else { return showEntrySheet = true }
+        guard phase == .installed, compatibility.canOpen else { return showEntrySheet = true }
         do {
             if helper == nil { isOpening = true }
             try launchIfNeeded()
@@ -93,17 +96,32 @@ final class SandboxService {
         }
     }
 
-    /// Once at launch, after the app has wired `onUpdateFound`: hashes the installed helper off the main actor.
+    /// Once at launch, after the app has wired `onUpdateFound`: hashes the installed helper off the main actor,
+    /// then looks for a new sandbox hourly, independently of V2Mac's own updates.
     func checkForUpdate() {
-        guard let pin, files.isInstalled else { return }
         let files = files
         Task {
-            updateAvailable = await Task.detached { (try? files.verify(pin)) == nil }.value
-            if updateAvailable { onUpdateFound(pin) }
+            if let installed, await Task.detached(operation: { (try? files.verify(installed)) == nil }).value { self.installed = nil }
+            while !Task.isCancelled {
+                await refresh()
+                try? await Task.sleep(for: .seconds(3600))
+            }
         }
     }
 
-    /// Update Now, as for V2Mac itself: stops the sandbox (its apps close), then downloads the pinned
+    /// Fetches the newest release's signed description. Keeps the last one on failure (no network, no route yet).
+    func refresh() async {
+        #if DEBUG
+        if Self.debugPin != nil { return }
+        #endif
+        guard let signed = try? await files.fetchLatest(download: ResumableDownload(routes: downloadRoutes())) else { return }
+        if signed.pin != pin { updateSize = nil }
+        signedPin = signed
+        pin = signed.pin
+        if updateAvailable { onUpdateFound(signed.pin) }
+    }
+
+    /// Update Now, as for V2Mac itself: stops the sandbox (its apps close), then downloads the newest
     /// release and puts it in place of the old helper.
     func update() {
         guard updateAvailable, downloadTask == nil else { return }
@@ -114,7 +132,9 @@ final class SandboxService {
     }
 
     func download() {
-        guard let pin, downloadTask == nil else { return }
+        guard let pin, compatibility.offersUpdate, downloadTask == nil else { return }
+        let signed = signedPin
+        let wasUpdate = updateAvailable
         phase = .downloading(nil)
         progress = nil
         downloadRate = nil
@@ -132,10 +152,11 @@ final class SandboxService {
                         self.downloadRate = self.rate.add(progress.received)
                     }
                 }
+                if let signed { try files.remember(signed) }
+                installed = pin
                 phase = .installed
                 updateSize = nil
-                if updateAvailable {
-                    updateAvailable = false
+                if wasUpdate {
                     onNotice(.sandboxReady, String(localized: "The Secure Sandbox (beta) was updated and is ready to open."))
                 } else {
                     onNotice(.sandboxReady, String(localized: "The Secure Sandbox (beta) is ready to open."))
@@ -154,8 +175,8 @@ final class SandboxService {
     // MARK: Helper process
 
     private func launchIfNeeded() throws {
-        guard helper == nil, let pin else { return }
-        try files.verify(pin)
+        guard helper == nil, let installed else { return }
+        try files.verify(installed)
         var fds: [Int32] = [0, 0]
         guard socketpair(AF_UNIX, SOCK_STREAM, 0, &fds) == 0 else { throw POSIXError(.init(rawValue: errno) ?? .EIO) }
         _ = fcntl(fds[0], F_SETFD, FD_CLOEXEC)
@@ -346,9 +367,14 @@ final class SandboxService {
         await stop()
         let fm = FileManager.default
         try? fm.removeItem(at: files.root)
-        try? fm.removeItem(at: fm.homeDirectoryForCurrentUser.appendingPathComponent("Applications/V2Mac Sandbox", isDirectory: true))
+        #if DEBUG
+        let apps = "Applications/V2Mac Sandbox Dev" // the installed sandbox's are not a dev build's to remove
+        #else
+        let apps = "Applications/V2Mac Sandbox"
+        #endif
+        try? fm.removeItem(at: fm.homeDirectoryForCurrentUser.appendingPathComponent(apps, isDirectory: true))
         phase = .notInstalled
-        updateAvailable = false
+        installed = nil
     }
 
     /// Disk space the sandbox folder takes (the data disk is sparse, so its allocated size counts).
