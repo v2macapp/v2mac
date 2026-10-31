@@ -21,6 +21,7 @@ VLESS、REALITY、VMess、Trojan、Shadowsocks、Hysteria2 和 WireGuard，集�
 <p align="center">
   <a href="#安装">安装</a> ·
   <a href="#功能">功能</a> ·
+  <a href="https://v2macapp.github.io"><b>网站</b></a> ·
   <a href="https://github.com/v2macapp/v2mac/wiki/zh-Home"><b>文档</b></a> ·
   <a href="#从源码构建">构建</a>
 </p>
@@ -84,7 +85,7 @@ brew install --cask v2macapp/tap/v2mac
 | [设置参考](https://github.com/v2macapp/v2mac/wiki/zh-Settings-Reference) | 所有设置、备份、隐私 |
 | [故障排除与常见问题](https://github.com/v2macapp/v2mac/wiki/zh-Troubleshooting-and-FAQ) | 常见问题与解答 |
 
-如需在 Chrome 中防止泄漏，可搭配同一作者的免费扩展 [**noleaker**](https://github.com/LordVersA/noleaker)。
+如需在 Chrome 中防止泄漏，可搭配同一作者的免费扩展 [**noleaker**](https://github.com/v2macapp/noleaker)。
 
 ## 从源码构建
 

@@ -21,6 +21,7 @@ VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 и WireGuard в быстр
 <p align="center">
   <a href="#установка">Установка</a> ·
   <a href="#возможности">Возможности</a> ·
+  <a href="https://v2macapp.github.io"><b>Сайт</b></a> ·
   <a href="https://github.com/v2macapp/v2mac/wiki/ru-Home"><b>Документация</b></a> ·
   <a href="#сборка-из-исходников">Сборка</a>
 </p>
@@ -84,7 +85,7 @@ brew install --cask v2macapp/tap/v2mac
 | [Справочник настроек](https://github.com/v2macapp/v2mac/wiki/ru-Settings-Reference) | Все настройки, резервная копия, приватность |
 | [Решение проблем и FAQ](https://github.com/v2macapp/v2mac/wiki/ru-Troubleshooting-and-FAQ) | Частые проблемы и вопросы |
 
-Для защиты от утечек в Chrome используйте V2Mac вместе с [**noleaker**](https://github.com/LordVersA/noleaker), бесплатным расширением того же автора.
+Для защиты от утечек в Chrome используйте V2Mac вместе с [**noleaker**](https://github.com/v2macapp/noleaker), бесплатным расширением того же автора.
 
 ## Сборка из исходников
 

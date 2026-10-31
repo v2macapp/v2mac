@@ -21,6 +21,7 @@ VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 and WireGuard in a fast Sw
 <p align="center">
   <a href="#install">Install</a> ·
   <a href="#features">Features</a> ·
+  <a href="https://v2macapp.github.io"><b>Website</b></a> ·
   <a href="https://github.com/v2macapp/v2mac/wiki"><b>Documentation</b></a> ·
   <a href="#build-from-source">Build</a>
 </p>
@@ -84,7 +85,7 @@ The **[V2Mac Wiki](https://github.com/v2macapp/v2mac/wiki)** covers everything i
 | [Settings Reference](https://github.com/v2macapp/v2mac/wiki/Settings-Reference) | Every setting, backup, privacy |
 | [Troubleshooting and FAQ](https://github.com/v2macapp/v2mac/wiki/Troubleshooting-and-FAQ) | Common problems and questions |
 
-For leak protection in Chrome, pair V2Mac with [**noleaker**](https://github.com/LordVersA/noleaker), a free extension from the same author.
+For leak protection in Chrome, pair V2Mac with [**noleaker**](https://github.com/v2macapp/noleaker), a free extension from the same author.
 
 ## Build from source
 

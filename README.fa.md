@@ -21,6 +21,7 @@ VLESS، REALITY، VMess، Trojan، Shadowsocks، Hysteria2 و WireGuard در ی�
 <p align="center" dir="rtl">
   <a href="#نصب">نصب</a> ·
   <a href="#امکانات">امکانات</a> ·
+  <a href="https://v2macapp.github.io"><b>وب‌سایت</b></a> ·
   <a href="https://github.com/v2macapp/v2mac/wiki/fa-Home"><b>مستندات</b></a> ·
   <a href="#ساخت-از-سورس">ساخت</a>
 </p>
@@ -94,7 +95,7 @@ brew install --cask v2macapp/tap/v2mac
 | [مرجع تنظیمات](https://github.com/v2macapp/v2mac/wiki/fa-Settings-Reference) | همهٔ تنظیمات، پشتیبان‌گیری، حریم خصوصی |
 | [عیب‌یابی و پرسش‌های رایج](https://github.com/v2macapp/v2mac/wiki/fa-Troubleshooting-and-FAQ) | مشکلات و پرسش‌های رایج |
 
-برای جلوگیری از نشت اطلاعات در کروم، V2Mac را همراه [**noleaker**](https://github.com/LordVersA/noleaker)، افزونهٔ رایگان همین سازنده، استفاده کنید.
+برای جلوگیری از نشت اطلاعات در کروم، V2Mac را همراه [**noleaker**](https://github.com/v2macapp/noleaker)، افزونهٔ رایگان همین سازنده، استفاده کنید.
 
 ## ساخت از سورس
 
