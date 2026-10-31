@@ -43,6 +43,8 @@ comments cite it as "spec 6.4" etc.; read the section before changing the behavi
   per-file zips, bsdiff patches from the last 3 releases, signed `files.json`). It then bumps `version` and `sha256` in the Homebrew cask
   (`v2macapp/homebrew-tap`, `Casks/v2mac.rb`), which needs the `TAP_TOKEN` secret: a fine-grained
   token for `homebrew-tap` only, Contents read and write, expiring 2027-01-23. Renew it before then.
+  CI also uploads the DMG as `V2Mac.dmg` for the website's Download button and asks the website to rebuild, which
+  needs the `SITE_TOKEN` secret (Contents write on `v2macapp/v2macapp.github.io`); without it the step only warns.
 - Never create or push release tags on your own. Run `Scripts/release.sh` only when asked.
 - "Actions → Release → Run workflow" is a dry run: it builds and attaches the DMG and notes as an
   artifact and publishes nothing.

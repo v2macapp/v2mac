@@ -93,8 +93,20 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${{ steps.v.outputs.tag }}" dist/*.dmg dist/*.sha256 dist/*.sig dist/update/* \
+          # The website's Download button uses releases/latest/download/V2Mac.dmg, which needs a name without the version.
+          cp "dist/V2Mac-${{ steps.v.outputs.version }}.dmg" "$RUNNER_TEMP/V2Mac.dmg"
+          gh release create "${{ steps.v.outputs.tag }}" dist/*.dmg "$RUNNER_TEMP/V2Mac.dmg" dist/*.sha256 dist/*.sig dist/update/* \
             --title "V2Mac ${{ steps.v.outputs.version }}" --notes-file notes.md
+
+      # Rebuilds the website with the new version and notes. Needs a SITE_TOKEN secret that can write
+      # contents of v2macapp/v2macapp.github.io. The release is out, so a failure here only warns.
+      - name: Rebuild the website
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ secrets.SITE_TOKEN }}
+        run: |
+          if [[ -z "$GH_TOKEN" ]]; then echo "::warning::SITE_TOKEN is not set; the website was not rebuilt"; exit 0; fi
+          gh api repos/v2macapp/v2macapp.github.io/dispatches -f event_type=release || echo "::warning::The website rebuild did not start"
 
       # Points the Homebrew cask (v2macapp/homebrew-tap) at the new DMG. Needs a TAP_TOKEN
       # secret with write access to that repo; fails without one so a skipped bump is noticed.
