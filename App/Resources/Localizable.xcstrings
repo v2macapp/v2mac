@@ -4,6 +4,50 @@
     "" : {
       "shouldTranslate" : false
     },
+    "Copy and Open GitHub" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کپی و باز کردن GitHub"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Копировать и открыть GitHub"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "复制并打开 GitHub"
+          }
+        }
+      }
+    },
+    "Server names and addresses, subscription links, keys, sites you visit and your account name were removed. Nothing is sent: V2Mac copies this text and opens GitHub, where you paste it. Read it first, and delete anything you don't want to share." : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نام و نشانی سرورها، لینک‌های اشتراک، کلیدها، سایت‌هایی که باز می‌کنید و نام حساب شما حذف شده‌اند. چیزی ارسال نمی‌شود: V2Mac این متن را کپی می‌کند و GitHub را باز می‌کند تا آن را آنجا بچسبانید. اول آن را بخوانید و هر چیزی را که نمی‌خواهید به اشتراک بگذارید پاک کنید."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Имена и адреса серверов, ссылки на подписки, ключи, посещаемые сайты и имя вашей учётной записи удалены. Ничего не отправляется: V2Mac копирует этот текст и открывает GitHub, где вы его вставляете. Сначала прочитайте его и удалите всё, чем не хотите делиться."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器名称和地址、订阅链接、密钥、您访问的网站以及您的账户名称均已移除。不会发送任何内容:V2Mac 会复制此文本并打开 GitHub,由您在那里粘贴。请先阅读,并删除任何您不想分享的内容。"
+          }
+        }
+      }
+    },
     "—" : {
       "shouldTranslate" : false
     },

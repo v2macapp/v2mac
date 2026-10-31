@@ -918,6 +918,10 @@ stopped ──start──▶ starting ──ready──▶ running ──stop─
 
 Every failed state offers "Show Logs", which opens the log panel.
 
+Settings → About → Report a Problem shows an editable report (`ProblemReport`): versions, the ends of the
+app and sandbox logs with identifying data removed, and fields picked from recent crash reports. Nothing is
+sent: the user copies it and pastes it into a GitHub issue.
+
 ### 9.5 TUN mode
 
 **Asking for access.** TUN mode defaults off and keeps its choice across launches

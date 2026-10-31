@@ -4,21 +4,10 @@ about: Something does not work or V2Mac crashed
 labels: bug
 ---
 
-<!-- Remove server addresses, subscription URLs, keys and passwords from everything you paste. -->
+<!-- In V2Mac: Settings → About → Report a Problem makes a report with server details, keys and sites removed, and copies it. Paste it at the end of this box. If you add anything by hand, remove server addresses, subscription URLs, keys and passwords from it. -->
 
 **What happened**
 
 **Steps to reproduce**
 
-**Versions**
-- V2Mac (Settings → About):
-- macOS:
-
-**Log**
-<!-- Log panel (⇧⌘L) → Copy, then paste below. -->
-```
-
-```
-
-**Crash report** (if it crashed)
-<!-- Settings → General → Show Crash Reports. Drag the newest V2Mac or xray .ips file into this box. -->
+**Report** (Settings → About → Report a Problem)

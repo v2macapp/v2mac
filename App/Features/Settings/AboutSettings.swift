@@ -4,6 +4,7 @@ import V2MacCore
 struct AboutSettings: View {
     @State private var copied = false
     @State private var commandLineTool = CommandLineToolInstaller()
+    @State private var reporting = false
 
     var body: some View {
         Form {
@@ -40,7 +41,15 @@ struct AboutSettings: View {
             Section("Project") {
                 AboutLinkRow("Star on GitHub", systemImage: "star", detail: "Source code", url: AboutLinks.repository)
                 AboutLinkRow("What's New", systemImage: "sparkles", detail: "Release notes", url: AboutLinks.releases)
-                AboutLinkRow("Report a Problem", systemImage: "ladybug", detail: "Open an issue", url: AboutLinks.newIssue)
+                Button { reporting = true } label: {
+                    HStack {
+                        Label("Report a Problem", systemImage: "ladybug")
+                        Spacer()
+                        Text("Open an issue").foregroundStyle(.secondary)
+                    }
+                    .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
             }
             Section {
                 HStack {
@@ -82,6 +91,7 @@ struct AboutSettings: View {
             }
         }
         .formStyle(.grouped)
+        .sheet(isPresented: $reporting) { ProblemReportSheet() }
     }
 
     private func copyLink() {
