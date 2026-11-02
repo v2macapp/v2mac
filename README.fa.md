@@ -89,7 +89,7 @@ brew install --cask v2macapp/tap/v2mac
 | [سرورها و اشتراک‌ها](https://github.com/v2macapp/v2mac/wiki/fa-Servers-and-Subscriptions) | افزودن، به‌روزرسانی، ویرایش، تست تأخیر |
 | [اتصال](https://github.com/v2macapp/v2mac/wiki/fa-Connecting) | TUN، پراکسی سیستم، کیل‌سوییچ، بررسی خروجی، WARP |
 | [مسیریابی](https://github.com/v2macapp/v2mac/wiki/fa-Routing) | حالت‌ها، پنجرهٔ Rules، سرورهای Via، وارد کردن از Proxifier |
-| [اتصال‌ها](https://github.com/v2macapp/v2mac/wiki/fa-Connections) | فهرست زندهٔ اتصال‌ها و نقشه |
+| [اتصال‌ها](https://github.com/v2macapp/v2mac/wiki/fa-Connections) | فهرست زندهٔ اتصال‌ها |
 | [سندباکس امن](https://github.com/v2macapp/v2mac/wiki/fa-Sandbox) | ماشین‌های مجازی کوچک، برنامه‌های سندباکس، خروجی‌ها، فروشگاه |
 | [نوار منو و میان‌برها](https://github.com/v2macapp/v2mac/wiki/fa-Menu-Bar-and-Shortcuts) | پنل، صفحه‌کلید، Shortcuts، اعلان‌ها |
 | [مرجع تنظیمات](https://github.com/v2macapp/v2mac/wiki/fa-Settings-Reference) | همهٔ تنظیمات، پشتیبان‌گیری، حریم خصوصی |

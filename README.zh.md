@@ -79,7 +79,7 @@ brew install --cask v2macapp/tap/v2mac
 | [服务器与订阅](https://github.com/v2macapp/v2mac/wiki/zh-Servers-and-Subscriptions) | 添加、更新、编辑、延迟测试 |
 | [连接](https://github.com/v2macapp/v2mac/wiki/zh-Connecting) | TUN、系统代理、Kill Switch、出口检测、WARP |
 | [路由](https://github.com/v2macapp/v2mac/wiki/zh-Routing) | 模式、规则窗口、Via 服务器、导入 Proxifier |
-| [连接列表](https://github.com/v2macapp/v2mac/wiki/zh-Connections) | 实时连接列表和地图 |
+| [连接列表](https://github.com/v2macapp/v2mac/wiki/zh-Connections) | 实时连接列表 |
 | [安全沙盒](https://github.com/v2macapp/v2mac/wiki/zh-Sandbox) | 迷你虚拟机、沙盒应用、出口、商店 |
 | [菜单栏与快捷方式](https://github.com/v2macapp/v2mac/wiki/zh-Menu-Bar-and-Shortcuts) | 面板、键盘、快捷指令、通知 |
 | [设置参考](https://github.com/v2macapp/v2mac/wiki/zh-Settings-Reference) | 所有设置、备份、隐私 |

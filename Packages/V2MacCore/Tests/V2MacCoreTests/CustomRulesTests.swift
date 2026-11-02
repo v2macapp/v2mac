@@ -327,45 +327,6 @@ import Testing
     }
 }
 
-@Suite struct CountryPlacesTests {
-    @Test func readsZoneTab() {
-        let places = CountryPlaces.read("# comment\nDE\t+5230+01322\tEurope/Berlin\nDE\t+4742+00841\tEurope/Busingen\nGB\t+513030-0000731\tEurope/London\nXX\tbad\tNowhere\n")
-        #expect(places.count == 2)
-        #expect(abs(places["DE"]!.latitude - 52.5) < 0.001 && abs(places["DE"]!.longitude - 13.3667) < 0.001)
-        #expect(abs(places["GB"]!.latitude - 51.5083) < 0.001 && abs(places["GB"]!.longitude + 0.1253) < 0.001)
-    }
-
-    @Test func systemFileCoversCountries() throws {
-        let text = try String(contentsOf: CountryPlaces.systemFile, encoding: .utf8)
-        let places = CountryPlaces.read(text)
-        #expect(places.count > 200 && places["JP"] != nil && places["IR"] != nil)
-    }
-}
-
-@Suite struct GeoIPIndexTests {
-    func field(_ number: UInt8, _ payload: [UInt8]) -> [UInt8] { [number << 3 | 2, UInt8(payload.count)] + payload }
-    func cidr(_ ip: [UInt8], _ prefix: UInt8) -> [UInt8] { field(2, field(1, ip) + [0x10, prefix]) }
-
-    @Test func findsCountries() {
-        let de = field(1, field(1, Array("DE".utf8)) + cidr([93, 184, 0, 0], 16) + cidr([0x20, 0x01, 0x0d, 0xb8] + Array(repeating: 0, count: 12), 32))
-        let jp = field(1, field(1, Array("jp".utf8)) + cidr([1, 2, 3, 0], 24))
-        let named = field(1, field(1, Array("private".utf8)) + cidr([10, 0, 0, 0], 8))
-        let index = GeoIPIndex(data: Data(de + jp + named))
-        #expect(index.country(of: "93.184.216.34") == "DE")
-        #expect(index.country(of: "1.2.3.200") == "JP")
-        #expect(index.country(of: "1.2.4.1") == nil)
-        #expect(index.country(of: "10.1.1.1") == nil)
-        #expect(index.country(of: "2001:db8::5") == "DE")
-        #expect(index.country(of: "example.com") == nil)
-    }
-
-    @Test(.tags(.integration), .enabled(if: TestSupport.coreAvailable)) func bundledFile() {
-        let index = GeoIPIndex(contentsOf: TestSupport.vendorCore.appendingPathComponent("geoip.dat"))
-        // Since Xray 26.10.21 the bundled file has only the CN, IR and RU country lists.
-        #expect(index.country(of: "223.5.5.5") == "CN")
-    }
-}
-
 @Suite struct RuleImportSafetyTests {
     @Test func malformedLinesAreSkippedNotFatal() throws {
         let r = try RuleImport(data: Data(",\n,,\nDOMAIN,,PROXY\nDOMAIN,a.example.com,PROXY".utf8))

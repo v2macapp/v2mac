@@ -79,7 +79,7 @@ brew install --cask v2macapp/tap/v2mac
 | [Серверы и подписки](https://github.com/v2macapp/v2mac/wiki/ru-Servers-and-Subscriptions) | Добавление, обновление, редактирование, тесты задержки |
 | [Подключение](https://github.com/v2macapp/v2mac/wiki/ru-Connecting) | TUN, системный прокси, kill switch, проверка выхода, WARP |
 | [Маршрутизация](https://github.com/v2macapp/v2mac/wiki/ru-Routing) | Режимы, окно «Правила», серверы Via, импорт из Proxifier |
-| [Соединения](https://github.com/v2macapp/v2mac/wiki/ru-Connections) | Живой список соединений и карта |
+| [Соединения](https://github.com/v2macapp/v2mac/wiki/ru-Connections) | Живой список соединений |
 | [Безопасная песочница](https://github.com/v2macapp/v2mac/wiki/ru-Sandbox) | Мини-ВМ, приложения песочницы, выходы, магазин |
 | [Строка меню и быстрые команды](https://github.com/v2macapp/v2mac/wiki/ru-Menu-Bar-and-Shortcuts) | Панель, клавиатура, Команды, уведомления |
 | [Справочник настроек](https://github.com/v2macapp/v2mac/wiki/ru-Settings-Reference) | Все настройки, резервная копия, приватность |

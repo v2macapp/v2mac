@@ -321,12 +321,8 @@
     "/" : {
       "shouldTranslate" : false
     },
-    "#%lld" : {
-
-},
-    "%@" : {
-
-},
+    "#%lld" : {},
+    "%@" : {},
     "%@ · Apps: %lld · Hosts: %lld" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -6436,9 +6432,6 @@
         }
       }
     },
-    "Connection map" : {
-
-},
     "Connection Status" : {
       "localizations" : {
         "fa" : {
@@ -8120,9 +8113,7 @@
         }
       }
     },
-    "Distance" : {
-
-},
+    "Distance" : {},
     "DNS" : {
       "shouldTranslate" : false
     },
@@ -12513,28 +12504,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "由此配置管理"
-          }
-        }
-      }
-    },
-    "Map" : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "نقشه"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Карта"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "地图"
           }
         }
       }
@@ -17540,28 +17509,6 @@
         }
       }
     },
-    "Requests" : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "درخواست‌ها"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Запросы"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请求"
-          }
-        }
-      }
-    },
     "Reserved" : {
       "localizations" : {
         "fa" : {
@@ -21513,9 +21460,7 @@
         }
       }
     },
-    "TCP" : {
-
-},
+    "TCP" : {},
     "TCP and UDP" : {
       "localizations" : {
         "fa" : {
@@ -24097,28 +24042,6 @@
         }
       }
     },
-    "Top apps" : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "برنامه‌های پرمصرف"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Самые активные приложения"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "流量最多的应用"
-          }
-        }
-      }
-    },
     "Top stable download speed" : {
       "localizations" : {
         "fa" : {
@@ -24872,9 +24795,7 @@
         }
       }
     },
-    "UDP" : {
-
-},
+    "UDP" : {},
     "UDP 443, so browsers use TCP and rules see their sites" : {
       "localizations" : {
         "fa" : {
@@ -26582,28 +26503,6 @@
         }
       }
     },
-    "View" : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "نما"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Вид"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "视图"
-          }
-        }
-      }
-    },
     "View Release" : {
       "localizations" : {
         "fa" : {
@@ -26654,9 +26553,7 @@
     "VMess" : {
       "shouldTranslate" : false
     },
-    "VPN · %@" : {
-
-},
+    "VPN · %@" : {},
     "VPN tunnel" : {
       "localizations" : {
         "fa" : {
@@ -27385,9 +27282,7 @@
         }
       }
     },
-    "You" : {
-
-},
+    "You" : {},
     "You have the latest core." : {
       "localizations" : {
         "fa" : {

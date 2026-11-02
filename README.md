@@ -79,7 +79,7 @@ The **[V2Mac Wiki](https://github.com/v2macapp/v2mac/wiki)** covers everything i
 | [Servers and Subscriptions](https://github.com/v2macapp/v2mac/wiki/Servers-and-Subscriptions) | Adding, updating, editing, latency tests |
 | [Connecting](https://github.com/v2macapp/v2mac/wiki/Connecting) | TUN, system proxy, kill switch, exit check, WARP |
 | [Routing](https://github.com/v2macapp/v2mac/wiki/Routing) | Modes, the Rules window, Via servers, Proxifier import |
-| [Connections](https://github.com/v2macapp/v2mac/wiki/Connections) | Live connection list and map |
+| [Connections](https://github.com/v2macapp/v2mac/wiki/Connections) | Live connection list |
 | [Secure Sandbox](https://github.com/v2macapp/v2mac/wiki/Sandbox) | Mini VMs, sandbox apps, exits, store |
 | [Menu Bar and Shortcuts](https://github.com/v2macapp/v2mac/wiki/Menu-Bar-and-Shortcuts) | Panel, keyboard, Shortcuts, notifications |
 | [Settings Reference](https://github.com/v2macapp/v2mac/wiki/Settings-Reference) | Every setting, backup, privacy |

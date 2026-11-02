@@ -6,8 +6,6 @@ import V2MacCore
 struct ConnectionsView: View {
     static let windowID = "connections"
 
-    enum Tab: String { case list, map }
-
     enum Grouping: String, CaseIterable, Identifiable {
         case none, host, application
         var id: Self { self }
@@ -33,7 +31,6 @@ struct ConnectionsView: View {
     @State private var expanded: Set<ConnectionGroup.Row.ID> = []
     @State private var filter = Filter.all
     @State private var actionFilter: CustomRule.Action?
-    @AppStorage("connectionsTab") private var tab = Tab.list
     @AppStorage("connectionsGrouping") private var grouping = Grouping.none
     @State private var search = ""
     /// The column and direction, kept across launches: `<column>:<asc|desc>`.
@@ -61,54 +58,39 @@ struct ConnectionsView: View {
     private var watcher: ConnectionWatcher { model.connection.watcher }
 
     var body: some View {
-        Group {
-            switch tab {
-            case .list: list
-            case .map: ConnectionMapView()
-            }
-        }
+        list
         .searchable(text: $search, placement: .toolbar, prompt: "Apps and targets")
         .navigationSubtitle(summary)
         .toolbar {
-            ToolbarItem(placement: .principal) {
-                Picker("View", selection: $tab) {
-                    Label("Connections", systemImage: "list.bullet").tag(Tab.list)
-                    Label("Map", systemImage: "globe.europe.africa.fill").tag(Tab.map)
+            ToolbarItem {
+                Picker("Filter", selection: $filter) {
+                    ForEach(Filter.allCases) { Text($0.title).tag($0) }
                 }
                 .pickerStyle(.segmented)
-                .labelStyle(.titleAndIcon)
             }
-            if tab == .list {
-                ToolbarItem {
-                    Picker("Filter", selection: $filter) {
-                        ForEach(Filter.allCases) { Text($0.title).tag($0) }
-                    }
-                    .pickerStyle(.segmented)
-                }
-                ToolbarItem {
-                    Menu {
-                        Picker("Filter by route", selection: $actionFilter) {
-                            Text("All").tag(Optional<CustomRule.Action>.none)
-                            ForEach(CustomRule.Action.allCases, id: \.self) { action in
-                                Text(RuleList(action).title).tag(Optional(action))
-                            }
+            ToolbarItem {
+                Menu {
+                    Picker("Filter by route", selection: $actionFilter) {
+                        Text("All").tag(Optional<CustomRule.Action>.none)
+                        ForEach(CustomRule.Action.allCases, id: \.self) { action in
+                            Text(RuleList(action).title).tag(Optional(action))
                         }
-                        .pickerStyle(.inline)
-                        Picker("Group by", selection: $grouping) {
-                            ForEach(Grouping.allCases) { Text($0.title).tag($0) }
-                        }
-                        .pickerStyle(.inline)
-                    } label: {
-                        Label(actionFilter.map { RuleList($0).title } ?? String(localized: "All"), systemImage: "line.3.horizontal.decrease")
                     }
-                    .labelStyle(.titleAndIcon)
-                    .fixedSize()
-                    .help("Filter by route")
+                    .pickerStyle(.inline)
+                    Picker("Group by", selection: $grouping) {
+                        ForEach(Grouping.allCases) { Text($0.title).tag($0) }
+                    }
+                    .pickerStyle(.inline)
+                } label: {
+                    Label(actionFilter.map { RuleList($0).title } ?? String(localized: "All"), systemImage: "line.3.horizontal.decrease")
                 }
-                ToolbarItem {
-                    Button("Clear", systemImage: "trash") { watcher.clear() }
-                        .help("Clear closed connections and the log")
-                }
+                .labelStyle(.titleAndIcon)
+                .fixedSize()
+                .help("Filter by route")
+            }
+            ToolbarItem {
+                Button("Clear", systemImage: "trash") { watcher.clear() }
+                    .help("Clear closed connections and the log")
             }
         }
         .frame(minWidth: 760, minHeight: 440)
