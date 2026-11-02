@@ -36,13 +36,13 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     /// macOS mirrors an app only for its own right-to-left system languages, and Persian is not
     /// one of them, so the app asks AppKit for a right-to-left layout itself when its language is.
     /// Registered, not saved: it follows whichever language the app opens in.
+    /// Not `NSForceRightToLeftWritingDirection`: that also moves the Mac's menu bar, Apple menu included, to the right.
     static func applyLayoutDirection() {
         guard let code = Bundle.main.preferredLocalizations.first,
               Locale.Language(identifier: code).characterDirection == .rightToLeft else { return }
         let defaults = UserDefaults.standard
         var arguments = defaults.volatileDomain(forName: UserDefaults.argumentDomain)
         arguments["AppleTextDirection"] = true
-        arguments["NSForceRightToLeftWritingDirection"] = true
         defaults.setVolatileDomain(arguments, forName: UserDefaults.argumentDomain)
     }
 
