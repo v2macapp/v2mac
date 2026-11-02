@@ -1914,7 +1914,7 @@ is in one list or the other).
 
 | Tab | Setting | Default |
 |---|---|---|
-| General | Language: Same as the system / English / فارسی / 简体中文 / Русский. Stored as the app's own `AppleLanguages`; takes effect when V2Mac opens again ("Restart Now"). Persian lays the app out right to left: macOS does not do that for a language it does not offer itself, so `AppLanguage.applyLayoutDirection` sets `AppleTextDirection` and `NSForceRightToLeftWritingDirection` in the argument domain at launch | Same as the system |
+| General | Language: Same as the system / English / فارسی / 简体中文 / Русский. Stored as the app's own `AppleLanguages`; takes effect when V2Mac opens again ("Restart Now"). Persian lays the app out right to left: macOS does not do that for a language it does not offer itself, so `AppLanguage.applyLayoutDirection` sets `AppleTextDirection` (not `NSForceRightToLeftWritingDirection`, which also moves the Mac's menu bar to the right) in the argument domain at launch | Same as the system |
 | | Launch at login (`SMAppService.mainApp`) | Off |
 | | Reconnect on launch | On |
 | | Restart core after sleep or network change | On |
