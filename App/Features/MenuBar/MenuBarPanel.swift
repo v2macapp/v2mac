@@ -323,6 +323,9 @@ struct MenuBarPanel: View {
             HStack {
                 Button("Open V2Mac", systemImage: "macwindow") { model.openMainWindow(openWindow) }
                 Spacer()
+                Button("Connections", systemImage: "point.3.connected.trianglepath.dotted") { model.openConnections(openWindow) }
+                    .labelStyle(.iconOnly)
+                    .help("Connections")
                 Button {
                     // The entry sheet belongs to the main window.
                     if model.sandbox.phase != .installed { model.openMainWindow(openWindow) }
