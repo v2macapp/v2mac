@@ -3302,28 +3302,6 @@
         }
       }
     },
-    "An earlier rule already matches the same traffic, so this one never does." : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "قانونی بالاتر همین ترافیک را تطبیق می‌دهد، پس این قانون هرگز تطبیق نمی‌یابد."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Более раннее правило уже совпадает с тем же трафиком, поэтому это не срабатывает никогда."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "前面的规则已匹配相同流量，因此这条规则永远不会生效。"
-          }
-        }
-      }
-    },
     "An older version saved an administrator password. V2Mac no longer reads or uses it. Remove the old Keychain entry; macOS may ask for permission." : {
       "localizations" : {
         "fa" : {
@@ -7556,28 +7534,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除"
-          }
-        }
-      }
-    },
-    "Delete “%@”, the same as “%@”" : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "حذف «%@» که همانند «%@» است"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Удалить «%@», совпадающее с «%@»"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "删除“%@”，它与“%@”相同"
           }
         }
       }
@@ -12101,28 +12057,6 @@
         }
       }
     },
-    "Local network already goes direct first: %@" : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "شبکهٔ محلی از قبل اول مستقیم می‌رود: %@"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Локальная сеть уже идёт напрямую первой: %@"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "本地网络已优先直连：%@"
-          }
-        }
-      }
-    },
     "Local Proxy" : {
       "localizations" : {
         "fa" : {
@@ -14627,28 +14561,6 @@
         }
       }
     },
-    "Nothing to tidy" : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "چیزی برای مرتب کردن نیست"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Нечего упорядочивать"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无需整理"
-          }
-        }
-      }
-    },
     "Nothing yet" : {
       "localizations" : {
         "fa" : {
@@ -15846,28 +15758,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "性能"
-          }
-        }
-      }
-    },
-    "Pick the changes to make. Only “Collapse spellings” can change what matches: it stops matching a program of the same name outside the app." : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تغییراتی را که می‌خواهید انتخاب کنید. فقط «ادغام نگارش‌ها» می‌تواند تطبیق را تغییر دهد: دیگر با برنامه‌ای هم‌نام بیرون از آن برنامه تطبیق نمی‌یابد."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Выберите изменения. Только «Объединить написания» может изменить совпадения: перестанет совпадать одноимённая программа вне приложения."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选择要进行的更改。只有“合并写法”会改变匹配：它不再匹配应用之外的同名程序。"
           }
         }
       }
@@ -17109,50 +16999,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "移除"
-          }
-        }
-      }
-    },
-    "Remove %lld local entries from “%@”" : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "حذف %lld مورد محلی از «%@»"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Удалить локальные записи (%lld) из «%@»"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "从“%2$@”中删除 %1$lld 个本地条目"
-          }
-        }
-      }
-    },
-    "Remove %lld repeated entries from “%@”" : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "حذف %lld مورد تکراری از «%@»"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Удалить повторы (%lld) из «%@»"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "从“%2$@”中删除 %1$lld 个重复条目"
           }
         }
       }
@@ -23882,50 +23728,6 @@
         }
       }
     },
-    "Tidy Up" : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "مرتب‌سازی"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Упорядочить"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "整理"
-          }
-        }
-      }
-    },
-    "Tidy Up…" : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "مرتب‌سازی…"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Упорядочить…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "整理…"
-          }
-        }
-      }
-    },
     "Time" : {
       "localizations" : {
         "fa" : {
@@ -27305,28 +27107,6 @@
         }
       }
     },
-    "Your rules have no duplicates or parts that never match." : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "قانون‌های شما تکراری یا بخشی که هرگز تطبیق نیابد ندارند."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "В ваших правилах нет повторов и частей, которые никогда не совпадают."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你的规则中没有重复项或永不匹配的部分。"
-          }
-        }
-      }
-    },
     "Your rules, Block QUIC and where traffic that matches no rule goes are in the Rules window." : {
       "localizations" : {
         "fa" : {
@@ -27367,6 +27147,2386 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zero Trust"
+          }
+        }
+      }
+    },
+    "%@ (exception)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (استثنا)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (исключение)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@（例外）"
+          }
+        }
+      }
+    },
+    "%@ and %lld more" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ و %lld مورد دیگر"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ и ещё %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 等另外 %lld 项"
+          }
+        }
+      }
+    },
+    "%@ → %@. It stops matching a program of the same name outside the app." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ← %@. دیگر برنامه‌ای هم‌نام بیرون از این اپ را شامل نمی‌شود."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ → %@. Программа с тем же именем вне приложения больше не подойдёт."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ → %@。不再匹配应用之外的同名程序。"
+          }
+        }
+      }
+    },
+    "%lld can be fixed automatically" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld مورد خودکار درست می‌شود"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Автоматически можно исправить: %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 项可自动修复"
+          }
+        }
+      }
+    },
+    "A %@ rule already has its service. Any other host it uses stops matching." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "یک قانون %@ همین سرویس را دارد. میزبان‌های دیگر این برنامه دیگر شامل نمی‌شوند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Правило %@ уже содержит этот сервис. Другие узлы приложения перестанут подходить."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 规则已包含此服务。它使用的其他主机将不再匹配。"
+          }
+        }
+      }
+    },
+    "A list that is not in the geo files, or a pattern the core cannot compile, can stop it from starting: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فهرستی که در فایل‌های geo نیست یا الگویی که هسته نمی‌تواند بخواند، ممکن است جلوی اجرای هسته را بگیرد: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Список, которого нет в geo-файлах, или шаблон, который ядро не может скомпилировать, может помешать его запуску: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "geo 文件中没有的列表或核心无法编译的模式可能导致其无法启动：%@"
+          }
+        }
+      }
+    },
+    "All %lld hosts it connected to while this window was open are in your %@ rules." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هر %lld میزبانی که هنگام باز بودن این پنجره به آن‌ها وصل شد، در قوانین %@ شما هستند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все узлы (%lld), к которым оно подключалось при открытом окне, есть в правилах %@."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此窗口打开期间它连接的全部 %lld 个主机都在你的 %@ 规则中。"
+          }
+        }
+      }
+    },
+    "All fixed" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "همه درست شد"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Всё исправлено"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已全部修复"
+          }
+        }
+      }
+    },
+    "Already covered by other entries in the same rule: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "موارد دیگرِ همین قانون این‌ها را پوشش می‌دهند: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Уже покрыто другими записями этого правила: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已被同一规则中的其他条目覆盖：%@"
+          }
+        }
+      }
+    },
+    "Block QUIC stops “%@” from ever matching" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Block QUIC نمی‌گذارد «%@» هرگز اعمال شود"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Block QUIC не даёт правилу «%@» сработать"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Block QUIC 使“%@”永远无法匹配"
+          }
+        }
+      }
+    },
+    "Block, Via, Proxy, Direct, then the ones that are off. Rules that could match the same traffic keep their order, so routing stays the same." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Block، Via، Proxy، Direct و بعد قوانین خاموش. قوانینی که ممکن است ترافیک یکسانی را بگیرند ترتیبشان را نگه می‌دارند، پس مسیر ترافیک تغییر نمی‌کند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Block, Via, Proxy, Direct, затем выключенные. Правила, способные совпасть с одним трафиком, сохраняют порядок, поэтому маршруты не меняются."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Block、Via、Proxy、Direct，然后是已关闭的规则。可能匹配相同流量的规则保持顺序，因此路由不变。"
+          }
+        }
+      }
+    },
+    "Both send it to %@, and the earlier rule wins: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هر دو به %@ می‌فرستند و قانون بالاتر برنده است: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оба отправляют в %@, и побеждает верхнее правило: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "两者都发送到 %@，且靠前的规则优先：%@"
+          }
+        }
+      }
+    },
+    "Checking your rules…" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "در حال بررسی قوانین…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверка правил…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在检查规则…"
+          }
+        }
+      }
+    },
+    "Collapse them" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ادغامشان کن"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Объединить"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "合并它们"
+          }
+        }
+      }
+    },
+    "Delete the rule" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف قانون"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить правило"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除规则"
+          }
+        }
+      }
+    },
+    "Delete them" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذفشان کن"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить их"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除它们"
+          }
+        }
+      }
+    },
+    "Delete “%@”" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف «%@»"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить «%@»"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "删除“%@”"
+          }
+        }
+      }
+    },
+    "Direct mode ignores all but Block rules" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حالت Direct همه‌چیز جز قوانین Block را نادیده می‌گیرد"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Режим Direct игнорирует всё, кроме правил Block"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Direct 模式会忽略 Block 以外的规则"
+          }
+        }
+      }
+    },
+    "Fall back to the connected server" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برگشت به سرور متصل"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переключаться на подключённый сервер"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回退到已连接的服务器"
+          }
+        }
+      }
+    },
+    "Find errors, conflicts and rules that can be simpler, and fix them" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خطاها، تداخل‌ها و قوانینی را که می‌توانند ساده‌تر شوند پیدا و درست می‌کند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Находит и исправляет ошибки, конфликты и правила, которые можно упростить"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查找并修复错误、冲突和可以简化的规则"
+          }
+        }
+      }
+    },
+    "Fix" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "درست کن"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Исправить"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "修复"
+          }
+        }
+      }
+    },
+    "Fix Automatically" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "درست کردن خودکار"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Исправить автоматически"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动修复"
+          }
+        }
+      }
+    },
+    "Found %lld things to improve" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld مورد برای بهتر شدن پیدا شد"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Найдено улучшений: %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发现 %lld 项可改进"
+          }
+        }
+      }
+    },
+    "Group the rules by what they do" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "گروه‌بندی قوانین بر اساس کارشان"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сгруппировать правила по действию"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按作用分组规则"
+          }
+        }
+      }
+    },
+    "Ignored until fixed: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تا درست نشوند نادیده گرفته می‌شوند: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Игнорируются до исправления: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "修复前将被忽略：%@"
+          }
+        }
+      }
+    },
+    "It applies only to apps set to use the proxy port. Hosts make it work for every connection." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فقط برای برنامه‌هایی کار می‌کند که از پورت پراکسی استفاده می‌کنند. با میزبان‌ها برای همهٔ اتصال‌ها کار می‌کند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Действует только для приложений, настроенных на порт прокси. С узлами будет работать для всех соединений."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它只对设置为使用代理端口的应用生效。改用主机后对所有连接生效。"
+          }
+        }
+      }
+    },
+    "It applies only to apps set to use the proxy port. Use the app with this window open, then run the Doctor again to replace it with the hosts it reaches." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فقط برای برنامه‌هایی کار می‌کند که از پورت پراکسی استفاده می‌کنند. با این پنجرهٔ باز از برنامه استفاده کنید و دوباره Doctor را اجرا کنید تا با میزبان‌هایش جایگزین شود."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Действует только для приложений, настроенных на порт прокси. Поработайте с приложением при открытом окне и снова запустите Doctor, чтобы заменить его узлами."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它只对设置为使用代理端口的应用生效。请在此窗口打开时使用该应用，然后再次运行 Doctor，将其替换为它访问的主机。"
+          }
+        }
+      }
+    },
+    "It has nothing to match, so it never does anything." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "چیزی برای تطبیق ندارد، پس هیچ کاری نمی‌کند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ему нечему соответствовать, поэтому оно ничего не делает."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它没有可匹配的内容，因此不起任何作用。"
+          }
+        }
+      }
+    },
+    "It refuses UDP 443 before your rules are checked." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "پیش از بررسی قوانین شما، UDP 443 را رد می‌کند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отклоняет UDP 443 до проверки ваших правил."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它在检查你的规则之前就拒绝 UDP 443。"
+          }
+        }
+      }
+    },
+    "Its network and protocol conditions contradict each other: QUIC runs over UDP, TLS and HTTP over TCP." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شرط‌های شبکه و پروتکلش با هم تناقض دارند: QUIC روی UDP و TLS و HTTP روی TCP کار می‌کنند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Условия сети и протокола противоречат друг другу: QUIC работает по UDP, TLS и HTTP — по TCP."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其网络和协议条件相互矛盾：QUIC 基于 UDP，TLS 和 HTTP 基于 TCP。"
+          }
+        }
+      }
+    },
+    "Its traffic is blocked." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ترافیکش مسدود می‌شود."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Его трафик блокируется."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其流量被阻止。"
+          }
+        }
+      }
+    },
+    "Its traffic uses the current server." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ترافیکش از سرور فعلی می‌رود."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Его трафик идёт через текущий сервер."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其流量使用当前服务器。"
+          }
+        }
+      }
+    },
+    "Keep today's routing and remove them from “%@”" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مسیر فعلی بماند و از «%@» حذف شوند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оставить текущие маршруты и удалить их из «%@»"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保持当前路由并从“%@”中移除"
+          }
+        }
+      }
+    },
+    "Let “%@” have them instead" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "به‌جایش به «%@» داده شوند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отдать их правилу «%@»"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "改为交给“%@”"
+          }
+        }
+      }
+    },
+    "Link it to “%@” on this Mac" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "وصل کردن به «%@» روی این مک"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Связать с «%@» на этом Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关联到此 Mac 上的“%@”"
+          }
+        }
+      }
+    },
+    "Local network goes direct before any rule, so these never reach it: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شبکهٔ محلی پیش از هر قانونی مستقیم می‌رود، پس این‌ها هرگز به این قانون نمی‌رسند: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Локальная сеть идёт напрямую раньше всех правил, поэтому они сюда не доходят: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本地网络在所有规则之前直连，因此这些永远不会到达此规则：%@"
+          }
+        }
+      }
+    },
+    "Make them an exception above “%@”" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "به‌صورت استثنا بالای «%@» قرار بگیرند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сделать исключением над «%@»"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设为“%@”之上的例外"
+          }
+        }
+      }
+    },
+    "Merge %lld neighbouring %@ rules into one" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ادغام %lld قانون %@ مجاور در یکی"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Объединить соседние правила %2$@ (%1$lld) в одно"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将 %lld 条相邻的 %@ 规则合并为一条"
+          }
+        }
+      }
+    },
+    "Merge them" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ادغامشان کن"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Объединить"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "合并它们"
+          }
+        }
+      }
+    },
+    "Name rules after what they match" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نام‌گذاری قوانین بر اساس چیزی که می‌گیرند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Назвать правила по тому, что они охватывают"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按匹配内容命名规则"
+          }
+        }
+      }
+    },
+    "Name them" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نام‌گذاری کن"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дать имена"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "命名它们"
+          }
+        }
+      }
+    },
+    "No server of “%@” answers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "هیچ سروری از «%@» پاسخ نمی‌دهد"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ни один сервер «%@» не отвечает"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”没有服务器响应"
+          }
+        }
+      }
+    },
+    "Nothing changes until you press Apply." : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تا Apply را نزنید چیزی تغییر نمی‌کند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ничего не изменится, пока вы не нажмёте Apply."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在你按下 Apply 之前不会有任何改变。"
+          }
+        }
+      }
+    },
+    "Press Apply in the Rules window to start using the changes." : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برای اعمال تغییرها در پنجرهٔ قوانین Apply را بزنید."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нажмите Apply в окне правил, чтобы изменения заработали."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在规则窗口按下 Apply 以使更改生效。"
+          }
+        }
+      }
+    },
+    "Read as %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خوانده شود: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Читать как %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "读取为 %@"
+          }
+        }
+      }
+    },
+    "Remove the app" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف برنامه"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить приложение"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除应用"
+          }
+        }
+      }
+    },
+    "Remove the app condition" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف شرط برنامه"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить условие приложения"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除应用条件"
+          }
+        }
+      }
+    },
+    "Remove the extra entries" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف موارد اضافه"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить лишние записи"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除多余条目"
+          }
+        }
+      }
+    },
+    "Remove the network condition" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذف شرط شبکه"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить условие сети"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除网络条件"
+          }
+        }
+      }
+    },
+    "Remove them" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حذفشان کن"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить их"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除它们"
+          }
+        }
+      }
+    },
+    "Removing the condition makes the rule apply to every app." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "با حذف این شرط، قانون برای همهٔ برنامه‌ها اعمال می‌شود."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без этого условия правило будет действовать для всех приложений."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除该条件后，规则将应用于所有应用。"
+          }
+        }
+      }
+    },
+    "Reorder them" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مرتب کن"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Упорядочить"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新排序"
+          }
+        }
+      }
+    },
+    "Replace %@ with the hosts it reaches" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جایگزینی %@ با میزبان‌هایی که به آن‌ها وصل می‌شود"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заменить %@ узлами, к которым оно подключается"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将 %@ 替换为它访问的主机"
+          }
+        }
+      }
+    },
+    "Replace %lld hosts with one entry: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جایگزینی %lld میزبان با یک مورد: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заменить узлы (%lld) одной записью: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用一个条目替换 %lld 个主机：%@"
+          }
+        }
+      }
+    },
+    "Replace %lld hosts with the “%@” list" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جایگزینی %lld میزبان با فهرست «%@»"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Заменить узлы (%lld) списком «%@»"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用“%2$@”列表替换 %1$lld 个主机"
+          }
+        }
+      }
+    },
+    "Rewrite them" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بازنویسی کن"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Переписать"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重写它们"
+          }
+        }
+      }
+    },
+    "Rules Doctor" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "دکتر قوانین"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Доктор правил"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "规则医生"
+          }
+        }
+      }
+    },
+    "Rules at the end change nothing right now" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قوانین انتهای فهرست فعلاً تأثیری ندارند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Правила в конце сейчас ничего не меняют"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "末尾的规则目前不起作用"
+          }
+        }
+      }
+    },
+    "Switch to Global mode" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رفتن به حالت Global"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перейти в режим Global"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "切换到 Global 模式"
+          }
+        }
+      }
+    },
+    "The built-in rule already blocks this traffic first." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قانون داخلی همین ترافیک را زودتر مسدود می‌کند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Встроенное правило уже блокирует этот трафик раньше."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内置规则已先行阻止此流量。"
+          }
+        }
+      }
+    },
+    "The core gets no rule at all from it until they are fixed." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تا درست نشوند، هسته هیچ قانونی از آن نمی‌گیرد."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пока они не исправлены, ядро не получает из него правил."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "修复前，核心不会从中获得任何规则。"
+          }
+        }
+      }
+    },
+    "These match far more sites than intended: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "این‌ها سایت‌های خیلی بیشتری از انتظار را می‌گیرند: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Они охватывают намного больше сайтов, чем нужно: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这些会匹配远超预期的网站：%@"
+          }
+        }
+      }
+    },
+    "They do the same thing, but separate rules are easier to turn on and off: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کار یکسانی می‌کنند، ولی روشن و خاموش کردن قوانین جدا آسان‌تر است: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Они делают одно и то же, но отдельные правила проще включать и выключать: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它们作用相同，但单独的规则更便于开关：%@"
+          }
+        }
+      }
+    },
+    "They have no name of their own, which makes the list harder to read." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نام مشخصی ندارند و خواندن فهرست را سخت می‌کنند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У них нет своего имени, поэтому список труднее читать."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它们没有自己的名称，使列表更难阅读。"
+          }
+        }
+      }
+    },
+    "They match nothing: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "با چیزی تطبیق ندارند: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Они ничему не соответствуют: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它们不匹配任何内容：%@"
+          }
+        }
+      }
+    },
+    "They work, but in an old form: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "کار می‌کنند، ولی به شکل قدیمی: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Они работают, но в старой форме: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "它们有效，但是旧格式：%@"
+          }
+        }
+      }
+    },
+    "Turn off Block QUIC" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خاموش کردن Block QUIC"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выключить Block QUIC"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭 Block QUIC"
+          }
+        }
+      }
+    },
+    "Turn the rule off" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خاموش کردن قانون"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выключить правило"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭规则"
+          }
+        }
+      }
+    },
+    "Turning it on would change nothing." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "روشن کردنش چیزی را تغییر نمی‌دهد."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Его включение ничего не изменит."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开启它不会有任何变化。"
+          }
+        }
+      }
+    },
+    "Unmatched traffic goes to %@ anyway. They matter again if the routing mode or Everything Else changes: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ترافیک بدون قانون به هر حال به %@ می‌رود. اگر حالت مسیریابی یا Everything Else عوض شود دوباره مهم می‌شوند: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Трафик без правил и так идёт в %@. Они снова понадобятся при смене режима или Everything Else: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未匹配的流量本来就发往 %@。如果路由模式或 Everything Else 改变，它们会重新起作用：%@"
+          }
+        }
+      }
+    },
+    "Use %@ and all its subdomains" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استفاده از %@ و همهٔ زیردامنه‌هایش"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Использовать %@ и все его поддомены"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用 %@ 及其所有子域名"
+          }
+        }
+      }
+    },
+    "Use the connected server" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استفاده از سرور متصل"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Использовать подключённый сервер"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用已连接的服务器"
+          }
+        }
+      }
+    },
+    "Use the ports %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استفاده از پورت‌های %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Использовать порты %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用端口 %@"
+          }
+        }
+      }
+    },
+    "Use the “%@” list" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استفاده از فهرست «%@»"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Использовать список «%@»"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用“%@”列表"
+          }
+        }
+      }
+    },
+    "Your Proxy, Direct and Via rules do nothing until the routing mode changes." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تا حالت مسیریابی عوض نشود، قوانین Proxy، Direct و Via شما کاری نمی‌کنند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Правила Proxy, Direct и Via не действуют, пока не сменится режим."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在更改路由模式之前，你的 Proxy、Direct 和 Via 规则不起作用。"
+          }
+        }
+      }
+    },
+    "Your choice" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "انتخاب با شما"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "На ваш выбор"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由你决定"
+          }
+        }
+      }
+    },
+    "Your rules look healthy" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قوانین شما سالم‌اند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "С правилами всё в порядке"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的规则状况良好"
+          }
+        }
+      }
+    },
+    "“%@” already covers part of “%@”" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» بخشی از «%@» را پوشش می‌دهد"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» уже покрывает часть «%@»"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”已覆盖“%@”的一部分"
+          }
+        }
+      }
+    },
+    "“%@” and “%@” claim the same entries" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» و «%@» موارد یکسانی دارند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» и «%@» претендуют на одни записи"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”和“%@”包含相同条目"
+          }
+        }
+      }
+    },
+    "“%@” can never match" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» هرگز اعمال نمی‌شود"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» никогда не сработает"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”永远无法匹配"
+          }
+        }
+      }
+    },
+    "“%@” comes earlier and matches everything this rule would." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» بالاتر است و همهٔ چیزهایی را که این قانون می‌گرفت می‌گیرد."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» стоит выше и охватывает всё, что охватило бы это правило."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”排在前面，并匹配此规则会匹配的一切。"
+          }
+        }
+      }
+    },
+    "“%@” comes earlier and sends these to %@, so they never reach %@: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» بالاتر است و این‌ها را به %@ می‌فرستد، پس هرگز به %@ نمی‌رسند: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» стоит выше и отправляет их в %@, поэтому они не доходят до %@: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”排在前面并将它们发送到 %@，因此永远不会到达 %@：%@"
+          }
+        }
+      }
+    },
+    "“%@” does nothing: “%@” already covers it" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» بی‌اثر است: «%@» پوشش می‌دهد"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» ничего не делает: его покрывает «%@»"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”不起作用：“%@”已覆盖它"
+          }
+        }
+      }
+    },
+    "“%@” doesn't need %@: hosts already cover it" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» به %@ نیاز ندارد: میزبان‌ها پوشش می‌دهند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» не нужно %@: узлы уже его покрывают"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”不需要 %@：主机已覆盖它"
+          }
+        }
+      }
+    },
+    "“%@” fails closed: its traffic stops until one does." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» با قطع ترافیک عمل می‌کند: تا یکی پاسخ ندهد ترافیکش متوقف است."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» закрывается при сбое: трафик стоит, пока какой-нибудь сервер не ответит."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”失败时关闭：在有服务器响应前其流量会停止。"
+          }
+        }
+      }
+    },
+    "“%@” further down sends them to %@ too, and nothing in between routes them elsewhere: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» پایین‌تر هم این‌ها را به %@ می‌فرستد و چیزی در این میان مسیرشان را عوض نمی‌کند: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» ниже тоже отправляет их в %@, и ничто между ними не меняет маршрут: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下方的“%@”也将它们发送到 %@，且中间没有规则改变其路由：%@"
+          }
+        }
+      }
+    },
+    "“%@” has entries V2Mac cannot read" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» مواردی دارد که V2Mac نمی‌تواند بخواند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В «%@» есть записи, которые V2Mac не может прочитать"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”包含 V2Mac 无法读取的条目"
+          }
+        }
+      }
+    },
+    "“%@” has entries the core cannot use" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» مواردی دارد که هسته نمی‌تواند استفاده کند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В «%@» есть записи, которые ядро не может использовать"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”包含核心无法使用的条目"
+          }
+        }
+      }
+    },
+    "“%@” has invalid ports: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» پورت‌های نامعتبر دارد: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В «%@» неверные порты: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”的端口无效：%@"
+          }
+        }
+      }
+    },
+    "“%@” has very short keywords" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» کلیدواژه‌های خیلی کوتاه دارد"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В «%@» слишком короткие ключевые слова"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”的关键词过短"
+          }
+        }
+      }
+    },
+    "“%@” hides entries of “%@”" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» موارد «%@» را بی‌اثر می‌کند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» скрывает записи «%@»"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”遮蔽了“%@”的条目"
+          }
+        }
+      }
+    },
+    "“%@” is empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» خالی است"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» пусто"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”为空"
+          }
+        }
+      }
+    },
+    "“%@” is left out: none of its “Only when” apps are on this Mac" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» کنار گذاشته شده: هیچ‌کدام از برنامه‌های «Only when» آن روی این مک نیست"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» пропущено: приложений из «Only when» нет на этом Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”被忽略：其“Only when”应用都不在此 Mac 上"
+          }
+        }
+      }
+    },
+    "“%@” is off and the same as “%@”" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» خاموش و مثل «%@» است"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» выключено и совпадает с «%@»"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”已关闭且与“%@”相同"
+          }
+        }
+      }
+    },
+    "“%@” lists local addresses" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» نشانی‌های محلی دارد"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В «%@» есть локальные адреса"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”列出了本地地址"
+          }
+        }
+      }
+    },
+    "“%@” matches apps, which TUN mode cannot see" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» برنامه‌ها را می‌گیرد که حالت TUN آن‌ها را نمی‌بیند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» охватывает приложения, которых не видит режим TUN"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”匹配应用，而 TUN 模式无法识别应用"
+          }
+        }
+      }
+    },
+    "“%@” names apps that are not on this Mac" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» برنامه‌هایی دارد که روی این مک نیستند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В «%@» указаны приложения, которых нет на этом Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”列出了此 Mac 上没有的应用"
+          }
+        }
+      }
+    },
+    "“%@” never matches: “%@” takes all its traffic first" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» هرگز اعمال نمی‌شود: «%@» همهٔ ترافیکش را زودتر می‌گیرد"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» не срабатывает: «%@» раньше забирает весь его трафик"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”永不匹配：“%@”先接管了其全部流量"
+          }
+        }
+      }
+    },
+    "“%@” repeats Block QUIC" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» همان Block QUIC را تکرار می‌کند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» повторяет Block QUIC"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”与 Block QUIC 重复"
+          }
+        }
+      }
+    },
+    "“%@” repeats itself" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» موارد تکراری دارد"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» повторяет само себя"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”存在重复"
+          }
+        }
+      }
+    },
+    "“%@” shows working entries as not understood" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» موارد سالم را نامفهوم نشان می‌دهد"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» показывает рабочие записи как непонятные"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”将有效条目显示为无法识别"
+          }
+        }
+      }
+    },
+    "“%@” then covers all of %@: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» سپس همهٔ %@ را پوشش می‌دهد: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тогда «%@» покроет весь %@: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”随后将覆盖整个 %@：%@"
+          }
+        }
+      }
+    },
+    "“%@” then follows the service's own list, updated with the geo files: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» سپس از فهرست خود سرویس پیروی می‌کند که با فایل‌های geo به‌روز می‌شود: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Тогда «%@» будет следовать собственному списку сервиса, обновляемому с geo-файлами: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”随后将跟随该服务自己的列表，并随 geo 文件更新：%@"
+          }
+        }
+      }
+    },
+    "“%@” uses “%@”, which is not on this Mac" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» از «%@» استفاده می‌کند که روی این مک نیست"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«%@» использует «%@», которого нет на этом Mac"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@”使用的“%@”不在此 Mac 上"
           }
         }
       }

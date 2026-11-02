@@ -8,6 +8,7 @@ struct RulesSidebar: View {
     @Environment(\.undoManager) private var undo
     @Binding var search: String
     @Binding var filter: RulesWindow.Filter
+    @Binding var doctoring: Bool
     @State private var answer: SearchAnswer?
 
     var body: some View {
@@ -70,6 +71,13 @@ struct RulesSidebar: View {
             }
             .listStyle(.sidebar)
             .onDeleteCommand { store.delete(store.selectedRuleIDs, undo) }
+            Button { doctoring = true } label: {
+                Label("Rules Doctor", systemImage: "stethoscope").frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.glass)
+            .controlSize(.large)
+            .padding(10)
+            .help("Find errors, conflicts and rules that can be simpler, and fix them")
         }
         .task(id: query) {
             try? await Task.sleep(for: .milliseconds(250))

@@ -34,7 +34,7 @@ Type a site, a link, an address or an app name in the search field. Above the li
 
 **Discovered** lists apps and sites seen while the Rules or Connections window is open that no rule covers. Add one to a rule with **Add to**, drag it onto a rule, or **Ignore** it. A site is offered as its whole domain (`github.com` for `api.github.com`).
 
-**Tidy Up…** (in the ⋯ menu) suggests merging rules that do the same thing, dropping rules an earlier one already covers, and removing repeated entries. Pick the ones you want; nothing changes until you Apply.
+**Rules Doctor** (the glass button under the rules) checks the whole list: errors, conflicts between rules, and rules that can be shorter, such as several subdomains that one domain entry covers, hosts that a service list covers, or an app whose hosts are already in your rules. **Fix Automatically** does what is safe; anything that could change where traffic goes is listed under **Your choice** with its own **Fix** button. Nothing changes until you Apply.
 
 ## Command line and AI agents
 

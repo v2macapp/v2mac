@@ -17,7 +17,7 @@ struct RulesWindow: View {
     @State private var imported: RuleImport?
     @State private var importError: String?
     @State private var exporting: RulesDocument?
-    @State private var tidying: [TidySuggestion]?
+    @State private var doctoring = false
 
     enum Filter: String, CaseIterable, Identifiable {
         case all = "All", proxy = "Proxy", via = "Via", direct = "Direct", block = "Block"
@@ -35,7 +35,7 @@ struct RulesWindow: View {
     var body: some View {
         let store = model.rules
         NavigationSplitView {
-            RulesSidebar(search: $search, filter: $filter)
+            RulesSidebar(search: $search, filter: $filter, doctoring: $doctoring)
                 .navigationSplitViewColumnWidth(min: 280, ideal: 320, max: 440)
         } detail: {
             RulesDetail(search: search)
@@ -60,9 +60,12 @@ struct RulesWindow: View {
                 if profile.blockQUIC { UserDefaults.standard.set(true, forKey: "blockQUIC"); model.connection.reconnectIfRunning() }
             }
         }
-        .sheet(item: Binding { tidying.map(TidyList.init) } set: { tidying = $0?.suggestions }) { list in
-            TidyUpSheet(suggestions: list.suggestions) { chosen in
-                store.change(undo) { $0 = TidyUp.apply(chosen, to: $0) }
+        .sheet(isPresented: $doctoring) {
+            RulesDoctorSheet { fixes in
+                store.change(undo) { $0 = RuleDoctor.apply(fixes, to: $0) }
+                let edits = fixes.flatMap(\.edits)
+                if edits.contains(.turnOffBlockQUIC) { UserDefaults.standard.set(false, forKey: "blockQUIC"); model.connection.reconnectIfRunning() }
+                if edits.contains(.useGlobalMode) { model.connection.setRoutingMode(.global) }
             }
         }
         .fileExporter(isPresented: Binding { exporting != nil } set: { if !$0 { exporting = nil } }, document: exporting,
@@ -70,7 +73,12 @@ struct RulesWindow: View {
         .alert("Import Failed", isPresented: Binding { importError != nil } set: { if !$0 { importError = nil } }) {
             Button("OK", role: .cancel) {}
         } message: { Text(importError ?? "") }
-        .task { await model.ruleCatalog.load() }
+        .task {
+            await model.ruleCatalog.load()
+            #if DEBUG
+            if UserDefaults.standard.bool(forKey: "debugRulesDoctor") { doctoring = true }
+            #endif
+        }
         .onAppear { model.connection.watcher.watch() }
         .onDisappear { model.connection.watcher.unwatch() }
     }
@@ -105,8 +113,6 @@ struct RulesWindow: View {
                 Button("Export All Rules…") { exporting = RulesDocument(rules: store.draft) }
                 Button("Export Selected Rules…") { exporting = RulesDocument(rules: store.draft.filter { store.selectedRuleIDs.contains($0.id) }) }
                     .disabled(store.selectedRuleIDs.isEmpty)
-                Divider()
-                Button("Tidy Up…") { tidying = TidyUp.suggestions(for: store.draft, apps: model.ruleCatalog.apps) }
             } label: {
                 Label("More", systemImage: "ellipsis.circle")
             }
@@ -129,11 +135,6 @@ struct RulesWindow: View {
         default: return false
         }
     }
-}
-
-private struct TidyList: Identifiable {
-    let suggestions: [TidySuggestion]
-    var id: Int { suggestions.hashValue }
 }
 
 extension RuleImport: Identifiable {

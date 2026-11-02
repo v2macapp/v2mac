@@ -114,6 +114,17 @@ public struct GeoLists: Sendable {
         return low > 0 && list[low - 1].contains(value)
     }
 
+    /// Whether every address of `cidr` (or the one address) is in the list `key`.
+    func ipList(_ key: String, covers cidr: String) -> Bool {
+        let parts = cidr.split(separator: "/")
+        guard let first = parts.first, let (value, isV4) = Self.number(String(first)), let list = isV4 ? ips[key] : v6Lists[key] else { return false }
+        let bits = isV4 ? 32 : 128
+        let host = bits - (parts.count == 2 ? Int(parts[1]) ?? bits : bits)
+        let mask = host == 128 ? UInt128.max : (UInt128(1) << host) - 1
+        let low = value & ~mask, high = value | mask
+        return list.contains { $0.lowerBound <= low && high <= $0.upperBound }
+    }
+
     public var isEmpty: Bool { sites.isEmpty && ips.isEmpty }
 
     /// Whether the loaded files contain the list named by a rule entry.

@@ -827,10 +827,24 @@ bar. Notifications from 1.1 that name `rule-editor` or `rule-builder` open it.
   using only lists the installed files have.
 - Profiles: named rule lists; switching needs no unapplied changes. New,
   Duplicate, Rename, Delete (not the last).
-- Tidy Up (`TidyUp`): merge an app-only and a host-only rule with the same
-  action into one, drop rules an earlier rule fully covers, collapse spellings
-  of one app, drop repeated or local-network entries. Each is a checkbox; only
-  collapsing spellings can change what matches, and the sheet says so.
+- Rules Doctor (`RuleDoctor`, the glass button under the sidebar): checks the
+  draft and proposes fixes, each one or more `DoctorEdit`s applied to the draft.
+  Errors: unreadable entries (repaired from URLs and the like), invalid ports,
+  lists missing from the geo files, patterns the core cannot compile, missing Via
+  targets. Conflicts: an entry an earlier rule with another action takes first
+  (coverage reads domains, keywords, geo lists, ranges and "Only when"); a narrower
+  one is offered as an exception above the wider rule. Simplify: entries covered in
+  the rule, above or by a wider one below; subdomains rolled up to their registered
+  domain (never shared hosting, and never over a rule that routes elsewhere);
+  hosts replaced by a service list; apps their hosts already cover, judged by
+  connections seen or by name. Organize, only on request: group by action while
+  rules that could overlap keep their order, merge neighbours, name rules.
+  **Fix Automatically** does the preselected findings, which keep routing, plus
+  repairs of errors; the rest are listed with their own Fix, which says when it
+  changes routing. A fix may turn off Block QUIC or switch to Global at once;
+  every other change waits for Apply. A rule that loses its last item is deleted,
+  because with "Only when" left it would match all such traffic. The list is
+  checked again after each fix. The CLI keeps `rules tidy` (`TidyUp`).
 
 The Connections window's row menu offers Add App/Host to Rule ▸ and Show Rule
 (the tester names the rule from the rules the connection opened under). The

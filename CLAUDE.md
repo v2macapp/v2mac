@@ -85,6 +85,7 @@ comments cite it as "spec 6.4" etc.; read the section before changing the behavi
     data), so a snapshot can show a settings tab: `-debugWindowRequest about`.
     With `rules`, `-debugSelectRule <part of a rule name>` shows that rule, and `-debugRulesFile <path>`
     shows made-up v2 rules from that file without saving them, so no real rule appears in a screenshot.
+    With `rules`, `-debugRulesDoctor YES` opens the Rules Doctor and prints its findings.
     With `connection`, `-debugFragmentTuner YES` opens Find Settings and prints the result.
   - `-debugSandbox install|boot|stop|probe|update|remove` with `-debugSandboxPin <pin.json>` (from `../sandbox`,
     `Scripts/package.sh <url of files.json>`, served with e.g. `python3 -m http.server` in `../sandbox/out/release`) drives
