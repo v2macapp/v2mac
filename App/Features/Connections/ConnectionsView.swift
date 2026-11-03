@@ -470,11 +470,13 @@ private struct RuleCell: View {
 extension ConnectionWatcher.Connection {
     /// Proxy, Direct or Block, or "Via" with the server's flag and name.
     var routeTitle: String {
-        if let viaServer {
-            let name = ServerName(viaServer)
-            return String(localized: "Via \((name.flag ?? "🌐") + " " + name.title)")
-        }
-        return action.map { RuleList($0).title } ?? outbound
+        viaServer.map { String(localized: "Via \(Self.server($0))") } ?? action.map { RuleList($0).title } ?? outbound
+    }
+
+    /// A server name with its flag in front, or a globe when it has none.
+    static func server(_ raw: String) -> String {
+        let name = ServerName(raw)
+        return (name.flag ?? "🌐") + " " + name.title
     }
 
     /// Purple for Via, as in the Rules window.
@@ -549,7 +551,7 @@ private struct EventRow: View {
             Spacer(minLength: 8)
             switch event.kind {
             case .opened:
-                Text("via \(c.routeTitle)").foregroundStyle(.secondary)
+                Text("via \(c.viaServer.map(ConnectionWatcher.Connection.server) ?? c.routeTitle)").foregroundStyle(.secondary)
             case .closed:
                 Text("↑ \(c.sent.formatted(Self.bytes))  ↓ \(c.received.formatted(Self.bytes))  \(StatusCell.duration((c.end ?? event.date).timeIntervalSince(c.start)))")
                     .foregroundStyle(.secondary)
