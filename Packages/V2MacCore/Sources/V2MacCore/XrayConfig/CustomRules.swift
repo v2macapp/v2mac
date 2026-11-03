@@ -69,6 +69,8 @@ public struct CustomRules: Sendable, Equatable, Hashable {
     /// Where apps that were set to use the proxy port themselves go, without any rule; nil follows
     /// the rules. Off while the system proxy is on, since then every app comes through that port.
     public var proxyClientsRoute: CustomRule.Action?
+    /// Via rules still apply to those apps, ahead of `proxyClientsRoute`.
+    public var proxyClientsKeepVia: Bool
     /// Where traffic that matches no rule goes, ahead of the mode's own default and an imported
     /// config's fallback; nil leaves it to them. Direct mode ignores it.
     public var unmatchedRoute: CustomRule.Action?
@@ -81,8 +83,9 @@ public struct CustomRules: Sendable, Equatable, Hashable {
 
     public init(rules: [Rule] = [], installedApps: [InstalledApp] = [], blockQUIC: Bool = false,
                 proxyClientsRoute: CustomRule.Action? = nil, unmatchedRoute: CustomRule.Action? = nil,
-                siteTags: Set<String> = [], viaServers: [Rule.Via.Target: [ViaServer]] = [:]) {
+                siteTags: Set<String> = [], viaServers: [Rule.Via.Target: [ViaServer]] = [:], proxyClientsKeepVia: Bool = false) {
         self.rules = rules
+        self.proxyClientsKeepVia = proxyClientsKeepVia
         self.installedApps = installedApps
         self.blockQUIC = blockQUIC
         self.proxyClientsRoute = proxyClientsRoute

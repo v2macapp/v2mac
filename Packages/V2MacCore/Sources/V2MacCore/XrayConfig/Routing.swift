@@ -49,12 +49,14 @@ extension ConfigBuilder {
         }
         // Direct mode keeps only the user's block rules: nothing there should reach the proxy.
         var customRules: [JSONValue] = []
+        var viaRules: [JSONValue] = []
         var hasCustomIPs = false
         for rule in custom.rules where rule.enabled && (plan != .direct || rule.action == .block) {
             let made = rule.xrayRules(apps: custom.installedApps, siteTags: custom.siteTags, target: custom.target(of: rule.action))
                 .enumerated().map { $1.setting("ruleTag", to: .string(RuleTag.user(rule.id, part: $0))) }
             hasCustomIPs = hasCustomIPs || made.contains { $0["ip"] != nil }
             customRules += made
+            if case .via = rule.action { viaRules += made }
         }
         // This Mac and the LAN always go direct, before any rule: a proxy rule for an app must not
         // send its localhost traffic to the server's own localhost.
@@ -62,6 +64,11 @@ extension ConfigBuilder {
         // Direct mode keeps everything off the server, the proxy port included.
         if let route = custom.proxyClientsRoute, plan != .direct {
             customRules.insert(["type": "field", "ruleTag": .string(RuleTag.proxyPort), "inboundTag": [.string(inboundTag)], "outboundTag": .string(route.tag)], at: 0)
+            // Xray wants unique tags; the suffix keeps the rule's ID, so Connections still names it.
+            if custom.proxyClientsKeepVia {
+                customRules.insert(contentsOf: viaRules.map { $0.setting("inboundTag", to: [.string(inboundTag)])
+                    .setting("ruleTag", to: .string(($0["ruleTag"]?.stringValue ?? "") + "-port")) }, at: 0)
+            }
         }
         if plan != .direct || !customRules.isEmpty { customRules.insert(contentsOf: [localNames, privateRule], at: 0) }
         if custom.blockQUIC { customRules.insert(["type": "field", "ruleTag": .string(RuleTag.quic), "network": "udp", "port": "443", "outboundTag": .string(blockTag)], at: 0) }

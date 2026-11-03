@@ -7,6 +7,7 @@ struct ProxySettings: View {
     @AppStorage("allowLAN") private var allowLAN = false
     @AppStorage("proxyUsername") private var username = ""
     @AppStorage("proxyClientsRoute") private var proxyClientsRoute = "proxy"
+    @AppStorage("proxyClientsKeepVia") private var proxyClientsKeepVia = false
     @State private var password = Prefs.proxyPassword
     @State private var passwordError: String?
     @State private var portText = ""
@@ -51,6 +52,9 @@ struct ProxySettings: View {
                 }
                 .disabled(model.connection.systemProxy.isEnabled)
                 .onChange(of: proxyClientsRoute) { model.connection.reconnectIfRunning() }
+                Toggle("Via rules still apply to these apps", isOn: $proxyClientsKeepVia)
+                    .disabled(model.connection.systemProxy.isEnabled || proxyClientsRoute == "rules")
+                    .onChange(of: proxyClientsKeepVia) { model.connection.reconnectIfRunning() }
             } footer: {
                 note("Where apps that were set to use V2Mac's proxy port themselves go, before any rule. Not used while the system proxy is on, since then every app comes through that port.")
             }

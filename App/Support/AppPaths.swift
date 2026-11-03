@@ -121,7 +121,7 @@ enum Prefs {
     static func resetKeys(_ tab: SettingsTab) -> [String] {
         switch tab {
         case .general: ["reconnectOnLaunch", "restartOnWakeOrNetwork", "checkAppUpdates", "installAppUpdates", "countTraffic", "logLevel", "logConnections"]
-        case .proxy: ["proxyPort", "allowLAN", "proxyUsername", "proxyClientsRoute", "systemProxy"]
+        case .proxy: ["proxyPort", "allowLAN", "proxyUsername", "proxyClientsRoute", "proxyClientsKeepVia", "systemProxy"]
         case .routing: ["routingMode", "unmatchedRoute"]
         case .connection:
             ["liveSwitch", "autoSelectServer", "switchOnDelay", "switchDelayMs", "switchOnSlowSpeed", "switchSpeedKBps",
@@ -158,6 +158,7 @@ enum Prefs {
             "proxyUsername": "",
             "systemProxy": false,
             "proxyClientsRoute": "proxy",
+            "proxyClientsKeepVia": false,
             "unmatchedRoute": "mode",
             "killSwitch": false,
             "outboundInterface": "",
@@ -410,7 +411,8 @@ enum Prefs {
     static var customRules: CustomRules {
         CustomRules(rules: rules, blockQUIC: defaults.bool(forKey: "blockQUIC"),
                     proxyClientsRoute: systemProxy ? nil : CustomRule.Action(rawValue: defaults.string(forKey: "proxyClientsRoute") ?? ""),
-                    unmatchedRoute: CustomRule.Action(rawValue: defaults.string(forKey: "unmatchedRoute") ?? ""))
+                    unmatchedRoute: CustomRule.Action(rawValue: defaults.string(forKey: "unmatchedRoute") ?? ""),
+                    proxyClientsKeepVia: defaults.bool(forKey: "proxyClientsKeepVia"))
     }
 
     /// Spec 8.6: the active profile's rules, under `rules`. Until they are first saved, the 1.1 list

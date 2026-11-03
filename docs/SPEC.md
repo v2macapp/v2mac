@@ -766,7 +766,10 @@ when the rules are unchanged.
 
 With System Proxy off, the mixed proxy inbound goes to `proxy` (or `direct`,
 per Settings → Proxy → Apps using the proxy port; "Follow rules" turns this off)
-before custom and region rules in Global and Bypass modes (`proxyClientsRoute`). Local
+before custom and region rules in Global and Bypass modes (`proxyClientsRoute`).
+"Via rules still apply to these apps" (`proxyClientsKeepVia`, off by default) puts
+copies of the Via rules, limited to that inbound and tagged `<ruleTag>-port`
+(Xray refuses repeated tags), ahead of it. Local
 names and private addresses still go direct first, and Block QUIC stays first
 when enabled. Direct mode keeps its Block rules and direct catch-all. With
 System Proxy on, the exception is disabled: manual and system proxy traffic
@@ -789,6 +792,9 @@ and the config's own observatory merged. Apply restarts a running core.
 With System Proxy off, the mixed proxy inbound goes to `proxy` (or `direct`,
 per Settings → Proxy → Apps using the proxy port; "Follow rules" turns this off)
 before custom and region rules in Global and Bypass modes (`proxyClientsRoute`).
+"Via rules still apply to these apps" (`proxyClientsKeepVia`, off by default) puts
+copies of the Via rules, limited to that inbound and tagged `<ruleTag>-port`
+(Xray refuses repeated tags), ahead of it.
 With System Proxy on this is disabled: manual and system proxy traffic share the
 inbound and cannot be told apart.
 

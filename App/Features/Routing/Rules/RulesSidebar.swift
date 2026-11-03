@@ -218,11 +218,15 @@ extension RulesStore.BuiltIn {
         case .blockQUIC: return String(localized: "UDP 443, so browsers use TCP and rules see their sites")
         case .proxyPort:
             guard !Prefs.systemProxy else { return String(localized: "Off while the system proxy is on") }
-            return switch CustomRule.Action(rawValue: UserDefaults.standard.string(forKey: "proxyClientsRoute") ?? "") {
-            case .proxy: String(localized: "→ Proxy, before your rules")
-            case .direct: String(localized: "→ Direct, before your rules")
-            case .block: String(localized: "→ Block, before your rules")
-            case nil: String(localized: "Follow your rules")
+            let route = CustomRule.Action(rawValue: UserDefaults.standard.string(forKey: "proxyClientsRoute") ?? "")
+            return switch (route, UserDefaults.standard.bool(forKey: "proxyClientsKeepVia")) {
+            case (.proxy, true): String(localized: "Via rules, then → Proxy, before your other rules")
+            case (.direct, true): String(localized: "Via rules, then → Direct, before your other rules")
+            case (.block, true): String(localized: "Via rules, then → Block, before your other rules")
+            case (.proxy, false): String(localized: "→ Proxy, before your rules")
+            case (.direct, false): String(localized: "→ Direct, before your rules")
+            case (.block, false): String(localized: "→ Block, before your rules")
+            case (nil, _): String(localized: "Follow your rules")
             }
         case .mode:
             return switch model.connection.routingMode {

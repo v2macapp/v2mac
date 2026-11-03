@@ -98,6 +98,26 @@ import Testing
         #expect(rules[2] == ["type": "field", "inboundTag": ["mixed-in"], "outboundTag": "direct"])
     }
 
+    @Test(arguments: [false, true])
+    func proxyClientsCanKeepViaRules(keepVia: Bool) {
+        let via = Rule(name: "Via", action: .via(.init(target: .server(UUID()), name: "Home")), items: [.host("a.example")])
+        let direct = Rule(name: "Direct", action: .direct, items: [.host("b.example")])
+        let custom = CustomRules(rules: [direct, via], proxyClientsRoute: .proxy, proxyClientsKeepVia: keepVia)
+        func route(_ host: String, _ inbound: String) -> String? {
+            let tag = RuleTester.route(RouteQuery(host: host, inbound: inbound), plan: .global, custom: custom, geo: GeoLists())?.ruleTag
+            return tag.flatMap(RuleTag.ruleID)?.uuidString ?? tag
+        }
+        // Proxy-port apps: the Via rule only with the option, never the Direct rule.
+        #expect(route("a.example", ConfigBuilder.inboundTag) == (keepVia ? via.id.uuidString : RuleTag.proxyPort))
+        #expect(route("b.example", ConfigBuilder.inboundTag) == RuleTag.proxyPort)
+        // TUN traffic is unchanged.
+        #expect(route("a.example", ConfigBuilder.tunInboundTag) == via.id.uuidString)
+        #expect(route("b.example", ConfigBuilder.tunInboundTag) == direct.id.uuidString)
+        // Xray refuses repeated rule tags.
+        let tags = RuleTester.routing(plan: .global, custom: custom)["rules"]?.arrayValue?.compactMap { $0["ruleTag"]?.stringValue } ?? []
+        #expect(Set(tags).count == tags.count)
+    }
+
     @Test(arguments: [RoutingPlan.global, .bypass([]), .bypass([
         RegionRoute(geositeFile: "sites.dat", geositeTags: ["ir"], geoipFile: "ips.dat", geoipTags: ["ir"]),
     ])], [false, true])

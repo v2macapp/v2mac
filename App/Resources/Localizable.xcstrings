@@ -29530,6 +29530,94 @@
           }
         }
       }
+    },
+    "Via rules still apply to these apps" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قانون‌های «از طریق» برای این برنامه‌ها هم اعمال شوند"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Правила «Через» по-прежнему действуют для этих приложений"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "经由规则仍适用于这些应用"
+          }
+        }
+      }
+    },
+    "Via rules, then → Proxy, before your other rules" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قانون‌های «از طریق»، سپس ← پروکسی، پیش از دیگر قانون‌های شما"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Правила «Через», затем → Прокси, до остальных ваших правил"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "先经由规则，然后 → 代理，在你的其他规则之前"
+          }
+        }
+      }
+    },
+    "Via rules, then → Direct, before your other rules" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قانون‌های «از طریق»، سپس ← مستقیم، پیش از دیگر قانون‌های شما"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Правила «Через», затем → Напрямую, до остальных ваших правил"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "先经由规则，然后 → 直连，在你的其他规则之前"
+          }
+        }
+      }
+    },
+    "Via rules, then → Block, before your other rules" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قانون‌های «از طریق»، سپس ← مسدود، پیش از دیگر قانون‌های شما"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Правила «Через», затем → Блокировать, до остальных ваших правил"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "先经由规则，然后 → 拦截，在你的其他规则之前"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -355,9 +355,13 @@ enum GeoFixture {
     func generatedViaConfigPassesXrayTest(custom: Bool) throws {
         let options = RunOptions(metricsPort: 1)
         let imported: JSONValue = ["outbounds": [Self.trojan.config.setting("tag", to: "p")]]
+        // Via rules copied for proxy-port apps need tags of their own.
+        var rules = Self.custom()
+        rules.proxyClientsRoute = .proxy
+        rules.proxyClientsKeepVia = true
         let config = custom
-            ? try ConfigBuilder.buildCustom(config: imported, options: options, routing: .rulesOnly, custom: Self.custom())
-            : try ConfigBuilder.build(outbound: Self.trojan.config, options: options, routing: .bypass([]), custom: Self.custom())
+            ? try ConfigBuilder.buildCustom(config: imported, options: options, routing: .rulesOnly, custom: rules)
+            : try ConfigBuilder.build(outbound: Self.trojan.config, options: options, routing: .bypass([]), custom: rules)
         let dir = try TestSupport.makeTempDirectory()
         defer { try? FileManager.default.removeItem(at: dir) }
         let file = dir.appendingPathComponent("config.json")
