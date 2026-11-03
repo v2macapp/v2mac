@@ -31,6 +31,8 @@ final class ConnectionWatcher {
         var proxySettingRoute: CustomRule.Action?
         var usesProxySetting: Bool { proxySettingRoute != nil }
         var action: CustomRule.Action?
+        /// The server name, when a Via rule's server carried it.
+        var viaServer: String?
         var configFallback = false
         var isDefaultRoute = false
         var skipsRules: Bool { usesProxySetting && routingMode != .direct && action == proxySettingRoute }
@@ -59,8 +61,9 @@ final class ConnectionWatcher {
         var lifetime: TimeInterval { (end ?? .now).timeIntervalSince(start) }
         var isOpen: Bool { end == nil && !untracked }
 
-        func matches(search: String, onlyOpen: Bool, action: CustomRule.Action?) -> Bool {
-            (!onlyOpen || isOpen) && (action == nil || self.action == action)
+        /// `route` is a `CustomRule.Action` raw value or "via"; nil matches every route.
+        func matches(search: String, onlyOpen: Bool, route: String?) -> Bool {
+            (!onlyOpen || isOpen) && (route == nil || (route == "via" ? viaServer != nil : action?.rawValue == route))
                 && (search.isEmpty || target.localizedCaseInsensitiveContains(search) || appName.localizedCaseInsensitiveContains(search))
         }
     }
@@ -89,6 +92,8 @@ final class ConnectionWatcher {
     @ObservationIgnored var coverage: (rules: CustomRules, catalog: Int, answers: [String: Bool], routing: JSONValue) = (CustomRules(), -1, [:], [:])
     @ObservationIgnored var hasConfigFallback = false
     @ObservationIgnored var outboundActions: [String: CustomRule.Action] = [:]
+    /// Server name behind each Via outbound (`via-s0-m0`).
+    @ObservationIgnored var viaExits: [String: String] = [:]
     @ObservationIgnored var modeOutbounds: Set<String> = []
     @ObservationIgnored private var watchers = 0
     @ObservationIgnored fileprivate var nextID = 0
@@ -131,7 +136,9 @@ final class ConnectionWatcher {
                                     inbound: seen.inbound, outbound: seen.outbound, start: .now)
         // Keep the running configuration with the row, even after settings change.
         connection.routingMode = routingMode
-        connection.action = outboundActions[seen.outbound] ?? CustomRule.Action(rawValue: seen.outbound)
+        connection.viaServer = viaExits[seen.outbound]
+        // A Via server is not the Proxy route, and only then can a Via rule be named as the match.
+        connection.action = connection.viaServer != nil ? nil : outboundActions[seen.outbound] ?? CustomRule.Action(rawValue: seen.outbound)
         connection.isDefaultRoute = seen.isDefaultRoute
         connection.configFallback = hasConfigFallback && (seen.isDefaultRoute || !modeOutbounds.contains(seen.outbound))
         if routingMode != nil {

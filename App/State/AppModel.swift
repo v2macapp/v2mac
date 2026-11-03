@@ -106,18 +106,19 @@ final class AppModel {
                 .compactMap { ActiveServer($0) }
         }
         rules.onApplied = { connection.reconnectIfRunning() }
-        connection.viaServers = { [weak self] targets in
-            guard let self else { return [:] }
-            var out: [Rule.Via.Target: [ViaServer]] = [:]
-            for target in targets {
-                let profiles: [Profile] = switch target {
-                case .server(let id): profile(id: id).map { [$0] } ?? []
-                case .group(let id): (group(id: id)?.profiles ?? []).filter { !$0.isStale }.sorted { $0.sortIndex < $1.sortIndex }
-                }
-                out[target] = profiles.compactMap { p in p.config.map { ViaServer(config: $0, kind: p.kind) } }
+        // A target's servers in config order, so names line up with the `-m<i>` outbounds.
+        let viaProfiles: @MainActor (Rule.Via.Target) -> [Profile] = { [weak self] target in
+            guard let self else { return [] }
+            let profiles: [Profile] = switch target {
+            case .server(let id): profile(id: id).map { [$0] } ?? []
+            case .group(let id): (group(id: id)?.profiles ?? []).filter { !$0.isStale }.sorted { $0.sortIndex < $1.sortIndex }
             }
-            return out
+            return profiles.filter { $0.config != nil }
         }
+        connection.viaServers = { targets in
+            Dictionary(uniqueKeysWithValues: targets.map { t in (t, viaProfiles(t).compactMap { p in p.config.map { ViaServer(config: $0, kind: p.kind) } }) })
+        }
+        connection.viaServerNames = { target in viaProfiles(target).map(\.name) }
         let latencyStore = LatencyStore(modelContainer: container)
         connection.onAutomaticResults = { results in
             for result in results { try? await latencyStore.apply(id: result.id, outcome: result.outcome, kind: "real") }

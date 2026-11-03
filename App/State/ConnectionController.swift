@@ -96,6 +96,7 @@ final class ConnectionController {
     @ObservationIgnored private var viaMembers: [Rule.Via.Target: [String]] = [:]
     /// The servers of Via targets (spec 8.6), from the app's data.
     var viaServers: @MainActor (Set<Rule.Via.Target>) -> [Rule.Via.Target: [ViaServer]] = { _ in [:] }
+    var viaServerNames: @MainActor (Rule.Via.Target) -> [String] = { _ in [] }
     let systemProxy: SystemProxyController
     private let runner: CoreRunner
     private let executable: @MainActor () -> URL
@@ -725,6 +726,7 @@ final class ConnectionController {
             watcher.routingMode = routingMode
             watcher.customRules = custom
             viaMembers = ConfigBuilder.viaMembers(plan: plan, custom: custom)
+            watcher.viaExits = Dictionary(viaMembers.flatMap { target, tags in zip(tags, viaServerNames(target)) }, uniquingKeysWith: { a, _ in a })
             watcher.hasConfigFallback = server.kind == .custom
             let outbounds = config["outbounds"]?.arrayValue ?? []
             watcher.outboundActions = Dictionary(outbounds.compactMap { outbound -> (String, CustomRule.Action)? in

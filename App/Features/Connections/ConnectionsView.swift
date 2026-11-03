@@ -30,7 +30,8 @@ struct ConnectionsView: View {
     @State private var selection: Set<ConnectionGroup.Row.ID> = []
     @State private var expanded: Set<ConnectionGroup.Row.ID> = []
     @State private var filter = Filter.all
-    @State private var actionFilter: CustomRule.Action?
+    /// A `CustomRule.Action` raw value or "via".
+    @State private var routeFilter: String?
     @AppStorage("connectionsGrouping") private var grouping = Grouping.none
     @State private var search = ""
     /// The column and direction, kept across launches: `<column>:<asc|desc>`.
@@ -70,11 +71,12 @@ struct ConnectionsView: View {
             }
             ToolbarItem {
                 Menu {
-                    Picker("Filter by route", selection: $actionFilter) {
-                        Text("All").tag(Optional<CustomRule.Action>.none)
+                    Picker("Filter by route", selection: $routeFilter) {
+                        Text("All").tag(String?.none)
                         ForEach(CustomRule.Action.allCases, id: \.self) { action in
-                            Text(RuleList(action).title).tag(Optional(action))
+                            Text(RuleList(action).title).tag(Optional(action.rawValue))
                         }
+                        Text("Via").tag(Optional("via"))
                     }
                     .pickerStyle(.inline)
                     Picker("Group by", selection: $grouping) {
@@ -82,7 +84,8 @@ struct ConnectionsView: View {
                     }
                     .pickerStyle(.inline)
                 } label: {
-                    Label(actionFilter.map { RuleList($0).title } ?? String(localized: "All"), systemImage: "line.3.horizontal.decrease")
+                    Label(routeFilter == "via" ? String(localized: "Via") : routeFilter.flatMap(CustomRule.Action.init).map { RuleList($0).title } ?? String(localized: "All"),
+                          systemImage: "line.3.horizontal.decrease")
                 }
                 .labelStyle(.titleAndIcon)
                 .fixedSize()
@@ -237,7 +240,7 @@ struct ConnectionsView: View {
     }
 
     private func matches(_ row: ConnectionWatcher.Connection) -> Bool {
-        row.matches(search: search, onlyOpen: filter == .open, action: actionFilter)
+        row.matches(search: search, onlyOpen: filter == .open, route: routeFilter)
     }
 }
 
@@ -320,7 +323,7 @@ private struct ConnectionMenu: View {
             (String(localized: "Duration"), StatusCell.duration(c.lifetime)),
             (String(localized: "Sent"), c.untracked ? nil : c.sent.formatted(ConnectionsView.bytes)),
             (String(localized: "Received"), c.untracked ? nil : c.received.formatted(ConnectionsView.bytes)),
-            (String(localized: "Route"), c.action.map { RuleList($0).title } ?? c.outbound),
+            (String(localized: "Route"), c.routeTitle),
             (String(localized: "Rule"), rule),
             (String(localized: "Inbound"), c.inbound),
             (String(localized: "Outbound"), c.outbound),
@@ -434,13 +437,12 @@ private struct RuleCell: View {
     let connection: ConnectionWatcher.Connection
 
     var body: some View {
-        let action = connection.action
         let viaProxySetting = connection.skipsRules
         let rule = viaProxySetting ? nil : connection.matchedRule(geo: GeoLists())
         let fromConfig = rule == nil && connection.configFallback
-        let tint: Color = viaProxySetting ? .orange : fromConfig ? .purple : action.map { RuleList($0).tint } ?? .secondary
+        let tint: Color = viaProxySetting ? .orange : fromConfig ? .purple : connection.routeTint
         HStack(spacing: 6) {
-            Text(action.map { RuleList($0).title } ?? connection.outbound)
+            Text(connection.routeTitle)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(tint)
                 .padding(.horizontal, 7)
@@ -466,6 +468,18 @@ private struct RuleCell: View {
 }
 
 extension ConnectionWatcher.Connection {
+    /// Proxy, Direct or Block, or "Via" with the server's flag and name.
+    var routeTitle: String {
+        if let viaServer {
+            let name = ServerName(viaServer)
+            return String(localized: "Via \((name.flag ?? "🌐") + " " + name.title)")
+        }
+        return action.map { RuleList($0).title } ?? outbound
+    }
+
+    /// Purple for Via, as in the Rules window.
+    var routeTint: Color { viaServer != nil ? .purple : action.map { RuleList($0).tint } ?? .secondary }
+
     /// The rule that sent this connection where it went, asked of the rules it opened under. Geo lists
     /// are looked into once the Rules window has read them.
     @MainActor func matchedRule(geo: GeoLists) -> Rule? {
@@ -524,19 +538,18 @@ private struct EventRow: View {
 
     var body: some View {
         let c = event.connection
-        let action = c.action
         HStack(spacing: 8) {
             Text(event.date, format: .dateTime.hour().minute().second())
                 .foregroundStyle(.tertiary)
                 .monospacedDigit()
             Image(systemName: event.kind == .opened ? "arrow.up.right.circle.fill" : "xmark.circle.fill")
-                .foregroundStyle(event.kind == .opened ? (action.map { RuleList($0).tint } ?? .secondary) : .secondary)
+                .foregroundStyle(event.kind == .opened ? c.routeTint : .secondary)
             Text(c.app.map(AppCell.name(of:)) ?? c.process ?? "—").fontWeight(.medium)
             Text(c.target).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
             Spacer(minLength: 8)
             switch event.kind {
             case .opened:
-                Text("via \(action.map { RuleList($0).title } ?? c.outbound)").foregroundStyle(.secondary)
+                Text("via \(c.routeTitle)").foregroundStyle(.secondary)
             case .closed:
                 Text("↑ \(c.sent.formatted(Self.bytes))  ↓ \(c.received.formatted(Self.bytes))  \(StatusCell.duration((c.end ?? event.date).timeIntervalSince(c.start)))")
                     .foregroundStyle(.secondary)
