@@ -897,7 +897,8 @@ import Testing
     }
 }
 
-@Suite(.tags(.integration), .enabled(if: TestSupport.coreAvailable))
+// Serialized: the two real-TUN tests both route TEST-NET-1, and only one TUN can own it.
+@Suite(.serialized, .tags(.integration), .enabled(if: TestSupport.coreAvailable))
 struct TunIntegrationTests {
     func xrayTest(_ config: JSONValue) throws -> (status: Int32, output: String) {
         let dir = try TestSupport.makeTempDirectory()
