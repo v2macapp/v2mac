@@ -1810,7 +1810,7 @@ there (else "No rule · <mode>"), and bytes sent and received. Imported fallback
 routes show a purple "Config fallback" label. Outbound tags from full configs
 are classified by their protocol for the Proxy, Direct and Block badges.
 A Via server's outbound (`via-s<n>-m<i>`, `via-g<n>-m<i>`; the access log names the
-member a balancer picked) shows a purple "Via <flag> <server>" badge instead, so its
+member a balancer picked) shows a purple "Via <flag>" badge instead (the server name in its tooltip), so its
 Via rule can be named, and the route filter has a Via entry.
 Connections that skip rules through the proxy-port exception show an orange
 "App's proxy setting" label. Each row keeps the mode and custom rules from its
