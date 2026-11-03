@@ -4,10 +4,8 @@
 It replaces the Rule Builder, the Rule Editor (Simple and Advanced) and the custom rules list in
 Settings → Routing. It ships in one release.
 
-**Status (2026-10-27):** R0–R8 are implemented locally. R9's real 30-rule migration produces identical
-routing in Global and Rules Only, Tidy Up completes with 26 reviewable suggestions, all 340 package
-tests pass, and the Debug app builds. The live stopped-server failover check, tester/access-log matrix,
-and release remain.
+**Status (2026-11-03):** released in V2Mac 1.2.0 (2026-10-27). Later releases added Rules Doctor (1.6.0) and
+Via routes in the Connections window (1.7.0).
 
 ## Today
 - Three places edit the same `CustomRule` list (about 2,600 lines of UI): Settings → Routing (the raw

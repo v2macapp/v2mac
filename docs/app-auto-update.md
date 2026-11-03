@@ -47,8 +47,8 @@ is available and when one is ready. Settings can turn automatic install off.
 | U6 | Spec 11.1/11.3/12.2, README ×4, wiki updates page ×4, String Catalogs ×3; cask `auto_updates true`. | app, wiki, homebrew-tap |
 | U7 | End to end with the dev build: release N installed → N+1 served locally: only changed files and patches fetched, staged, swapped on quit; break a patch hash → full file; break the manifest sig → nothing staged; core out of range → pinned core fetched. | app |
 
-## Status (2026-10-27)
-Released in V2Mac 1.3.0, the first release built with it (N). The "Done when" still needs the next release (N+1).
+## Status (2026-11-03)
+Released in V2Mac 1.3.0, the first release built with it (N). Releases 1.4.0–1.7.1 have shipped through it since.
 - **U0 spike**, on the real 1.2.0 and 1.2.1 DMGs: (a) two CI builds already agree on `xray`, `Assets.car`, the
   geo files, strings and `AppIcon.icns`; what differs is code (main executable, CLI, privileged helper, Control
   extension), `Info.plist`, `Metadata.appintents` and `_CodeSignature`, so nothing needed fixing. (b) Only
