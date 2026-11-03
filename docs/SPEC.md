@@ -1091,8 +1091,12 @@ Docker Desktop's `com.docker.backend`). `TunApps` carries the identity across:
   `process` rule per entry in the order above, and last a rule sending everything else
   to `core`. The root helper writes that file itself from `tun.apps` with a fixed `awk`
   program that skips any line that is not a valid entry, and keeps it readable by root
-  alone. The managed daemon checks the same limits on the session state's `apps` before
-  writing the list.
+  alone. It never reads `tun.apps` where it was left: it moves it into its own folder
+  first (a rename moves a link, not its target), then takes it as root's and uses it only
+  if it is a regular file with one link, owned like the request folder, of at most
+  256 KB; anything else counts as an empty list. So the app writes the file every time,
+  empty when no rule names an app. The managed daemon checks the same limits on the
+  session state's `apps` before writing the list.
 - *Changes.* The app writes the list after building each config. The helper compares it
   on every turn of its loop and, when it differs, stops the forwarder and starts it again
   at once, leaving DNS as it is; the TUN is down for that moment, as on a core restart.

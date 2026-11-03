@@ -253,22 +253,33 @@ public enum TunHelper {
     }
     """#
 
-    /// The TUN app rules (spec 9.5): `tun.apps` in the request directory becomes `apps.json`, the
-    /// forwarder's second config file, through `TunApps.awkProgram`, which skips any line that is
-    /// not a plain entry. Root reads the list alone (`umask 077`), as with the kill switch's.
+    /// The TUN app rules (spec 9.5): the app leaves the list as `tun.apps` in the request
+    /// directory; the helper moves it into its own folder (a rename moves a link, not what it
+    /// points to), where no one else can swap it, and uses it only as a plain file of at most
+    /// 256 KB with one link and the request directory's owner, else as an empty list. It becomes
+    /// `apps.json`, the forwarder's second config file, through `TunApps.awkProgram`, which skips
+    /// any line that is not a plain entry, readable by root alone.
     static let appsFunctions = #"""
     apps_sum=""
-    apps_read() {
-      f="$STATE_DIR/\#(TunApps.file)"
-      apps_now=""
-      [ -f "$f" ] && [ ! -L "$f" ] || return 0
-      while IFS= read -r line || [ -n "$line" ]; do apps_now="$apps_now$line
-    "; done < "$f"
+    apps_now=""
+    apps_take() {
+      f="$STATE_DIR/\#(TunApps.file)"; g="$ROOT_DIR/apps.in"
+      [ -e "$f" ] || [ -L "$f" ] || return 1
+      rm -f "$g"
+      mv -f "$f" "$g" 2>/dev/null || return 1
+      if [ -L "$g" ] || [ ! -f "$g" ] || [ "$(stat -f '%u %l' "$g")" != "$(stat -f %u "$STATE_DIR") 1" ] \
+        || [ "$(stat -f %z "$g")" -gt 262144 ]; then
+        rm -rf "$g"; : > "$g"
+      fi
+      # Root's from here on, so it can't be written through its new name either.
+      chown 0:0 "$g" 2>/dev/null; chmod 600 "$g"
+      apps_now=$(head -c 262144 "$g")
     }
-    apps_changed() { apps_read; [ "$apps_now" != "$apps_sum" ]; }
+    apps_changed() { apps_take && [ "$apps_now" != "$apps_sum" ]; }
     apps_sync() {
-      apps_read
-      ( umask 077; printf '%s' "$apps_now" | LC_ALL=C awk -v port="$CORE_PORT" '\#(TunApps.awkProgram.replacingOccurrences(of: "'", with: "'\\''"))' > "$ROOT_DIR/apps.json" )
+      apps_take
+      [ -f "$ROOT_DIR/apps.in" ] || : > "$ROOT_DIR/apps.in"
+      ( umask 077; head -c 262144 "$ROOT_DIR/apps.in" | LC_ALL=C awk -v port="$CORE_PORT" '\#(TunApps.awkProgram.replacingOccurrences(of: "'", with: "'\\''"))' > "$ROOT_DIR/apps.json" )
       apps_sum=$apps_now
     }
     """#

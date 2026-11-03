@@ -160,7 +160,7 @@ import Testing
         try PrivilegedSessionState(tunEnabled: true, proxyPort: nil, killSwitchEnabled: false, allowedAddresses: [], apps: ["curl", "/x/"]).write(to: dir)
         #expect(try String(contentsOf: dir.appendingPathComponent(TunApps.file), encoding: .utf8) == "curl\n/x/\n")
         try PrivilegedSessionState(tunEnabled: true, proxyPort: nil, killSwitchEnabled: false, allowedAddresses: []).write(to: dir)
-        #expect(!FileManager.default.fileExists(atPath: dir.appendingPathComponent(TunApps.file).path))
+        #expect(try String(contentsOf: dir.appendingPathComponent(TunApps.file), encoding: .utf8) == "")
     }
 
     /// What root does with the list: lines that are not plain entries are skipped, so the file
@@ -849,6 +849,7 @@ import Testing
 
     /// Spec 9.5: the forwarder runs with the app list as its second config file, which follows
     /// `tun.apps`, is readable by root alone, and restarts the forwarder only when it changes.
+    /// The helper takes the file each time; a link or an oversized file counts as no apps.
     @Test func forwarderFollowsTheAppList() async throws {
         let s = try await start(core: "echo \"$*\" >> \"$MARKER.args\"\n" + liveCore)
         defer { s.cleanUp() }
@@ -870,11 +871,23 @@ import Testing
         try "curl\nssh\n".write(to: apps, atomically: true, encoding: .utf8)
         #expect(await wait { runs().count == 2 })
         #expect(json()?["routing"]?["rules"]?[1]?["process"] == ["ssh"])
+        #expect(!FileManager.default.fileExists(atPath: apps.path), "the helper takes the list into its own folder")
+        try "curl\nssh\n".write(to: apps, atomically: true, encoding: .utf8)
         try? await Task.sleep(for: .milliseconds(900))
         #expect(runs().count == 2, "an unchanged list must not restart the forwarder")
 
-        try FileManager.default.removeItem(at: apps)
+        // A link is taken as a link, never followed: no apps.
+        let target = s.dir.appendingPathComponent("elsewhere")
+        try "curl\n".write(to: target, atomically: true, encoding: .utf8)
+        try FileManager.default.createSymbolicLink(at: apps, withDestinationURL: target)
         #expect(await wait { runs().count == 3 })
+        #expect(json()?["outbounds"] == [])
+
+        try "curl\n".write(to: apps, atomically: true, encoding: .utf8)
+        #expect(await wait { runs().count == 4 })
+        // Over 256 KB: no apps, whatever it starts with.
+        try ("curl\n" + String(repeating: "x", count: 262_144)).write(to: apps, atomically: true, encoding: .utf8)
+        #expect(await wait { runs().count == 5 })
         #expect(json()?["outbounds"] == [])
         #expect(s.childRunning)
     }

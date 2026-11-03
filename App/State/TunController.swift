@@ -49,8 +49,8 @@ final class TunController {
     func requestApps(_ apps: [String]) {
         privilegedState.apps = apps
         let file = stateDirectory.appendingPathComponent(TunApps.file)
-        if apps.isEmpty { try? FileManager.default.removeItem(at: file) }
-        else { try? (apps.joined(separator: "\n") + "\n").write(to: file, atomically: true, encoding: .utf8) }
+        // Written even when empty: the helper takes the file each time it reads it.
+        try? apps.map { $0 + "\n" }.joined().write(to: file, atomically: true, encoding: .utf8)
     }
 
     private var sessionFlag: URL { stateDirectory.appendingPathComponent(TunHelper.sessionFlag) }

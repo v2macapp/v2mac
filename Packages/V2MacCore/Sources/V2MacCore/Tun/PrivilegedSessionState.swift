@@ -57,7 +57,8 @@ public struct PrivilegedSessionState: Codable, Equatable, Sendable {
         try write(KillSwitch.allowFile, allowedAddresses.joined(separator: "\n") + "\n")
         try write(KillSwitch.flag, killSwitchEnabled ? "" : nil)
         try write(SystemProxy.flag, proxyPort.map { "\($0)\n" })
-        try write(TunApps.file, apps.isEmpty ? nil : apps.joined(separator: "\n") + "\n")
+        // Always written: the helper takes the file each time it reads it (`TunHelper.appsFunctions`).
+        try write(TunApps.file, apps.map { $0 + "\n" }.joined())
         try write(TunHelper.onFlag, tunEnabled ? "" : nil)
     }
 }
