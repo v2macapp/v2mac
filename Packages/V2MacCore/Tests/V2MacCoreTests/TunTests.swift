@@ -59,7 +59,9 @@ import Testing
         if let primary = NetworkInterfaces.primary() { #expect(networks.first?.name == primary) }
     }
 
-    @Test func tunSkipsAppRulesButKeepsHostRules() throws {
+    /// Spec 9.5: an app rule keeps its place in the order; on `tun-in` it matches the SOCKS users
+    /// the forwarder arrives as instead of the process, which the core can't see there.
+    @Test func tunAppRulesMatchTheForwardersUsers() throws {
         let custom = CustomRules(rules: [
             CustomRule(name: "App", action: .block, apps: "curl"),
             CustomRule(name: "Both", action: .direct, apps: "curl", hosts: "example.com"),
@@ -76,10 +78,41 @@ import Testing
             }
             #expect(appRules[1]["domain"] == ["domain:example.com"])
             #expect(rules.contains { $0["domain"] == ["domain:example.org"] && $0["inboundTag"] == nil })
+
+            let tunRules = rules.filter { $0["user"] != nil }
+            #expect(ConfigBuilder.tunApps(of: config) == (tun == nil ? [] : ["curl"]))
+            guard tun != nil else { #expect(tunRules.isEmpty); continue }
+            #expect(tunRules.count == 2)
+            for (direct, copy) in zip(appRules, tunRules) {
+                #expect(copy["user"] == ["curl"] && copy["inboundTag"] == ["tun-in"] && copy["process"] == nil)
+                #expect(copy["outboundTag"] == direct["outboundTag"] && copy["domain"] == direct["domain"])
+                // Right after its original, so first-match order is the same on both inbounds.
+                let at = try #require(rules.firstIndex(of: direct))
+                #expect(rules[at + 1] == copy)
+            }
+            let tunIn = config["inbounds"]?.arrayValue?.first { $0["tag"] == "tun-in" }
+            #expect(tunIn?["settings"]?["auth"] == "password")
+            #expect(tunIn?["settings"]?["accounts"] == [["user": "*", "pass": "v2mac"], ["user": "curl", "pass": "v2mac"]])
         }
     }
 
-    @Test func tunExcludesItselfFromImportedProcessRules() throws {
+    /// The forwarder sends an app as the most specific entry it matches, so a rule naming a wider
+    /// folder must also accept the deeper one, or the first matching rule would change.
+    @Test func tunFolderRulesAcceptDeeperEntries() throws {
+        let custom = CustomRules(rules: [
+            CustomRule(name: "Xcode", action: .direct, apps: "/Applications/Xcode.app"),
+            CustomRule(name: "Its Python", action: .block, apps: "/Applications/Xcode.app/Contents/Developer/Python.app"),
+            CustomRule(name: "curl", action: .block, apps: "/usr/bin/curl"),
+            CustomRule(name: "By name", action: .direct, apps: "curl"),
+        ])
+        let config = try ConfigBuilder.build(outbound: ["protocol": "vless"], options: options(tun: link), routing: .global, custom: custom)
+        let xcode = "/Applications/Xcode.app/", python = "/Applications/Xcode.app/Contents/Developer/Python.app/"
+        #expect(ConfigBuilder.tunApps(of: config) == ["/usr/bin/curl", python, xcode, "curl"])
+        let users = (config["routing"]?["rules"]?.arrayValue ?? []).compactMap { $0["user"] }
+        #expect(users == [[.string(python), .string(xcode)], [.string(python)], ["/usr/bin/curl"], ["/usr/bin/curl", "curl"]])
+    }
+
+    @Test func tunImportedProcessRulesGetTunCopiesWhereTheyApplied() throws {
         let imported: JSONValue = [
             "inbounds": [["tag": "socks", "protocol": "socks"]],
             "outbounds": [["tag": "direct", "protocol": "freedom"]],
@@ -93,10 +126,76 @@ import Testing
         let config = try ConfigBuilder.buildCustom(config: imported, options: options(tun: link))
         let rules = try #require(config["routing"]?["rules"]?.arrayValue)
         let appRules = rules.filter { $0["process"] != nil }
-        #expect(appRules.count == 2)
         #expect(appRules.map { $0["process"] } == [["curl"], ["git"]])
         #expect(appRules.allSatisfy { $0["inboundTag"] == ["mixed-in"] })
+        let tunRules = rules.filter { $0["user"] != nil }
+        #expect(tunRules.map { $0["user"] } == [["curl"], ["git"], ["xray"]])
+        #expect(tunRules.allSatisfy { $0["inboundTag"] == ["tun-in"] })
         #expect(rules.contains { $0["domain"] == ["domain:example.org"] && $0["inboundTag"] == ["mixed-in", "tun-in"] })
+    }
+
+    @Test func tunAppEntriesAreCheckedAndOrdered() {
+        let rules: [JSONValue] = [["process": ["Telegram", "/Applications/Telegram.app/", #"bad"quote"#, #"back\slash"#, "*", ""]],
+                                  ["process": ["/usr/bin/curl", "/Applications/", "curl", "Telegram", .string(String(repeating: "x", count: 256))]]]
+        #expect(TunApps.entries(in: rules) == ["/usr/bin/curl", "/Applications/Telegram.app/", "/Applications/", "Telegram", "curl"])
+        #expect(TunApps.implies("/usr/bin/curl", "curl"))
+        #expect(TunApps.implies("/usr/bin/curl", "/usr/"))
+        #expect(TunApps.implies("/Applications/Telegram.app/", "/Applications/"))
+        #expect(!TunApps.implies("/Applications/", "/Applications/Telegram.app/"))
+        #expect(!TunApps.implies("/Applications/Telegram.app/", "Telegram"))
+        #expect(!TunApps.implies("Telegram", "/Applications/Telegram.app/"))
+        #expect(!TunApps.implies("curl", "/usr/bin/curl"))
+    }
+
+    @Test func privilegedStateRefusesAppsRootCouldNotWriteSafely() throws {
+        func state(_ apps: [String]) throws -> Data {
+            try JSONEncoder().encode(PrivilegedSessionState(tunEnabled: true, proxyPort: nil, killSwitchEnabled: false, allowedAddresses: [], apps: apps))
+        }
+        #expect(try PrivilegedSessionState.decode(state(["curl", "/Applications/My App (2).app/", "名前"])).apps.count == 3)
+        for bad in [[#"a"b"#], [#"a\b"#], ["a\nb"], ["*"], [""], [String(repeating: "x", count: 256)], Array(repeating: "x", count: 513)] {
+            #expect(throws: (any Error).self) { try PrivilegedSessionState.decode(state(bad)) }
+        }
+        let dir = try TestSupport.makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        try PrivilegedSessionState(tunEnabled: true, proxyPort: nil, killSwitchEnabled: false, allowedAddresses: [], apps: ["curl", "/x/"]).write(to: dir)
+        #expect(try String(contentsOf: dir.appendingPathComponent(TunApps.file), encoding: .utf8) == "curl\n/x/\n")
+        try PrivilegedSessionState(tunEnabled: true, proxyPort: nil, killSwitchEnabled: false, allowedAddresses: []).write(to: dir)
+        #expect(!FileManager.default.fileExists(atPath: dir.appendingPathComponent(TunApps.file).path))
+    }
+
+    /// What root does with the list: lines that are not plain entries are skipped, so the file
+    /// can only ever add these outbounds and rules.
+    /// The forwarder's apps file as the root script writes it from `input`.
+    static func appsFile(_ input: String, port: Int = 10891) throws -> Data {
+        let p = Process()
+        p.executableURL = URL(fileURLWithPath: "/usr/bin/awk")
+        p.arguments = ["-v", "port=\(port)", TunApps.awkProgram]
+        p.environment = ["LC_ALL": "C"]
+        let (stdin, stdout) = (Pipe(), Pipe())
+        p.standardInput = stdin
+        p.standardOutput = stdout
+        try p.run()
+        stdin.fileHandleForWriting.write(Data(input.utf8))
+        try stdin.fileHandleForWriting.close()
+        let data = stdout.fileHandleForReading.readDataToEndOfFile()
+        p.waitUntilExit()
+        return data
+    }
+
+    @Test func forwarderAppsFileHasOneOutboundAndRulePerUsableLine() throws {
+        func run(_ input: String) throws -> JSONValue { try JSONDecoder().decode(JSONValue.self, from: try Self.appsFile(input)) }
+        let lines = ["curl", "/Applications/My App (2).app/", #"bad"},{"x"#, #"back\slash"#, "*", "", String(repeating: "x", count: 256), "ctl\u{1}x", "名前"]
+        let file = try run(lines.joined(separator: "\n") + "\n")
+        let entries = ["curl", "/Applications/My App (2).app/", "名前"]
+        let outbounds = try #require(file["outbounds"]?.arrayValue)
+        #expect(outbounds == entries.enumerated().map { TunApps.coreOutbound(tag: "app-\($0.offset + 1)", user: $0.element, corePort: 10891) })
+        let rules = try #require(file["routing"]?["rules"]?.arrayValue)
+        #expect(rules.dropLast().map { $0["process"] } == entries.map { [.string($0)] })
+        #expect(rules.dropLast().map { $0["outboundTag"]?.stringValue } == ["app-1", "app-2", "app-3"])
+        #expect(rules.last == ["network": "tcp,udp", "outboundTag": "core"])
+
+        let empty = try run("")
+        #expect(empty == ["outbounds": [], "routing": ["rules": [["network": "tcp,udp", "outboundTag": "core"]]]])
     }
 
     @Test func bindingKeepsExistingStreamSettings() {
@@ -153,8 +252,11 @@ import Testing
         #expect(settings?["autoOutboundsInterface"]?.stringValue == "auto")
         #expect(c["inbounds"]?[0]?["sniffing"]?["routeOnly"] == nil)
         #expect(c["outbounds"]?[0]?["protocol"]?.stringValue == "socks")
-        #expect(c["outbounds"]?[0]?["settings"]?["address"]?.stringValue == "127.0.0.1")
-        #expect(c["outbounds"]?[0]?["settings"]?["port"]?.intValue == 10891)
+        let server = c["outbounds"]?[0]?["settings"]?["servers"]?[0]
+        #expect(server?["address"]?.stringValue == "127.0.0.1")
+        #expect(server?["port"]?.intValue == 10891)
+        // Connections no app rule claims arrive as the user for no app (spec 9.5).
+        #expect(server?["users"]?[0]?["user"]?.stringValue == "*")
         #expect(c["outbounds"]?[0]?["streamSettings"]?["sockopt"]?["interface"]?.stringValue == "lo0")
         // Nothing, DNS included, may leave the forwarder any other way than through the core.
         #expect(c["outbounds"]?.arrayValue?.count == 1)
@@ -298,10 +400,10 @@ import Testing
         let command = TunHelper.launchCommand(
             appPID: 42, stateDirectory: URL(fileURLWithPath: "/it's/run"), core: URL(fileURLWithPath: "/x/xray"),
             coreSHA256: "abc", config: #"{"a":1}"#, rootDirectory: URL(fileURLWithPath: "/var/run/v2mac-tun-501"),
-            killSwitchRules: "block all", killSwitchAnchor: "com.apple/v2mac", killSwitchMarker: URL(fileURLWithPath: "/var/run/v2mac-killswitch-501")
+            killSwitchRules: "block all", killSwitchAnchor: "com.apple/v2mac", killSwitchMarker: URL(fileURLWithPath: "/var/run/v2mac-killswitch-501"), corePort: 10890
         )
         #expect(command.hasPrefix("/bin/sh -c '"))
-        #expect(command.hasSuffix(#" 'v2mac-tun-helper' '42' '/it'\''s/run' '/x/xray' 'abc' '{"a":1}' '/var/run/v2mac-tun-501' 'block all' 'com.apple/v2mac' '/var/run/v2mac-killswitch-501' > /dev/null 2>&1 &"#))
+        #expect(command.hasSuffix(#" 'v2mac-tun-helper' '42' '/it'\''s/run' '/x/xray' 'abc' '{"a":1}' '/var/run/v2mac-tun-501' 'block all' 'com.apple/v2mac' '/var/run/v2mac-killswitch-501' '10890' > /dev/null 2>&1 &"#))
         #expect(command.range(of: #"\.sh['\s]"#, options: .regularExpression) == nil, "no script file a user process could change")
     }
 
@@ -400,7 +502,7 @@ import Testing
         helper.arguments = ["-c", (store ? Self.fakeStore(storeDir) : Self.noSystemChanges) + Self.fakeFirewall(dir, anchors: anchors) + TunHelper.script,
                             "v2mac-tun-helper", "\(app.processIdentifier)", state.path, fake.path,
                             hash ?? sha, #"{"log":{}}"#, root.path, KillSwitch.rules(tunInterface: "utun123"), "com.apple/v2mac-test",
-                            dir.appendingPathComponent("ks-marker").path]
+                            dir.appendingPathComponent("ks-marker").path, "10890"]
         try helper.run()
         return Session(dir: dir, state: state, root: root, marker: marker, helper: helper, app: app)
     }
@@ -600,7 +702,7 @@ import Testing
             appPID: getpid(), stateDirectory: state, core: fake, coreSHA256: try await TunHelper.sha256(of: fake),
             config: #"{"it's": "quoted \\ text"}"#, rootDirectory: root,
             killSwitchRules: KillSwitch.rules(tunInterface: "utun123"), killSwitchAnchor: "com.apple/v2mac-test",
-            killSwitchMarker: dir.appendingPathComponent("ks-marker")
+            killSwitchMarker: dir.appendingPathComponent("ks-marker"), corePort: 10890
         )
         let source = TunHelper.appleScript(command: command, prompt: "unused")
             .replacingOccurrences(of: " with administrator privileges", with: "")
@@ -744,6 +846,38 @@ import Testing
         #expect(runs() <= 3, "a failing core must not be restarted in a tight loop")
         #expect(s.helper.isRunning)
     }
+
+    /// Spec 9.5: the forwarder runs with the app list as its second config file, which follows
+    /// `tun.apps`, is readable by root alone, and restarts the forwarder only when it changes.
+    @Test func forwarderFollowsTheAppList() async throws {
+        let s = try await start(core: "echo \"$*\" >> \"$MARKER.args\"\n" + liveCore)
+        defer { s.cleanUp() }
+        let apps = s.state.appendingPathComponent(TunApps.file)
+        let file = s.root.appendingPathComponent("apps.json")
+        func json() -> JSONValue? { (try? Data(contentsOf: file)).flatMap { try? JSONDecoder().decode(JSONValue.self, from: $0) } }
+        func runs() -> [String] {
+            ((try? String(contentsOf: URL(fileURLWithPath: s.marker.path + ".args"), encoding: .utf8)) ?? "").split(separator: "\n").map(String.init)
+        }
+
+        try "curl\n".write(to: apps, atomically: true, encoding: .utf8)
+        FileManager.default.createFile(atPath: s.flag.path, contents: nil)
+        #expect(await wait { runs().count == 1 })
+        #expect(runs().first == "run -c \(s.root.path)/config.json -c \(s.root.path)/apps.json")
+        #expect(json()?["routing"]?["rules"]?[0]?["process"] == ["curl"])
+        #expect(json()?["outbounds"]?[0]?["settings"]?["servers"]?[0]?["port"]?.intValue == 10890)
+        #expect(try FileManager.default.attributesOfItem(atPath: file.path)[.posixPermissions] as? Int == 0o600)
+
+        try "curl\nssh\n".write(to: apps, atomically: true, encoding: .utf8)
+        #expect(await wait { runs().count == 2 })
+        #expect(json()?["routing"]?["rules"]?[1]?["process"] == ["ssh"])
+        try? await Task.sleep(for: .milliseconds(900))
+        #expect(runs().count == 2, "an unchanged list must not restart the forwarder")
+
+        try FileManager.default.removeItem(at: apps)
+        #expect(await wait { runs().count == 3 })
+        #expect(json()?["outbounds"] == [])
+        #expect(s.childRunning)
+    }
 }
 
 @Suite(.tags(.integration), .enabled(if: TestSupport.coreAvailable))
@@ -770,6 +904,24 @@ struct TunIntegrationTests {
         let result = try xrayTest(ConfigBuilder.tunForwarder(interfaceName: "utun123", corePort: 10891))
         #expect(result.status == 0, Comment(rawValue: result.output))
         #expect(result.output.contains("Configuration OK"))
+    }
+
+    @Test func forwarderWithItsAppsFilePassesXrayTest() throws {
+        let dir = try TestSupport.makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let base = dir.appendingPathComponent("config.json"), apps = dir.appendingPathComponent("apps.json")
+        try ConfigBuilder.tunForwarder(interfaceName: "utun123", corePort: 10891).data().write(to: base)
+        try TunConfigTests.appsFile("curl\n/Applications/My App (2).app/\n/usr/bin/\n").write(to: apps)
+        let p = Process()
+        p.executableURL = TestSupport.xray
+        p.arguments = ["run", "-test", "-c", base.path, "-c", apps.path]
+        let pipe = Pipe()
+        p.standardOutput = pipe
+        p.standardError = pipe
+        try p.run()
+        let out = String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+        p.waitUntilExit()
+        #expect(p.terminationStatus == 0 && out.contains("Configuration OK"), Comment(rawValue: out))
     }
 
     @Test func coreConfigInTunModePassesXrayTest() throws {
@@ -816,7 +968,8 @@ struct TunIntegrationTests {
         let coreLog = OSLockedBox<[String]>([])
         let coreLines = core.logs
         Task { for await line in coreLines { coreLog.mutate { $0.append(line) } } }
-        try await core.start(config: try ConfigBuilder.build(outbound: proxy, options: options, routing: .global), readyPort: options.inbound.port)
+        let built = try ConfigBuilder.build(outbound: proxy, options: options, routing: .global)
+        try await core.start(config: Self.openingTunIn(built), readyPort: options.inbound.port)
 
         let answer = try await Task.detached { try SocksUDP.lookUp("example.com", resolver: [192, 0, 2, 53], socksPort: tunPort) }.value
         // Ordinary traffic from the TUN goes the same way.
@@ -844,7 +997,7 @@ struct TunIntegrationTests {
             metricsPort: try PortUtil.freePort(),
             tun: TunLink(port: tunPort, outboundInterface: primary)
         )
-        let config = try ConfigBuilder.build(outbound: ["protocol": "freedom"], options: options, routing: .global)
+        let config = Self.openingTunIn(try ConfigBuilder.build(outbound: ["protocol": "freedom"], options: options, routing: .global))
         let dir = try TestSupport.makeTempDirectory()
         defer { try? FileManager.default.removeItem(at: dir) }
         let runner = CoreRunner(executable: TestSupport.xray, assetDirectory: TestSupport.vendorCore, runDirectory: dir)
@@ -861,6 +1014,15 @@ struct TunIntegrationTests {
         let stats = try await StatsClient(port: options.metricsPort).snapshot()
         #expect(stats.downlink > 0)
         await runner.stop()
+    }
+
+    /// `tun-in` without its login: the forwarder logs in as an app's user (`TunApps`), but
+    /// `URLSession`, which these tests use in its place, can't send a SOCKS password.
+    static func openingTunIn(_ config: JSONValue) -> JSONValue {
+        config.setting("inbounds", to: .array((config["inbounds"]?.arrayValue ?? []).map { inbound in
+            guard inbound["tag"]?.stringValue == ConfigBuilder.tunInboundTag, let settings = inbound["settings"] else { return inbound }
+            return inbound.setting("settings", to: settings.setting("auth", to: "noauth"))
+        }))
     }
 
     /// The forwarder's own TUN inbound, run as root the way TUN mode runs it, but routing only
@@ -921,6 +1083,71 @@ struct TunIntegrationTests {
     }
 }
 
+extension TunIntegrationTests {
+    /// Spec 9.5 end to end: the core blocks `curl` by an app rule, and through a real TUN that holds
+    /// for curl's traffic and for no one else's. Routes only TEST-NET-1, like the test above.
+    @Test(.enabled(if: TestSupport.canSudo)) func appRulesHoldThroughARealTun() async throws {
+        let primary = try #require(NetworkInterfaces.primary(), "needs a network connection")
+        let dir = try TestSupport.makeTempDirectory()
+        defer { try? FileManager.default.removeItem(at: dir) }
+
+        let tunPort = try PortUtil.freePort()
+        let options = RunOptions(
+            inbound: InboundSettings(port: try PortUtil.freePort()), logConnections: true, metricsPort: try PortUtil.freePort(),
+            tun: TunLink(port: tunPort, outboundInterface: primary)
+        )
+        let custom = CustomRules(rules: [CustomRule(name: "No curl", action: .block, apps: "curl")])
+        let config = try ConfigBuilder.build(outbound: ["protocol": "freedom"], options: options, routing: .global, custom: custom)
+        #expect(ConfigBuilder.tunApps(of: config) == ["curl"])
+        let core = CoreRunner(executable: TestSupport.xray, assetDirectory: TestSupport.vendorCore, runDirectory: dir)
+        let coreLog = OSLockedBox<[String]>([])
+        let coreLines = core.logs
+        Task { for await line in coreLines { coreLog.mutate { $0.append(line) } } }
+        try await core.start(config: config, readyPort: options.inbound.port)
+
+        let name = "utun238"
+        let real = ConfigBuilder.tunForwarder(interfaceName: name, corePort: tunPort)
+        let inbound = try #require(real["inbounds"]?[0])
+        let settings = try #require(inbound["settings"]).setting("autoSystemRoutingTable", to: ["192.0.2.0/24"])
+        let base = dir.appendingPathComponent("forwarder.json"), apps = dir.appendingPathComponent("apps.json")
+        try real.setting("inbounds", to: [inbound.setting("settings", to: settings)]).data().write(to: base)
+        try TunConfigTests.appsFile(ConfigBuilder.tunApps(of: config).joined(separator: "\n") + "\n", port: tunPort).write(to: apps)
+        let forwarder = Process()
+        forwarder.executableURL = URL(fileURLWithPath: "/usr/bin/sudo")
+        forwarder.arguments = ["-n", TestSupport.xray.path, "run", "-c", base.path, "-c", apps.path]
+        let output = Pipe()
+        forwarder.standardOutput = output
+        forwarder.standardError = output
+        try forwarder.run()
+        defer {
+            forwarder.terminate()
+            forwarder.waitUntilExit()
+        }
+
+        var routed = false
+        for _ in 0..<50 where !routed {
+            try await Task.sleep(for: .milliseconds(200))
+            routed = TestSupport.run("/sbin/route", ["-n", "get", "192.0.2.53"]).contains("interface: \(name)")
+        }
+        try #require(routed, "the forwarder did not route TEST-NET-1 into \(name)")
+
+        // curl is blocked; this test process, which no rule names, still gets its answer.
+        let http = TestSupport.run("/usr/bin/curl", ["-s", "-o", "/dev/null", "-w", "%{http_code}", "--max-time", "8",
+                                                     "-H", "Host: www.gstatic.com", "http://192.0.2.1/generate_204"])
+        let answer = await Task.detached { Result { try SocksUDP.lookUpDirect("example.com", server: [192, 0, 2, 53]) } }.value
+        try await Task.sleep(for: .milliseconds(300))
+        await core.stop()
+
+        #expect(http == "000", "curl through \(name) returned \(http)")
+        #expect(coreLog.value.contains { $0.contains("192.0.2.1:80") || $0.contains("www.gstatic.com:80") ? $0.contains("tun-in -> block") : false },
+                Comment(rawValue: coreLog.value.joined(separator: "\n")))
+        switch answer {
+        case .success(let answer): #expect(answer.rcode == 0 && answer.answers > 0, "example.com through \(name): \(answer)")
+        case .failure(let error): Issue.record("no DNS answer through \(name): \(error)")
+        }
+    }
+}
+
 /// A DNS query sent the way the TUN forwarder sends one: as a SOCKS5 UDP datagram into `tun-in`.
 enum SocksUDP {
     struct Answer: CustomStringConvertible {
@@ -942,7 +1169,14 @@ enum SocksUDP {
             throw Failure(description: "connect to tun-in failed")
         }
         // No authentication, then UDP ASSOCIATE; the reply names the relay port.
-        guard exchange(control, [5, 1, 0], expect: 2).starts(with: [5, 0]) else { throw Failure(description: "SOCKS greeting refused") }
+        // No authentication, or the login the forwarder uses for an app no rule names.
+        let method = exchange(control, [5, 2, 0, 2], expect: 2)
+        if method == [5, 2] {
+            let user = Array("*".utf8), pass = Array("v2mac".utf8)
+            guard exchange(control, [1, UInt8(user.count)] + user + [UInt8(pass.count)] + pass, expect: 2) == [1, 0] else {
+                throw Failure(description: "SOCKS login refused")
+            }
+        } else if method != [5, 0] { throw Failure(description: "SOCKS greeting refused") }
         let reply = exchange(control, [5, 3, 0, 1, 0, 0, 0, 0, 0, 0], expect: 10)
         guard reply.count >= 10, reply[1] == 0 else { throw Failure(description: "UDP ASSOCIATE refused: \(reply)") }
         let relayPort = Int(reply[8]) << 8 | Int(reply[9])

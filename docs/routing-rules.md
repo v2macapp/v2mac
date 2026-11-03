@@ -66,7 +66,7 @@ Rules from V2Mac 1.1 are moved over on first launch and do the same as before: a
 
 ### Apps
 
-Apps can be written as `Spotify.app`, `com.spotify.client`, `*discord*`, a process name (`curl`) or a full path. App rules work for apps that use the system proxy or connect to V2Mac's proxy port. In TUN mode the core cannot see which app a connection comes from, so app items match only apps that use the proxy port; site and address items still apply.
+Apps can be written as `Spotify.app`, `com.spotify.client`, `*discord*`, a process name (`curl`) or a full path. App rules work for apps that use the system proxy or V2Mac's proxy port, and in TUN mode for every app, including command-line tools, Docker and Apple's background services.
 
 With **System Proxy off**, apps pointed at V2Mac's proxy port skip the rules and use the server (Settings → Proxy). Connections marks these in orange as **App's proxy setting**. With **System Proxy on**, all traffic through that port follows the rules.
 

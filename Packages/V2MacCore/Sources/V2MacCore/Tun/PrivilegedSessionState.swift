@@ -7,17 +7,21 @@ public struct PrivilegedSessionState: Codable, Equatable, Sendable {
     public var proxyPort: Int?
     public var killSwitchEnabled: Bool
     public var allowedAddresses: [String]
+    /// The app entries the TUN forwarder looks for (`TunApps`).
+    public var apps: [String]
 
-    public init(tunEnabled: Bool, proxyPort: Int?, killSwitchEnabled: Bool, allowedAddresses: [String]) {
+    public init(tunEnabled: Bool, proxyPort: Int?, killSwitchEnabled: Bool, allowedAddresses: [String], apps: [String] = []) {
         self.tunEnabled = tunEnabled
         self.proxyPort = proxyPort
         self.killSwitchEnabled = killSwitchEnabled
         self.allowedAddresses = allowedAddresses
+        self.apps = apps
     }
 
     public func validate() throws {
         guard proxyPort.map({ (1024...65535).contains($0) }) ?? true,
               allowedAddresses.count <= 4096,
+              apps.count <= TunApps.limit, apps.allSatisfy(TunApps.isUsable),
               allowedAddresses.allSatisfy({ address in
                   address.utf8.count <= 45 && address.utf8.allSatisfy({ byte in
                       (48...57).contains(byte) || (65...70).contains(byte) || (97...102).contains(byte) || byte == 46 || byte == 58
@@ -53,6 +57,7 @@ public struct PrivilegedSessionState: Codable, Equatable, Sendable {
         try write(KillSwitch.allowFile, allowedAddresses.joined(separator: "\n") + "\n")
         try write(KillSwitch.flag, killSwitchEnabled ? "" : nil)
         try write(SystemProxy.flag, proxyPort.map { "\($0)\n" })
+        try write(TunApps.file, apps.isEmpty ? nil : apps.joined(separator: "\n") + "\n")
         try write(TunHelper.onFlag, tunEnabled ? "" : nil)
     }
 }

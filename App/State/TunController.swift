@@ -44,6 +44,14 @@ final class TunController {
     func requestSystemProxy(port: Int?) { privilegedState.proxyPort = port }
     func requestKillSwitch(_ enabled: Bool) { privilegedState.killSwitchEnabled = enabled }
     func requestAllowedAddresses(_ addresses: [String]) { privilegedState.allowedAddresses = addresses }
+    /// The apps the core's rules name, for the forwarder to look for (spec 9.5). The managed helper
+    /// gets them with the state; the prompted one reads the file, each line checked as root.
+    func requestApps(_ apps: [String]) {
+        privilegedState.apps = apps
+        let file = stateDirectory.appendingPathComponent(TunApps.file)
+        if apps.isEmpty { try? FileManager.default.removeItem(at: file) }
+        else { try? (apps.joined(separator: "\n") + "\n").write(to: file, atomically: true, encoding: .utf8) }
+    }
 
     private var sessionFlag: URL { stateDirectory.appendingPathComponent(TunHelper.sessionFlag) }
     private var onFlag: URL { stateDirectory.appendingPathComponent(TunHelper.onFlag) }
@@ -275,7 +283,7 @@ final class TunController {
 
     private func removeFlags() {
         privilegedState = PrivilegedSessionState(tunEnabled: false, proxyPort: nil, killSwitchEnabled: false, allowedAddresses: [])
-        for name in [TunHelper.onFlag, TunHelper.sessionFlag, SystemProxy.flag, KillSwitch.flag, KillSwitch.allowFile] {
+        for name in [TunHelper.onFlag, TunHelper.sessionFlag, SystemProxy.flag, KillSwitch.flag, KillSwitch.allowFile, TunApps.file] {
             try? FileManager.default.removeItem(at: stateDirectory.appendingPathComponent(name))
         }
     }
@@ -296,7 +304,7 @@ final class TunController {
             appPID: ProcessInfo.processInfo.processIdentifier, stateDirectory: stateDirectory,
             core: core, coreSHA256: coreSHA256, config: String(decoding: config, as: UTF8.self), rootDirectory: rootDirectory,
             killSwitchRules: KillSwitch.rules(tunInterface: interface), killSwitchAnchor: KillSwitch.anchor(name: AppPaths.dataFolderName),
-            killSwitchMarker: KillSwitch.marker(name: AppPaths.dataFolderName)
+            killSwitchMarker: KillSwitch.marker(name: AppPaths.dataFolderName), corePort: port
         )
     }
 

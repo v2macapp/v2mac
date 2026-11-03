@@ -94,7 +94,8 @@ final class HelperCoordinator: @unchecked Sendable {
                 process.executableURL = URL(fileURLWithPath: "/bin/sh")
                 process.arguments = ["-c", TunHelper.script, "v2mac-managed-session", "\(pid)", requests.path, copiedCore.path, hash,
                                      String(decoding: config, as: UTF8.self), TunHelper.rootDirectory(name: name, uid: uid).path,
-                                     KillSwitch.rules(tunInterface: interface), KillSwitch.anchor(name: name), KillSwitch.marker(name: name, uid: uid).path]
+                                     KillSwitch.rules(tunInterface: interface), KillSwitch.anchor(name: name), KillSwitch.marker(name: name, uid: uid).path,
+                                     "\(port)"]
                 process.environment = ["PATH": "/usr/bin:/bin:/usr/sbin:/sbin", "HOME": "/var/root", "LC_ALL": "C"]
                 process.standardInput = FileHandle.nullDevice
                 process.standardOutput = FileHandle.nullDevice

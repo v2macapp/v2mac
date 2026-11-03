@@ -722,12 +722,13 @@ and `*word*` (name or bundle id) are looked up at connect time among the apps
 in `/Applications`, `/System/Applications`, `/System/Library/CoreServices`,
 `~/Applications` and the running apps (`InstalledApps`). A bundle id with no
 installed app is kept as a process name; a rule whose apps all match nothing is
-left out. App rules see the app only for connections that reach the core
-directly (system proxy or app settings); in TUN mode the core sees the root
-forwarder (9.5). TUN config generation excludes `tun-in` from process rules,
-including imported JSON rules, before Xray attempts process lookup. Rules without
-inbound tags (or with an empty tag list) are restricted to `mixed-in`; rules
-targeting only `tun-in` are omitted. Host/IP-only rules remain available to TUN.
+left out. App rules hold for every inbound. On `mixed-in` the core finds the app
+itself; on `tun-in` it sees the root forwarder, which finds the app instead and arrives
+as a SOCKS user named after the app entry (9.5, "App rules"). In TUN mode each process
+rule, imported JSON rules included, therefore becomes two adjacent rules: the original
+on `mixed-in` (rules without inbound tags, or with an empty list, are restricted to it)
+and a copy on `tun-in` with `user` in place of `process`. A rule that named only
+`tun-in` keeps only the copy. Host/IP-only rules apply to both inbounds unchanged.
 
 Local names (`localhost`, `.local`, `.test`, `.internal`, `.lan`, `.home.arpa`,
 dotless names) always go direct, ahead of the rules. **Block QUIC (UDP 443)**
@@ -1018,8 +1019,10 @@ The shell helper:
   its SHA-256 against the daemon's verified root copy (the app's pre-prompt hash in the fallback), writes the
   config next to it, and only ever runs those copies;
 - takes its orders from two flag files: `tun.session` (stay alive) and
-  `tun.on` (forwarder up). They carry no data, so a process without root can
-  only switch the TUN on or off, not change what runs as root;
+  `tun.on` (forwarder up), and from one list, `tun.apps` (below). The flags carry no
+  data, and the list only names apps for the forwarder's lookup, so a process without
+  root can switch the TUN on or off and change which apps are told apart, not what runs
+  as root or where its traffic goes;
 - stops the forwarder and exits when the app's process is gone or `tun.session`
   is removed. Routes belong to the `utun` interface and vanish with it, also
   after a crash. Managed-helper approval survives a reboot; live network requests do not.
@@ -1041,7 +1044,8 @@ one interface; the app's own `utun` is not counted as a network change.
 
 **DNS.** Every lookup goes through the tunnel too. Three parts:
 
-- *Forwarder:* it has one outbound, the core. Port 53 is not an exception.
+- *Forwarder:* all its outbounds lead to the core (one per app entry, below). Port 53 is
+  not an exception.
 - *Core* (`ConfigBuilder.tunDNS`): the first rules send `tun-in` traffic on port 53,
   whatever resolver it was addressed to, to a `dns` outbound (`v2mac-dns-out`). A and AAAA
   queries go to the core's resolver; other types get an empty answer. The resolver asks
@@ -1067,6 +1071,34 @@ one interface; the app's own `utun` is not counted as a network change.
 
 `Scripts/check-tun.sh` checks a running tunnel: routes, resolvers, and a capture on the
 physical interface while lookups and connections run.
+
+**App rules.** The core can't tell apps apart on `tun-in`, since every connection there
+comes from the forwarder, but the forwarder runs where the app opened the connection,
+so Xray's process lookup works there (checked 2026-11-03, `proxifier-replacement.md`
+Phase 4: TCP and UDP, root daemons such as `softwareupdated` and `apsd` by full path,
+Docker Desktop's `com.docker.backend`). `TunApps` carries the identity across:
+
+- *Entries.* The app entries of the core's rules (`ConfigBuilder.tunApps`), at most
+  512, each a SOCKS username (1–255 bytes) with no `"`, `\` or control character, in
+  order: exact paths, folders deepest first, names. Longer or odd entries are left out
+  and match nothing in TUN mode.
+- *Core.* `tun-in` requires a login: one account per entry and `*` for any other app
+  (password `v2mac`, not a secret: the port is on loopback, as before). A rule's TUN
+  copy lists every entry that implies one of its own: the same entry, a deeper folder
+  or path inside one of its folders, or a path whose file name is one of its names.
+- *Forwarder.* Its base config (fixed for the session) has `core`, logged in as `*`.
+  Its second config file, `apps.json`, adds an outbound logged in as each entry, a
+  `process` rule per entry in the order above, and last a rule sending everything else
+  to `core`. The root helper writes that file itself from `tun.apps` with a fixed `awk`
+  program that skips any line that is not a valid entry, and keeps it readable by root
+  alone. The managed daemon checks the same limits on the session state's `apps` before
+  writing the list.
+- *Changes.* The app writes the list after building each config. The helper compares it
+  on every turn of its loop and, when it differs, stops the forwarder and starts it again
+  at once, leaving DNS as it is; the TUN is down for that moment, as on a core restart.
+
+Known limit: an app that matches both a name entry and an unrelated folder entry arrives
+as the folder only, so a rule naming just the name misses it in TUN mode.
 
 **Protection contract.** Neither TUN failure policy is a kill switch. Removing a TUN
 interface removes its routes; direct traffic may resume during a failure or after the

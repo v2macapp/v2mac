@@ -20,10 +20,10 @@ to bottom with the first match winning:
 Proxifier catches every app's connections, including apps that ignore the system proxy, and
 knows which app opened each one. V2Mac must do both.
 
-## Status (2026-10-17)
+## Status (2026-11-03)
 
-Phases 1, 2, 3 and 5 are done (spec 8.6). Phase 4 is not started: it needs TUN mode
-tested while the installed V2Mac is not in use.
+Phases 1, 2, 3 and 5 are done (spec 8.6). Phase 4 is implemented (spec 9.5, "App rules");
+its "Done when" needs a run with TUN on and Proxifier quit.
 
 ## What works today
 
@@ -110,14 +110,18 @@ forwarder, so the core sees the forwarder (`xray`) as the app. App rules stop wo
         Desktop sent it through the system proxy, where the core sees the same process.
       - Names are what Xray finds, not what was typed: `/usr/bin/python3` shows up as `Python`
         (Xcode's `Python.app`). Rules must use the found name or the app's folder.
-- [ ] If it does: the forwarder checks only the app rules and sends each connection to one of
-      three core ports (proxy, direct, block). The core handles each port with its own rules.
-      Only app names reach the root process, never server configs (spec 9.5).
-- [ ] If it doesn't: look up the app by the connection's source port in the root helper,
-      or accept that app rules work only in system proxy mode.
-- [ ] Turn on the QUIC block from Phase 1 in TUN mode by default, so Chrome's UDP traffic
-      follows the host rules.
-- [ ] Update spec 9.5 and 8.6.
+- [x] It does, so the forwarder checks only the app rules. Instead of three core ports it
+      reaches the one `tun-in` port as a SOCKS user named after the app entry that matched,
+      and each app rule gets a copy on `tun-in` that matches those users. So "Via" rules,
+      "Only when" conditions and the rule order work as on the proxy port, and only the
+      app entries reach root, never a rule or a server config (spec 9.5, `TunApps`).
+- [x] ~~If it doesn't~~: not needed.
+- [ ] QUIC block on by default in TUN mode: not done. The forwarder and the core both
+      sniff QUIC, so host rules already see the names in Chrome's QUIC traffic; decide
+      after the acceptance run whether anything still slips past.
+- [x] Update spec 9.5 and 8.6.
+- [ ] Real-TUN test `appRulesHoldThroughARealTun` (needs password-free `sudo`, so it runs
+      in CI) passing.
 
 **Done when:** with TUN on and Proxifier quit, every v7.1 rule behaves as before, including
 apps that ignore the system proxy (command-line tools, Docker, Apple background services).

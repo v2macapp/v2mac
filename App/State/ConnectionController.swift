@@ -722,6 +722,7 @@ final class ConnectionController {
             case .custom:
                 config = try ConfigBuilder.buildCustom(config: server.config, options: options(metrics: metrics, api: nil), routing: plan, custom: custom)
             }
+            if tunLink != nil { tun.requestApps(ConfigBuilder.tunApps(of: config)) }
             logs.append("[v2mac] Connecting to \(server.name)")
             watcher.routingMode = routingMode
             watcher.customRules = custom

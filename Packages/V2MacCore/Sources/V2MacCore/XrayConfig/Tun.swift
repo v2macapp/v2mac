@@ -99,14 +99,8 @@ extension ConfigBuilder {
                 "sniffing": ["enabled": true, "destOverride": ["http", "tls", "quic"]],
             ]],
             // Everything goes to the core, DNS included (see `tunDNS`): nothing here leaves directly.
-            "outbounds": [[
-                "tag": "core",
-                "protocol": "socks",
-                "settings": ["address": "127.0.0.1", "port": .number(Double(corePort))],
-                // `autoOutboundsInterface` would bind this to the physical interface, and UDP
-                // to loopback bound there is dropped: DNS and every other UDP flow got lost.
-                "streamSettings": ["sockopt": ["interface": "lo0"]],
-            ]],
+            // The app rules (`TunApps.awkProgram`) only choose which SOCKS user it arrives as.
+            "outbounds": [TunApps.coreOutbound(tag: "core", user: TunApps.noApp, corePort: corePort)],
         ]
     }
 
@@ -147,18 +141,41 @@ extension ConfigBuilder {
         dns = dns.setting("servers", to: .array(servers))
 
         let routing = config["routing"] ?? [:]
-        let userRules = (routing["rules"]?.arrayValue ?? []).compactMap { rule -> JSONValue? in
-            guard !(rule["process"]?.arrayValue ?? []).isEmpty else { return rule }
-            // The SOCKS forwarder loses app identity; reject its inbound before Xray's process lookup.
-            let tags = (rule["inboundTag"]?.arrayValue).flatMap { $0.isEmpty ? nil : $0 } ?? [.string(inboundTag)]
-            let directTags = tags.filter { $0 != .string(tunInboundTag) }
-            guard !directTags.isEmpty else { return nil }
-            return rule.setting("inboundTag", to: .array(directTags))
+        let original = routing["rules"]?.arrayValue ?? []
+        let apps = TunApps.entries(in: original)
+        let userRules = original.flatMap { rule -> [JSONValue] in
+            guard let processes = rule["process"]?.arrayValue?.compactMap(\.stringValue), !processes.isEmpty else { return [rule] }
+            // Spec 9.5: on `tun-in` the core sees the root forwarder, not the app. The forwarder
+            // looks the app up and arrives as the SOCKS user of the entry it matched, so the rule's
+            // TUN copy matches those users instead, in the same place in the order.
+            let explicit = (rule["inboundTag"]?.arrayValue).flatMap { $0.isEmpty ? nil : $0 }
+            let directTags = (explicit ?? [.string(inboundTag)]).filter { $0 != .string(tunInboundTag) }
+            var out: [JSONValue] = directTags.isEmpty ? [] : [rule.setting("inboundTag", to: .array(directTags))]
+            let users = apps.filter { found in processes.contains { TunApps.implies(found, $0) } }
+            if explicit?.contains(.string(tunInboundTag)) ?? true, !users.isEmpty {
+                var copy = rule.objectValue ?? [:]
+                copy["process"] = nil
+                out.append(JSONValue.object(copy)
+                    .setting("inboundTag", to: [.string(tunInboundTag)])
+                    .setting("user", to: .array(users.map { .string($0) })))
+            }
+            return out
         }
         return config
+            .setting("inbounds", to: .array((config["inbounds"]?.arrayValue ?? []).map { inbound in
+                guard inbound["tag"]?.stringValue == tunInboundTag, let settings = inbound["settings"] else { return inbound }
+                return inbound.setting("settings", to: settings.setting("auth", to: "password").setting("accounts", to: TunApps.accounts(apps)))
+            }))
             .setting("outbounds", to: .array(wired))
             .setting("dns", to: dns)
             .setting("routing", to: routing.setting("rules", to: .array(rules + userRules)))
+    }
+
+    /// The app entries the TUN forwarder must look for (spec 9.5), read back from a built config's
+    /// `tun-in` accounts. Empty without TUN mode.
+    public static func tunApps(of config: JSONValue) -> [String] {
+        let tun = config["inbounds"]?.arrayValue?.first { $0["tag"]?.stringValue == tunInboundTag }
+        return (tun?["settings"]?["accounts"]?.arrayValue ?? []).compactMap { $0["user"]?.stringValue }.filter { $0 != TunApps.noApp }
     }
 
     /// Server names an outbound dials, IP addresses and this Mac's own names left out.

@@ -57,7 +57,7 @@ V2Mac 1.1 的规则会在首次启动时迁移，效果与之前相同：1.1 中
 
 ### 应用
 
-应用可以写成 `Spotify.app`、`com.spotify.client`、`*discord*`、进程名（`curl`）或完整路径。应用规则适用于使用系统代理或连接 V2Mac 代理端口的应用。在 TUN 模式下，内核无法看出连接来自哪个应用，因此应用条目只匹配使用代理端口的应用；网站和地址条目仍然有效。
+应用可以写成 `Spotify.app`、`com.spotify.client`、`*discord*`、进程名（`curl`）或完整路径。应用规则适用于使用系统代理或 V2Mac 代理端口的应用；在 TUN 模式下适用于所有应用，包括命令行工具、Docker 和 Apple 的后台服务。
 
 **关闭系统代理时**，设置为使用 V2Mac 代理端口的应用会跳过规则，直接使用服务器（Settings → Proxy）。Connections 以橙色的 **App's proxy setting** 标记这些连接。**开启系统代理时**，经该端口的所有流量都遵循规则。
 
