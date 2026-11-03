@@ -99,7 +99,17 @@ forwarder, so the core sees the forwarder (`xray`) as the app. App rules stop wo
       **Yes (2026-11-03, Xray 26.10.21, TCP only):** a root Xray with a TUN routing only
       192.0.2.0/24 and the rule `process: ["curl"] → block` blocked curl's request and let
       python3's identical one through (access log `[tun -> block]` / `[tun >> direct]`).
-      Not yet checked: UDP, and apps that don't run as the user (Docker, Apple background services).
+      **Full run (same day, macOS 27.0.1, alongside the installed V2Mac's own TUN):**
+      - TCP and UDP (DNS to 192.0.2.53), each in the order blocked → allowed → allowed → blocked:
+        every connection hit the rule for its app (`block`, `py`, `dns-py`).
+      - Root daemons are found with their full path: `softwareupdated`, `mobileassetd`, `apsd`
+        (a Lua hook calling `router.FindProcess` logged name and path, no errors), so `/System/` and
+        `/usr/libexec/` folder rules work.
+      - Docker Desktop: container DNS arrives as `com.docker.backend` and matched the
+        `/Applications/Docker.app/` folder rule. Container HTTP did not enter the TUN at all: Docker
+        Desktop sent it through the system proxy, where the core sees the same process.
+      - Names are what Xray finds, not what was typed: `/usr/bin/python3` shows up as `Python`
+        (Xcode's `Python.app`). Rules must use the found name or the app's folder.
 - [ ] If it does: the forwarder checks only the app rules and sends each connection to one of
       three core ports (proxy, direct, block). The core handles each port with its own rules.
       Only app names reach the root process, never server configs (spec 9.5).
