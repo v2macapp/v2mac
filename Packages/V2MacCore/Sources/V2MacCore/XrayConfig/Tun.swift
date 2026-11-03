@@ -155,6 +155,8 @@ extension ConfigBuilder {
             if explicit?.contains(.string(tunInboundTag)) ?? true, !users.isEmpty {
                 var copy = rule.objectValue ?? [:]
                 copy["process"] = nil
+                // Xray wants unique tags; `RuleTag.ruleID` still reads the rule from this one.
+                if let tag = rule["ruleTag"]?.stringValue, !directTags.isEmpty { copy["ruleTag"] = .string(tag + "-tun") }
                 out.append(JSONValue.object(copy)
                     .setting("inboundTag", to: [.string(tunInboundTag)])
                     .setting("user", to: .array(users.map { .string($0) })))

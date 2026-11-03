@@ -90,6 +90,10 @@ import Testing
                 let at = try #require(rules.firstIndex(of: direct))
                 #expect(rules[at + 1] == copy)
             }
+            // Xray refuses to start on a repeated ruleTag; the copy still names its rule.
+            let tags = rules.compactMap { $0["ruleTag"]?.stringValue }
+            #expect(Set(tags).count == tags.count)
+            #expect(tunRules.map { $0["ruleTag"]?.stringValue.flatMap(RuleTag.ruleID) } == appRules.map { $0["ruleTag"]?.stringValue.flatMap(RuleTag.ruleID) })
             let tunIn = config["inbounds"]?.arrayValue?.first { $0["tag"] == "tun-in" }
             #expect(tunIn?["settings"]?["auth"] == "password")
             #expect(tunIn?["settings"]?["accounts"] == [["user": "*", "pass": "v2mac"], ["user": "curl", "pass": "v2mac"]])
