@@ -94,8 +94,12 @@ broad Proxy rules).
 In TUN mode every app's traffic is captured, but it reaches the core through the root
 forwarder, so the core sees the forwarder (`xray`) as the app. App rules stop working.
 
-- [ ] First, find out whether the forwarder's own Xray sees the real app for traffic that
+- [x] First, find out whether the forwarder's own Xray sees the real app for traffic that
       arrives from the TUN interface. Phase 4 depends on the answer.
+      **Yes (2026-11-03, Xray 26.10.21, TCP only):** a root Xray with a TUN routing only
+      192.0.2.0/24 and the rule `process: ["curl"] → block` blocked curl's request and let
+      python3's identical one through (access log `[tun -> block]` / `[tun >> direct]`).
+      Not yet checked: UDP, and apps that don't run as the user (Docker, Apple background services).
 - [ ] If it does: the forwarder checks only the app rules and sends each connection to one of
       three core ports (proxy, direct, block). The core handles each port with its own rules.
       Only app names reach the root process, never server configs (spec 9.5).
