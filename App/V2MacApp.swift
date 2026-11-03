@@ -77,6 +77,9 @@ struct WindowRequestHandler: View {
                 case .main: model.openMainWindow(openWindow)
                 case .rules: model.openRules(openWindow)
                 case .connections: model.openConnections(openWindow)
+                case .group(let id):
+                    if model.group(id: id) != nil { model.sidebarSelection = .group(id) }
+                    model.openMainWindow(openWindow)
                 case .settings(let tab): model.openSettings(openSettings, tab: tab)
                 }
             }

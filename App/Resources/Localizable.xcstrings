@@ -1438,34 +1438,6 @@
     "%lld/%lld" : {
       "shouldTranslate" : false
     },
-    "%lld%% of the traffic quota is used (%@ of %@ used)." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld%% of the traffic quota is used (%2$@ of %3$@ used)."
-          }
-        },
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld%% از سهمیه ترافیک مصرف شده است (%2$@ از %3$@)."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Использовано %1$lld%% квоты трафика (%2$@ из %3$@)."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已用流量配额的 %1$lld%%（已用 %2$@ / %3$@）。"
-          }
-        }
-      }
-    },
     "→ Block, before your rules" : {
       "localizations" : {
         "fa" : {
@@ -23036,34 +23008,6 @@
         }
       }
     },
-    "The traffic quota is used up (%@ of %@ used)." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "The traffic quota is used up (%1$@ of %2$@ used)."
-          }
-        },
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "سهمیه ترافیک تمام شده است (%1$@ از %2$@)."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Квота трафика исчерпана (%1$@ из %2$@)."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "流量配额已用完（已用 %1$@ / %2$@）。"
-          }
-        }
-      }
-    },
     "The TUN helper stopped. Reconnect to start it again." : {
       "localizations" : {
         "fa" : {
@@ -23570,72 +23514,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "本次会话"
-          }
-        }
-      }
-    },
-    "This subscription expires in %lld days." : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "این اشتراک %lld روز دیگر منقضی می‌شود."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Подписка истекает через %lld дн."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此订阅将在 %lld 天后到期。"
-          }
-        }
-      }
-    },
-    "This subscription expires in less than a day." : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "این اشتراک کمتر از یک روز دیگر منقضی می‌شود."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Подписка истекает меньше чем через день."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此订阅将在一天内到期。"
-          }
-        }
-      }
-    },
-    "This subscription has expired." : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "این اشتراک منقضی شده است."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Подписка истекла."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此订阅已过期。"
           }
         }
       }
@@ -29615,6 +29493,138 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "先经由规则，然后 → 拦截，在你的其他规则之前"
+          }
+        }
+      }
+    },
+    "No Notifications" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اعلانی نیست"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет уведомлений"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有通知"
+          }
+        }
+      }
+    },
+    "%lld new" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld جدید"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новых: %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld 条新通知"
+          }
+        }
+      }
+    },
+    "%@ expires soon" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ به‌زودی منقضی می‌شود"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ скоро истекает"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 即将到期"
+          }
+        }
+      }
+    },
+    "%@ has expired" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ منقضی شده است"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ истекла"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 已到期"
+          }
+        }
+      }
+    },
+    "%@ is low on traffic" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ترافیک %@ کم است"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У %@ мало трафика"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 流量不足"
+          }
+        }
+      }
+    },
+    "%@ is out of traffic" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ترافیک %@ تمام شد"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У %@ закончился трафик"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 流量已用完"
           }
         }
       }

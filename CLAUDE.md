@@ -82,7 +82,8 @@ comments cite it as "spec 6.4" etc.; read the section before changing the behavi
   - `-debugEditServer new|<row>|save` (with demo data) opens the server editor, or runs a save;
     `-debugEditProtocol <protocol>` and `-debugEditorHeight <points>` show a whole form in a snapshot.
   - `-debugWindowRequest <settings tab>|main|rules|connections` opens that window after 2 seconds (also with demo
-    data), so a snapshot can show a settings tab: `-debugWindowRequest about`.
+    data), so a snapshot can show a settings tab: `-debugWindowRequest about`. `-debugFocus <anchor>` also
+    flashes that `flashTarget` spot, as a notification click does, and prints `[v2mac-debug] flash <anchor>`.
     With `rules`, `-debugSelectRule <part of a rule name>` shows that rule, and `-debugRulesFile <path>`
     shows made-up v2 rules from that file without saving them, so no real rule appears in a screenshot.
     With `rules`, `-debugRulesDoctor YES` opens the Rules Doctor and prints its findings.

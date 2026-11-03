@@ -37,7 +37,7 @@ struct GeneralSettings: View {
                 Text("Downloads a new version in the background and installs it when V2Mac quits.")
             }
             .disabled(!checkUpdates)
-            AppUpdateRow()
+            AppUpdateRow().flashTarget("appUpdate")
             PrivilegedHelperSection()
             SecretStorageSection()
             BackupSection()

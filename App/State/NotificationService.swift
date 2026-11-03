@@ -37,6 +37,24 @@ enum NotificationKind: String, CaseIterable, Identifiable, Sendable {
         }
     }
 
+    /// The list behind the bell shows each kind with its own symbol and colour.
+    var symbol: String {
+        switch self {
+        case .connection: "wifi.exclamationmark"
+        case .reconnected: "checkmark"
+        case .tun: "network.slash"
+        case .network: "cable.connector"
+        case .expiry: "calendar.badge.clock"
+        case .traffic: "chart.pie"
+        case .updateFailed: "exclamationmark.arrow.circlepath"
+        case .serversChanged: "list.bullet"
+        case .appUpdate: "arrow.down"
+        case .testFinished: "speedometer"
+        case .sandboxReady: "shippingbox"
+        case .sandboxExitDown: "shippingbox"
+        }
+    }
+
     /// Kinds the sandbox helper may post through the link (spec 12.11).
     var isSandbox: Bool { self == .sandboxReady || self == .sandboxExitDown }
 
@@ -55,12 +73,15 @@ enum WindowRequest: Equatable, Sendable {
     case settings(SettingsTab)
     case rules
     case connections
+    /// The main window with this subscription selected.
+    case group(UUID)
 
     var code: String {
         switch self {
         case .main: "main"
         case .rules: "rules"
         case .connections: "connections"
+        case .group(let id): "group:\(id.uuidString)"
         case .settings(let tab): "settings:\(tab.rawValue)"
         }
     }
@@ -71,6 +92,8 @@ enum WindowRequest: Equatable, Sendable {
         } else if ["rules", "rule-editor", "rule-builder"].contains(code) {
             // The last two from notifications delivered by 1.1, whose windows the Rules window replaced.
             self = .rules
+        } else if code.hasPrefix("group:"), let id = UUID(uuidString: String(code.dropFirst(6))) {
+            self = .group(id)
         } else if code == "connections" {
             self = .connections
         } else {
@@ -85,8 +108,46 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
     private static let usePortAction = "usePort"
 
     private(set) var authorization: UNAuthorizationStatus = .notDetermined
+
+    /// What was posted, newest first, for the list behind the toolbar's bell (spec 12.6).
+    struct Entry: Codable, Identifiable {
+        let id: String
+        var kind: String? = nil
+        let title: String
+        let body: String
+        let date: Date
+        let open: String
+        var focus: String? = nil
+    }
+    private(set) var history: [Entry] = {
+        let data = UserDefaults.standard.data(forKey: "notificationHistory") ?? Data()
+        return (try? JSONDecoder().decode([Entry].self, from: data)) ?? []
+    }()
+    private(set) var seenAt = UserDefaults.standard.object(forKey: "notificationsSeenAt") as? Date ?? .distantPast
+    var unseenCount: Int { history.count { $0.date > seenAt } }
+
+    func markSeen() {
+        seenAt = Date()
+        UserDefaults.standard.set(seenAt, forKey: "notificationsSeenAt")
+    }
+
+    func clearHistory() {
+        history = []
+        saveHistory()
+    }
+
+    private func record(_ entry: Entry) {
+        // Same id replaces the earlier one, as Notification Center does.
+        history = [entry] + history.filter { $0.id != entry.id }.prefix(49)
+        saveHistory()
+    }
+
+    private func saveHistory() {
+        UserDefaults.standard.set(try? JSONEncoder().encode(history), forKey: "notificationHistory")
+    }
     /// Set by `AppModel`: open a window, and the "Use port" button.
-    @ObservationIgnored var onOpen: @MainActor (WindowRequest) -> Void = { _ in }
+    /// The second value is the spot in that window to scroll to and flash (`flashTarget`).
+    @ObservationIgnored var onOpen: @MainActor (WindowRequest, String?) -> Void = { _, _ in }
     @ObservationIgnored var onUsePort: @MainActor () -> Void = {}
 
     private var center: UNUserNotificationCenter { .current() }
@@ -111,13 +172,13 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
 
     /// `id` replaces an earlier notification with the same id instead of stacking another one.
     func post(_ kind: NotificationKind, title: String, body: String, id: String? = nil,
-              open: WindowRequest = .main, usePort: Int? = nil) {
+              open: WindowRequest = .main, focus: String? = nil, usePort: Int? = nil) {
         guard Prefs.notify(kind) else { return }
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
         content.sound = .default
-        content.userInfo = ["kind": kind.rawValue, "open": open.code]
+        content.userInfo = ["kind": kind.rawValue, "open": open.code, "focus": focus ?? ""]
         if let usePort {
             // The button's title carries the port, so the category is registered per notification.
             let action = UNNotificationAction(identifier: Self.usePortAction, title: String(localized: "Use Port \(String(usePort))"))
@@ -126,7 +187,9 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
             ])
             content.categoryIdentifier = Self.portCategory
         }
-        let request = UNNotificationRequest(identifier: id ?? UUID().uuidString, content: content, trigger: nil)
+        let identifier = id ?? UUID().uuidString
+        record(Entry(id: identifier, kind: kind.rawValue, title: title, body: body, date: Date(), open: open.code, focus: focus))
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
         center.add(request) { error in
             #if DEBUG
             print("[v2mac-debug] notification \(kind.rawValue): \(title) | \(body)\(error.map { " | error \($0)" } ?? "")")
@@ -159,12 +222,14 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         _ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse
     ) async {
         let action = response.actionIdentifier
-        let open = response.notification.request.content.userInfo["open"] as? String ?? "main"
+        let info = response.notification.request.content.userInfo
+        let open = info["open"] as? String ?? "main"
+        let focus = (info["focus"] as? String).flatMap { $0.isEmpty ? nil : $0 }
         await MainActor.run {
             if action == Self.usePortAction {
                 onUsePort()
             } else if action == UNNotificationDefaultActionIdentifier {
-                onOpen(WindowRequest(code: open))
+                onOpen(WindowRequest(code: open), focus)
             }
         }
     }

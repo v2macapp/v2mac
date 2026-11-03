@@ -20,7 +20,8 @@ struct SandboxSettings: View {
             if sandbox.phase == .installed || sandbox.updateAvailable {
                 Section("Version") {
                     LabeledContent("Installed", value: installedVersion ?? String(localized: "Unknown"))
-                    if sandbox.updateAvailable { SandboxUpdateRow() }
+                        .flashTarget("sandbox")
+                    if sandbox.updateAvailable { SandboxUpdateRow().flashTarget("sandboxUpdate") }
                 }
             }
             Section {

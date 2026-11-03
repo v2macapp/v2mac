@@ -7,7 +7,7 @@ struct SettingsView: View {
 
     var body: some View {
         @Bindable var model = model
-        TabView(selection: $model.settingsTab) {
+        ScrollViewReader { proxy in TabView(selection: $model.settingsTab) {
             GeneralSettings().tabItem { Label("General", systemImage: "gearshape") }.tag(SettingsTab.general)
             ProxySettings().tabItem { Label("Proxy", systemImage: "network") }.tag(SettingsTab.proxy)
             RoutingSettings().tabItem { Label("Routing", systemImage: "arrow.triangle.branch") }.tag(SettingsTab.routing)
@@ -19,6 +19,7 @@ struct SettingsView: View {
             CoreSettings().tabItem { Label("Core", systemImage: "cpu") }.tag(SettingsTab.core)
             AboutSettings().tabItem { Label("About", systemImage: "info.circle") }.tag(SettingsTab.about)
         }
+        .environment(\.flashScroll, proxy) }
         // Narrower, some tabs go to an overflow menu; Russian tab names need more room than the others.
         .frame(width: (Bundle.main.preferredLocalizations.first == "ru" ? 780 : 630) + 90, height: 440)
     }

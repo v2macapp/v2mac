@@ -62,6 +62,7 @@ struct ServerListView: View {
             VStack(spacing: 0) {
                 if let group = selectedGroup, showsHeader {
                     GroupHeader(group: group)
+                        .flashTarget("group")
                         .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
                 }
                 else {
@@ -137,6 +138,10 @@ struct ServerListView: View {
             ToolbarSpacer(.fixed)
         }
         ToolbarItem {
+            NotificationsButton(notifications: model.notifications) { model.windowRequest = $0 }
+        }
+        ToolbarSpacer(.fixed)
+        ToolbarItem {
             Button { model.showAddSheet = true } label: {
                 Label("Add", systemImage: "plus")
             }
@@ -183,6 +188,102 @@ struct ServerListView: View {
             }
             .help("Toggle Inspector (⌘I)")
         }
+    }
+}
+
+/// The bell: what V2Mac has notified, newest first; a row opens where its notification leads (spec 12.6).
+private struct NotificationsButton: View {
+    let notifications: NotificationService
+    let open: (WindowRequest) -> Void
+    @State private var isShown = false
+    /// When the list was last seen before this opening: rows after it keep their dot while it is open.
+    @State private var seenBefore = Date.distantPast
+
+    var body: some View {
+        let unseen = notifications.unseenCount
+        Button {
+            if !isShown {
+                seenBefore = notifications.seenAt
+                notifications.markSeen()
+            }
+            isShown.toggle()
+        } label: {
+            if unseen > 0 {
+                Label("Notifications", systemImage: "bell.badge")
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(.red, .primary)
+            } else {
+                Label("Notifications", systemImage: "bell")
+            }
+        }
+        .help("Notifications")
+        .accessibilityValue(unseen > 0 ? Text("\(unseen) new") : Text(verbatim: ""))
+        .popover(isPresented: $isShown, arrowEdge: .bottom) {
+            VStack(spacing: 0) {
+                HStack {
+                    Text("Notifications").font(.headline)
+                    Spacer()
+                    if !notifications.history.isEmpty {
+                        Button("Clear") { notifications.clearHistory() }
+                            .buttonStyle(.borderless)
+                    }
+                }
+                .padding(.horizontal, 14).padding(.vertical, 10)
+                Divider()
+                if notifications.history.isEmpty {
+                    ContentUnavailableView("No Notifications", systemImage: "bell.slash")
+                        .frame(maxHeight: .infinity)
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 2) {
+                            ForEach(notifications.history) { entry in
+                                NotificationRow(entry: entry, isNew: entry.date > seenBefore) {
+                                    isShown = false
+                                    open(WindowRequest(code: entry.open))
+                                }
+                            }
+                        }
+                        .padding(6)
+                    }
+                }
+            }
+            .frame(width: 340, height: 380)
+        }
+    }
+}
+
+private struct NotificationRow: View {
+    let entry: NotificationService.Entry
+    let isNew: Bool
+    let action: () -> Void
+    @State private var isHovered = false
+
+    var body: some View {
+        let kind = entry.kind.flatMap(NotificationKind.init(rawValue:))
+        Button(action: action) {
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: kind?.symbol ?? "bell")
+                    .font(.system(size: 15))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 22)
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Text(entry.title).font(.system(size: 13, weight: .semibold)).lineLimit(1)
+                        Spacer(minLength: 4)
+                        Text(entry.date, format: .relative(presentation: .numeric, unitsStyle: .narrow))
+                            .font(.caption).foregroundStyle(.secondary).fixedSize()
+                        if isNew { Circle().fill(.blue).frame(width: 7, height: 7) }
+                    }
+                    Text(entry.body).font(.callout).foregroundStyle(.secondary).lineLimit(2)
+                }
+            }
+            .padding(8)
+            .background(isHovered ? AnyShapeStyle(.quaternary) : AnyShapeStyle(.clear), in: .rect(cornerRadius: 8))
+            .contentShape(.rect)
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
+        .help(entry.body)
     }
 }
 

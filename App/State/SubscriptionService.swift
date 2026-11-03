@@ -41,10 +41,10 @@ final class SubscriptionService {
 
     /// Events worth a notification (spec 12.6); `AppModel` turns them into one.
     enum Notice {
-        case updateFailed(group: String, message: String)
-        case serversChanged(group: String, added: Int, removed: Int, activeRemoved: Bool)
-        case expiry(group: String, level: UsageAlert.Expiry, expiresAt: Date)
-        case traffic(group: String, level: UsageAlert.Traffic, used: Int64, total: Int64)
+        case updateFailed(groupID: UUID, group: String, message: String)
+        case serversChanged(groupID: UUID, group: String, added: Int, removed: Int, activeRemoved: Bool)
+        case expiry(groupID: UUID, group: String, level: UsageAlert.Expiry, expiresAt: Date)
+        case traffic(groupID: UUID, group: String, level: UsageAlert.Traffic, used: Int64, total: Int64)
     }
     @ObservationIgnored var onNotice: @MainActor (Notice) -> Void = { _ in }
     /// Favorites a manual update found missing from their subscription (spec 6.6). An automatic
@@ -153,13 +153,13 @@ final class SubscriptionService {
                 if !missing.isEmpty { onMissingFavorites(missing) }
             }
             if scheduled, summary.added + summary.removed > 0 {
-                onNotice(.serversChanged(group: summary.groupName, added: summary.added, removed: summary.removed, activeRemoved: summary.activeRemoved))
+                onNotice(.serversChanged(groupID: groupID, group: summary.groupName, added: summary.added, removed: summary.removed, activeRemoved: summary.activeRemoved))
             }
             checkUsage(groupID: groupID, name: summary.groupName, used: summary.usedBytes, total: summary.totalBytes, expiresAt: summary.expiresAt)
         } catch {
             // Announced for the first failure only; the scheduler retries every 15 minutes.
             if scheduled, group.lastUpdateError == nil {
-                onNotice(.updateFailed(group: group.name, message: error.localizedDescription))
+                onNotice(.updateFailed(groupID: groupID, group: group.name, message: error.localizedDescription))
             }
             try? await store.recordFailure(groupID: groupID, message: error.localizedDescription)
         }
@@ -174,7 +174,7 @@ final class SubscriptionService {
                 marker: Prefs.usageMarker("notifiedExpiry", group: groupID)
             )
             Prefs.setUsageMarker(step.marker, "notifiedExpiry", group: groupID)
-            if step.notify { onNotice(.expiry(group: name, level: level, expiresAt: expiresAt)) }
+            if step.notify { onNotice(.expiry(groupID: groupID, group: name, level: level, expiresAt: expiresAt)) }
         }
         if let used, let total, total > 0 {
             let level = UsageAlert.traffic(used: used, total: total)
@@ -183,7 +183,7 @@ final class SubscriptionService {
                 marker: Prefs.usageMarker("notifiedTraffic", group: groupID)
             )
             Prefs.setUsageMarker(step.marker, "notifiedTraffic", group: groupID)
-            if step.notify { onNotice(.traffic(group: name, level: level, used: used, total: total)) }
+            if step.notify { onNotice(.traffic(groupID: groupID, group: name, level: level, used: used, total: total)) }
         }
     }
 

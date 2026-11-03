@@ -79,6 +79,7 @@ struct ConnectionSettings: View {
                         Text("\(NetworkInterfaces.describe(outboundInterface).title) (not connected)").tag(outboundInterface)
                     }
                 }
+                .flashTarget("network")
             } footer: {
                 note("The network that connections to the server and direct traffic leave through, in TUN mode too. Automatic follows the network macOS uses. If the chosen network disconnects, V2Mac goes back to Automatic and lets you know. Delay tests use the same network.")
             }

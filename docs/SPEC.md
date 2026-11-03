@@ -1751,9 +1751,20 @@ Rules:
   once per subscription; `UsageAlert.step` keeps a marker per group in `UserDefaults`
   (`notifiedExpiry`, `notifiedTraffic`) that resets when the date or quota changes.
   Groups are checked after every update and on each 15-minute scheduler tick.
-- A click opens the main window, or Settings on the tab that fits (updates,
-  subscriptions). The click sets `AppModel.windowRequest`; `WindowRequestHandler`, a
+- Expiry and traffic notices name the subscription in the title and say what is left of
+  both: the expiry date and the remaining traffic.
+- A click opens the main window, with the subscription selected for subscription
+  notices, or Settings on the tab that fits (updates). The click sets `AppModel.windowRequest`; `WindowRequestHandler`, a
   view in the menu bar label, opens the window, because only a view has `openWindow`.
+- A notification also names the spot it is about (`focus`): the connect button, the TUN
+  switch, the port field, the outgoing network, the subscription's header, Update Now, the
+  sandbox's version. That view, marked with `flashTarget`, scrolls into view and pulses twice
+  with a soft accent highlight. "Test finished" selects the fastest server instead.
+- Every posted notification is also kept in a list behind the bell in the main window's
+  toolbar (newest first, at most 50, in `UserDefaults` as `notificationHistory`). The bell
+  shows a dot when something arrived since the list was last opened (`notificationsSeenAt`),
+  each kind has its own symbol and colour, and a row
+  leads where its notification's click does. A kind that is switched off is not listed.
 
 ### 12.7 Server editor
 

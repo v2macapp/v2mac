@@ -41,6 +41,23 @@ final class AppModel {
     var settingsTab: SettingsTab = .general
     /// A window a notification click asked for; `WindowRequestHandler` opens it.
     var windowRequest: WindowRequest?
+    /// A spot a notification points at; the view marked with `flashTarget` of that name scrolls to it and flashes.
+    var focusAnchor: String?
+
+    /// A notification click: the window, then the spot in it. `server:<id>` selects that server instead.
+    func open(_ request: WindowRequest, focus: String?) {
+        windowRequest = request
+        if let focus, focus.hasPrefix("server:"), let id = UUID(uuidString: String(focus.dropFirst(7))) {
+            reveal(id)
+            return
+        }
+        focusAnchor = focus
+        // A spot that is not on screen (an update row with nothing to show) must not flash later.
+        Task {
+            try? await Task.sleep(for: .seconds(3))
+            if focusAnchor == focus { focusAnchor = nil }
+        }
+    }
     /// Spec 8.6: the Rules window's draft, shared with the Connections window and the menu bar.
     let rules = RulesStore()
     let ruleCatalog = RuleCatalog()
@@ -192,74 +209,75 @@ final class AppModel {
     private func wireNotifications() {
         let notifications = self.notifications
         let connection = self.connection
-        notifications.onOpen = { [weak self] request in self?.windowRequest = request }
+        notifications.onOpen = { [weak self] request, focus in self?.open(request, focus: focus) }
         notifications.onUsePort = { connection.useSuggestedPort() }
 
         connection.onNotice = { notice in
             // One id: the latest state of the connection replaces the one before it.
             switch notice {
             case .failed(let server, let message):
-                notifications.post(.connection, title: String(localized: "Could not connect"), body: "\(server): \(message)", id: "connection")
+                notifications.post(.connection, title: String(localized: "Could not connect"), body: "\(server): \(message)", id: "connection", focus: "connect")
             case .lost(let server):
                 notifications.post(.connection, title: String(localized: "Connection lost"),
-                                   body: String(localized: "\(server) stopped and could not be restarted."), id: "connection")
+                                   body: String(localized: "\(server) stopped and could not be restarted."), id: "connection", focus: "connect")
             case .reconnected(let server):
-                notifications.post(.reconnected, title: String(localized: "Reconnected"), body: String(localized: "Connected to \(server) again."), id: "connection")
+                notifications.post(.reconnected, title: String(localized: "Reconnected"), body: String(localized: "Connected to \(server) again."), id: "connection", focus: "connect")
             case .portInUse(let busy, let suggested):
                 notifications.post(
                     .connection, title: String(localized: "Port \(String(busy)) is in use"),
                     body: suggested.map { String(localized: "Another app is using it. V2Mac can use port \(String($0)) instead.") }
                         ?? String(localized: "Another app is using it. Choose another port in Settings."),
-                    id: "connection", usePort: suggested
+                    id: "connection", open: .settings(.proxy), focus: "port", usePort: suggested
                 )
             case .networkGone(let name):
                 notifications.post(.network, title: String(localized: "Network disconnected"),
                                    body: String(localized: "\(NetworkInterfaces.describe(name).title) is no longer connected. V2Mac uses the automatic network again."),
-                                   id: "network", open: .settings(.connection))
+                                   id: "network", open: .settings(.connection), focus: "network")
             }
         }
         sandbox.onNotice = { kind, text in
-            notifications.post(kind, title: kind.title, body: text, id: kind.rawValue)
+            notifications.post(kind, title: kind.title, body: text, id: kind.rawValue, open: .settings(.sandbox), focus: "sandbox")
         }
         sandbox.onUpdateFound = { pin in
             // Once per sandbox release, like the app's own update.
             guard Prefs.announcedTag("notifiedSandboxPin") != pin.sha256 else { return }
             Prefs.setAnnouncedTag(pin.sha256, "notifiedSandboxPin")
             notifications.post(.appUpdate, title: String(localized: "Secure Sandbox (beta) update available"),
-                               body: String(localized: "Open Settings to install it."), id: "sandboxUpdate", open: .settings(.sandbox))
+                               body: String(localized: "Open Settings to install it."), id: "sandboxUpdate", open: .settings(.sandbox), focus: "sandboxUpdate")
         }
         sandbox.checkForUpdate()
         connection.onTunFailure = { message in
-            notifications.post(.tun, title: String(localized: "TUN mode stopped"), body: message, id: "tun")
+            notifications.post(.tun, title: String(localized: "TUN mode stopped"), body: message, id: "tun", focus: "tun")
         }
 
-        subscriptions.onNotice = { notice in
+        subscriptions.onNotice = { [weak self] notice in
+            // Usage notices: the subscription in the title, what is left of time and traffic in one short line.
+            @MainActor func usage(_ id: UUID, expiresAt: Date? = nil, used: Int64? = nil, total: Int64? = nil) -> String {
+                let group = self?.group(id: id)
+                var parts: [String] = []
+                if let used = used ?? group?.usedBytes, let total = total ?? group?.totalBytes, total > 0 {
+                    parts.append(String(localized: "\(String(Int(Double(used) / Double(total) * 100)) + "%") used"))
+                    parts.append(String(localized: "\(ByteCountFormatter.string(fromByteCount: max(total - used, 0), countStyle: .binary)) left"))
+                }
+                if let date = expiresAt ?? group?.expiresAt { parts.append(Format.expiry(date, long: false).text) }
+                return parts.joined(separator: " · ")
+            }
             switch notice {
-            case .updateFailed(let group, let message):
-                notifications.post(.updateFailed, title: String(localized: "Could not update \(group)"), body: message, open: .settings(.servers))
-            case .serversChanged(let group, let added, let removed, let activeRemoved):
+            case .updateFailed(let id, let group, let message):
+                notifications.post(.updateFailed, title: String(localized: "Could not update \(group)"), body: message, open: .group(id), focus: "group")
+            case .serversChanged(let id, let group, let added, let removed, let activeRemoved):
                 var parts: [String] = []
                 if added > 0 { parts.append(String(localized: "\(added) added")) }
                 if removed > 0 { parts.append(String(localized: "\(removed) removed")) }
                 var body = parts.joined(separator: ", ") + "."
                 if activeRemoved { body += " " + String(localized: "The server in use is no longer in the subscription.") }
-                notifications.post(.serversChanged, title: String(localized: "\(group) was updated"), body: body)
-            case .expiry(let group, let level, let expiresAt):
-                let body: String
-                switch level {
-                case .expired: body = String(localized: "This subscription has expired.")
-                case .lastDay: body = String(localized: "This subscription expires in less than a day.")
-                default: body = String(localized: "This subscription expires in \(UsageAlert.daysLeft(expiresAt: expiresAt)) days.")
-                }
-                notifications.post(.expiry, title: group, body: body)
-            case .traffic(let group, let level, let used, let total):
-                let usedText = ByteCountFormatter.string(fromByteCount: used, countStyle: .binary)
-                let totalText = ByteCountFormatter.string(fromByteCount: total, countStyle: .binary)
-                let percent = Int(Double(used) / Double(total) * 100)
-                let body = level == .out
-                    ? String(localized: "The traffic quota is used up (\(usedText) of \(totalText) used).")
-                    : String(localized: "\(percent)% of the traffic quota is used (\(usedText) of \(totalText) used).")
-                notifications.post(.traffic, title: group, body: body)
+                notifications.post(.serversChanged, title: String(localized: "\(group) was updated"), body: body, open: .group(id), focus: "group")
+            case .expiry(let id, let group, let level, let expiresAt):
+                let title = level == .expired ? String(localized: "\(group) has expired") : String(localized: "\(group) expires soon")
+                notifications.post(.expiry, title: title, body: usage(id, expiresAt: expiresAt), id: "expiry-\(id)", open: .group(id), focus: "group")
+            case .traffic(let id, let group, let level, let used, let total):
+                let title = level == .out ? String(localized: "\(group) is out of traffic") : String(localized: "\(group) is low on traffic")
+                notifications.post(.traffic, title: title, body: usage(id, used: used, total: total), id: "traffic-\(id)", open: .group(id), focus: "group")
             }
         }
 
@@ -270,10 +288,10 @@ final class AppModel {
                 guard Prefs.announcedTag("notifiedAppTag") != tag else { return }
                 Prefs.setAnnouncedTag(tag, "notifiedAppTag")
                 notifications.post(.appUpdate, title: String(localized: "V2Mac \(VersionCompare.normalized(tag)) is available"),
-                                   body: String(localized: "Open Settings to install it."), id: "appUpdate", open: .settings(.general))
+                                   body: String(localized: "Open Settings to install it."), id: "appUpdate", open: .settings(.general), focus: "appUpdate")
             case .updated(let version):
                 notifications.post(.appUpdate, title: String(localized: "V2Mac updated to \(version)"),
-                                   body: String(localized: "Open Settings to read what changed."), id: "appUpdate", open: .settings(.general))
+                                   body: String(localized: "Open Settings to read what changed."), id: "appUpdate", open: .settings(.general), focus: "appUpdate")
             }
         }
 
@@ -282,7 +300,8 @@ final class AppModel {
             let fastest = best.flatMap { best in self?.profile(id: best.id).map { String(localized: "Fastest: \($0.name), \(best.ms) ms.") } }
             let count = tested == 1 ? String(localized: "1 server tested.") : String(localized: "\(tested) servers tested.")
             notifications.post(.testFinished, title: String(localized: "Test finished"),
-                               body: count + " " + (fastest ?? String(localized: "None answered.")), id: "test")
+                               body: count + " " + (fastest ?? String(localized: "None answered.")), id: "test",
+                               focus: best.map { "server:\($0.id.uuidString)" })
         }
 
         notifications.start()
@@ -1012,7 +1031,9 @@ final class AppModel {
                let rule = rules.draft.first(where: { $0.name.localizedCaseInsensitiveContains(name) }) {
                 rules.selection = [.rule(rule.id)]
             }
-            windowRequest = WindowRequest(code: ["main", RulesWindow.windowID, ConnectionsView.windowID].contains(target) ? target : "settings:\(target)")
+            // `-debugFocus <anchor>` flashes that spot, as a notification click does.
+            open(WindowRequest(code: ["main", RulesWindow.windowID, ConnectionsView.windowID].contains(target) ? target : "settings:\(target)"),
+                 focus: UserDefaults.standard.string(forKey: "debugFocus"))
             try? await Task.sleep(for: .seconds(1))
             print("[v2mac-debug] window request handled: \(windowRequest == nil), settings tab \(settingsTab.rawValue)")
         }
@@ -1158,10 +1179,10 @@ final class AppModel {
                 connection.onNotice(.portInUse(busy: 10808, suggested: 10809))
                 connection.onNotice(.networkGone(name: "en9"))
                 connection.tun.onFailure("Sample TUN failure.")
-                subscriptions.onNotice(.updateFailed(group: "Sample", message: "sample reason"))
-                subscriptions.onNotice(.serversChanged(group: "Sample", added: 2, removed: 1, activeRemoved: true))
-                subscriptions.onNotice(.expiry(group: "Sample", level: .soon, expiresAt: Date().addingTimeInterval(2.5 * 86400)))
-                subscriptions.onNotice(.traffic(group: "Sample", level: .low, used: 85 << 30, total: 100 << 30))
+                subscriptions.onNotice(.updateFailed(groupID: UUID(), group: "Sample", message: "sample reason"))
+                subscriptions.onNotice(.serversChanged(groupID: UUID(), group: "Sample", added: 2, removed: 1, activeRemoved: true))
+                subscriptions.onNotice(.expiry(groupID: UUID(), group: "Sample", level: .soon, expiresAt: Date().addingTimeInterval(2.5 * 86400)))
+                subscriptions.onNotice(.traffic(groupID: UUID(), group: "Sample", level: .low, used: 85 << 30, total: 100 << 30))
                 updates.onFound(.app("v9.9.9"))
                 latency.onFinished(12, nil)
                 try? await Task.sleep(for: .seconds(4))

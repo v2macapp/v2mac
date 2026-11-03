@@ -135,7 +135,7 @@ struct ConnectionBar: View {
 
     private func content(rates: RateLayout?, showAddress: Bool) -> some View {
         HStack(spacing: Self.spacing) {
-            connectButton
+            connectButton.flashTarget("connect")
             titleBlock
             Spacer(minLength: Self.minimumGap)
             if let rates, connection.phase == .connected {
@@ -145,6 +145,7 @@ struct ConnectionBar: View {
             SystemProxyToggle(connection: connection)
                 .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { proxyWidth = $0 }
             TunToggle(connection: connection)
+                .flashTarget("tun")
                 .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { tunWidth = $0 }
             RoutingModeMenu(connection: connection, packs: model.regionPacks) { model.showRegionsSheet = true }
                 .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { routingWidth = $0 }

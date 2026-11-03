@@ -22,6 +22,7 @@ struct ProxySettings: View {
                 TextField("Port", text: $portText)
                     .onSubmit(commitPort)
                     .frame(maxWidth: 200)
+                    .flashTarget("port")
                 if !portValid {
                     Text("Enter a port between 1024 and 65535.").font(.caption).foregroundStyle(.red)
                 }
