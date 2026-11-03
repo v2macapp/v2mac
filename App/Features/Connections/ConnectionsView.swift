@@ -442,13 +442,15 @@ private struct RuleCell: View {
         let fromConfig = rule == nil && connection.configFallback
         let tint: Color = viaProxySetting ? .orange : fromConfig ? .purple : connection.routeTint
         HStack(spacing: 6) {
-            Text(connection.routeTitle)
+            // The badge keeps only the flag; the server's full name is in the tooltip and Details.
+            Text(connection.viaServer.map { String(localized: "Via \(ServerName($0).flag ?? "🌐")") } ?? connection.routeTitle)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(tint)
                 .padding(.horizontal, 7)
                 .padding(.vertical, 1)
                 .background(tint.opacity(0.14), in: .capsule)
                 .fixedSize()
+                .help(connection.routeTitle)
             if viaProxySetting {
                 Label("App's proxy setting", systemImage: "arrow.triangle.branch")
                     .foregroundStyle(.orange)
