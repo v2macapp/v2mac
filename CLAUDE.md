@@ -61,7 +61,9 @@ comments cite it as "spec 6.4" etc.; read the section before changing the behavi
   - `forwarderCarriesUDPAndTCPThroughARealTun` runs the TUN forwarder as root and only where `sudo`
     needs no password (CI). It caught Xray 26.10.17's lost TUN UDP; never pin a core it fails on.
     Locally run `sudo -v` in the same terminal first, or it is skipped.
-- There is no linter and no app-target test bundle. All testable logic belongs in the package.
+- There is no linter. All testable logic belongs in the package; the few app-state tests are the
+  `v2macStateTests` scheme (`Tests/V2MacAppTests`, sources listed in `project.yml`):
+  `xcodebuild test -project v2mac.xcodeproj -scheme v2macStateTests -destination 'platform=macOS'`.
 - Local DMG: `Scripts/make-dmg.sh` (ad-hoc signed, output in `dist/`).
   - The DMG window (background picture, icon positions, size) comes from two committed files in
     `Scripts/dmg/`, which `make-dmg.sh` only copies, so CI never scripts Finder. To change the
@@ -116,7 +118,7 @@ comments cite it as "spec 6.4" etc.; read the section before changing the behavi
     active server, and open the panel with System Events (`click menu bar item 1 of menu bar 2`).
     `-debugPanelHeight <points>` shows the panel as on a display with that much room below the
     menu bar. The click does not always open the panel: check the snapshot line lists five windows.
-- CI (`.github/workflows/ci.yml`, every push) runs the package tests and an unsigned Debug build on
+- CI (`.github/workflows/ci.yml`, every push) runs the package tests, an unsigned Debug build and the state tests on
   `macos-26`. Watch it with `gh run watch` after pushing.
 - The menu bar glyph PDFs in the asset catalog are generated: edit the SVGs in `Design/` and run
   `Scripts/make-glyphs.sh` (needs `rsvg-convert`).

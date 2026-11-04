@@ -149,7 +149,7 @@ targets:
       - App/State/LogStore.swift
       - App/State/NotificationService.swift
       - App/Features/Settings/SettingsTab.swift
-      - App/Features/Settings/AboutSettings.swift
+      - App/Features/Settings/AboutLinks.swift
       - App/Support/AppPaths.swift
       - App/Support/AdminConsent.swift
       - App/Support/InstalledApps.swift

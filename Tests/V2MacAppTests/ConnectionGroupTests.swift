@@ -82,14 +82,14 @@ struct ConnectionGroupTests {
         block.action = .block; block.sent = 30
         let unknown = connection(4)
         let rows = [proxy, direct, block, unknown]
-        #expect(rows.filter { $0.matches(search: "", onlyOpen: false, action: nil) }.count == 4)
+        #expect(rows.filter { $0.matches(search: "", onlyOpen: false, route: nil) }.count == 4)
         for action in CustomRule.Action.allCases {
-            #expect(rows.filter { $0.matches(search: "", onlyOpen: false, action: action) }.count == 1)
+            #expect(rows.filter { $0.matches(search: "", onlyOpen: false, route: action.rawValue) }.count == 1)
         }
-        #expect(rows.filter { $0.matches(search: "", onlyOpen: true, action: .direct) }.isEmpty)
-        #expect(rows.filter { $0.matches(search: "CURL", onlyOpen: true, action: .proxy) }.map(\.id) == [1])
-        #expect(rows.filter { $0.matches(search: "ads", onlyOpen: false, action: .proxy) }.isEmpty)
-        let filtered = rows.filter { $0.matches(search: "EXAMPLE.COM", onlyOpen: true, action: .proxy) }
+        #expect(rows.filter { $0.matches(search: "", onlyOpen: true, route: "direct") }.isEmpty)
+        #expect(rows.filter { $0.matches(search: "CURL", onlyOpen: true, route: "proxy") }.map(\.id) == [1])
+        #expect(rows.filter { $0.matches(search: "ads", onlyOpen: false, route: "proxy") }.isEmpty)
+        let filtered = rows.filter { $0.matches(search: "EXAMPLE.COM", onlyOpen: true, route: "proxy") }
         let group = try #require(ConnectionGroup.make(filtered, by: .host).first)
         #expect(group.connections.map(\.id) == [1])
         #expect(group.sent == 10 && group.openCount == 1)

@@ -15,3 +15,7 @@ jobs:
           xcodegen generate
           xcodebuild -project v2mac.xcodeproj -scheme v2mac -configuration Debug \
             CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO build
+      - name: State tests
+        run: |
+          xcodebuild test -project v2mac.xcodeproj -scheme v2macStateTests -destination 'platform=macOS' \
+            CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO
