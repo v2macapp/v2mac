@@ -5,7 +5,7 @@
 #
 #   Scripts/check-tun.sh
 #
-# Exit status 0 when nothing leaked.
+# Exit status 0 when nothing leaked, 1 on a leak, 2 = INCONCLUSIVE (nothing could be measured).
 set -u
 
 phys=$(printf 'show State:/Network/Global/IPv4\n' | scutil | sed -n 's/^ *PrimaryInterface : //p')
@@ -41,9 +41,11 @@ echo "Watching $phys while lookups and connections run (sudo asks for your passw
 capture=$(mktemp)
 token="v2mac-check-$(uuidgen | tr 'A-Z' 'a-z' | cut -c1-8)"
 sudo -v || exit 2
-sudo tcpdump -i "$phys" -n -l -s 512 "port 53 or host 1.0.0.1 or host 9.9.9.9 or host 2606:4700:4700::1001" > "$capture" 2>/dev/null &
+# Everything on the interface: the tunnel's own packets to the server prove the capture worked.
+sudo tcpdump -i "$phys" -n -l -s 512 > "$capture" &
 dump=$!
 sleep 2
+ps -p "$dump" > /dev/null || { rm -f "$capture"; echo "INCONCLUSIVE: tcpdump did not start (its error is above)."; exit 2; }
 # The system resolver, the resolver /etc/resolv.conf names, and one an app picks itself.
 dscacheutil -q host -a name "$token-sys.example.com" > /dev/null
 dig +time=3 +tries=1 "$token-dig.example.com" > /dev/null 2>&1
@@ -54,6 +56,7 @@ exit6=""
 sleep 2
 sudo kill "$dump" 2> /dev/null
 wait "$dump" 2> /dev/null
+[ -s "$capture" ] || { rm -f "$capture"; echo "INCONCLUSIVE: tcpdump caught nothing on $phys."; exit 2; }
 
 if grep -q "$token" "$capture"; then
   leak "DNS lookups went out directly:"
@@ -61,9 +64,11 @@ if grep -q "$token" "$capture"; then
 else
   ok "no lookup went out directly"
 fi
-if grep -Eq '1\.0\.0\.1|9\.9\.9\.9|2606:4700:4700::1001' "$capture"; then
+# Not part of a longer address; tcpdump appends the port as ".443".
+direct='(^|[^0-9.])(1\.0\.0\.1|9\.9\.9\.9)([^0-9]|$)|2606:4700:4700::1001'
+if grep -Eq "$direct" "$capture"; then
   leak "connections went out directly:"
-  grep -E '1\.0\.0\.1|9\.9\.9\.9|2606:4700:4700::1001' "$capture" | head -5 | sed 's/^/          /'
+  grep -E "$direct" "$capture" | head -5 | sed 's/^/          /'
 else
   ok "no connection went out directly"
 fi
