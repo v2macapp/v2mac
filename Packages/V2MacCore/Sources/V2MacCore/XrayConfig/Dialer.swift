@@ -170,9 +170,10 @@ extension ConfigBuilder {
         return warp.setting("tag", to: .string(proxyTag)).setting("streamSettings", to: stream.setting("sockopt", to: sockopt))
     }
 
-    /// Loopback API used to swap the proxy outbound without restarting the core.
-    static func apiSection(port: Int) -> JSONValue {
-        ["tag": .string(apiTag), "listen": .string("127.0.0.1:\(port)"), "services": ["HandlerService"]]
+    /// API used to swap the proxy outbound without restarting the core. A Unix socket created 0600
+    /// (Xray's `path,mode` form), so no other user or sandboxed app can reach it the way they could a loopback port.
+    static func apiSection(socket: String) -> JSONValue {
+        ["tag": .string(apiTag), "listen": .string("\(socket),0600"), "services": ["HandlerService"]]
     }
 
     static func dnsSection(_ settings: DNSSettings) -> JSONValue {

@@ -625,13 +625,15 @@ time or on a network change, the setting goes back to Automatic, a running core 
 default network and the "Chosen network disconnected" notification says so.
 
 **Switching without a restart.** When on, configs for outbound profiles gain
-`"api": {"tag": "api", "listen": "127.0.0.1:<free port>", "services": ["HandlerService"]}`.
+`"api": {"tag": "api", "listen": "<run>/api.sock,0600", "services": ["HandlerService"]}`: a Unix socket only the
+user can open, in the 0700 `run/` folder, never a loopback port (any local process, another user or a sandboxed app could
+reach that and swap the server while the UI stays green). A run folder whose socket path would pass 103 bytes gets no API and always restarts.
 Activating another outbound profile while connected, with every other setting unchanged, runs
-`xray api rmo --server=127.0.0.1:<port> proxy` and then `xray api ado ... <file>` with the new
+`xray api rmo --server=unix://<run>/api.sock proxy` and then `xray api ado ... <file>` with the new
 outbound (tagged, dialled and bound as above). The core, its ports and the traffic counters stay;
 connections already open finish on the old server. If either command fails the core is restarted
 as before. Custom configs, any switch while TUN mode is on (section 9.5, DNS), and any change of
-port, mode, TUN, log or the settings above, always restart. The API port is loopback-only and unauthenticated, like the metrics port.
+port, mode, TUN, log or the settings above, always restart. The metrics port (`/debug/vars`, `/debug/pprof`) is still loopback TCP without auth and ignores the Host header; it carries traffic counters, observatory delays and the core's command line, no keys.
 
 ### 8.5 Servers that ask for `allowInsecure`
 

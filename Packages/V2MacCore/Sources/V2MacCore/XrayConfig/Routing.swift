@@ -139,7 +139,7 @@ extension ConfigBuilder {
         ]
         if let observatory = via.observatory { config = config.setting("observatory", to: observatory) }
         if let dns = options.dns.map(dnsSection) ?? sections.dns { config = config.setting("dns", to: dns) }
-        if let port = options.apiPort { config = config.setting("api", to: apiSection(port: port)) }
+        if let socket = options.apiSocket { config = config.setting("api", to: apiSection(socket: socket)) }
         if let tun = options.tun { config = tunDNS(config, tun: tun) }
         return blockingLoopback(of: config, when: options.inbound.allowLAN)
     }

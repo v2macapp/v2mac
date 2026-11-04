@@ -8,8 +8,8 @@ import Testing
 
     func vless() throws -> JSONValue { try ShareLinkParser.parse(Fixtures.vlessWS).config }
 
-    func options(dialer: DialerSettings = DialerSettings(), dns: DNSSettings? = nil, api: Int? = nil, tun: TunLink? = nil) -> RunOptions {
-        RunOptions(metricsPort: 20000, tun: tun, dialer: dialer, dns: dns, apiPort: api)
+    func options(dialer: DialerSettings = DialerSettings(), dns: DNSSettings? = nil, api: String? = nil, tun: TunLink? = nil) -> RunOptions {
+        RunOptions(metricsPort: 20000, tun: tun, dialer: dialer, dns: dns, apiSocket: api)
     }
 
     @Test func rangesAreValidated() {
@@ -117,10 +117,10 @@ import Testing
     }
 
     @Test func apiSectionOnlyWhenAsked() throws {
-        let c = try ConfigBuilder.buildGlobal(outbound: vless(), options: options(api: 20001))
-        #expect(c["api"]?["listen"]?.stringValue == "127.0.0.1:20001")
+        let c = try ConfigBuilder.buildGlobal(outbound: vless(), options: options(api: "/run/api.sock"))
+        #expect(c["api"]?["listen"]?.stringValue == "/run/api.sock,0600")
         #expect(c["api"]?["services"]?[0]?.stringValue == "HandlerService")
-        #expect(try ConfigBuilder.buildCustom(config: ["outbounds": [["protocol": "freedom"]]], options: options(api: 20001))["api"] == nil)
+        #expect(try ConfigBuilder.buildCustom(config: ["outbounds": [["protocol": "freedom"]]], options: options(api: "/run/api.sock"))["api"] == nil)
     }
 
     @Test func latencyBatchUsesTheDialer() throws {
@@ -149,7 +149,7 @@ struct LiveSwitchIntegrationTests {
             tun: TunLink(port: try PortUtil.freePort(), outboundInterface: "lo0"),
             dialer: DialerSettings(fragment: FragmentSettings(), noise: NoiseSettings()),
             dns: DNSSettings(queryStrategy: .useIPv4),
-            apiPort: try PortUtil.freePort()
+            apiSocket: "/tmp/v2mac-test-api.sock"
         )
         let config = try ConfigBuilder.buildGlobal(outbound: ShareLinkParser.parse(Fixtures.vlessWS).config, options: options)
         let dir = try TestSupport.makeTempDirectory()
@@ -170,31 +170,41 @@ struct LiveSwitchIntegrationTests {
     }
 
     @Test func outboundIsReplacedWhileTheCoreKeepsRunning() async throws {
-        let options = RunOptions(inbound: InboundSettings(port: try PortUtil.freePort()), metricsPort: try PortUtil.freePort(), apiPort: try PortUtil.freePort())
-        let port = options.inbound.port
-        let api = try #require(options.apiPort)
-        // A SOCKS server nobody runs: every request fails until the outbound is replaced.
-        let dead: JSONValue = ["protocol": "socks", "settings": ["address": "127.0.0.1", "port": .number(Double(try PortUtil.freePort()))]]
-        let dir = try TestSupport.makeTempDirectory()
+        // The usual temp folder is too long for a Unix socket path, so the runner offers no API there.
+        let long = try TestSupport.makeTempDirectory()
+        try? FileManager.default.removeItem(at: long)
+        #expect(CoreRunner(executable: TestSupport.xray, assetDirectory: TestSupport.vendorCore, runDirectory: long.appendingPathComponent(String(repeating: "x", count: 60))).apiSocket == nil)
+
+        let dir = URL(fileURLWithPath: "/tmp/v2mac-\(UUID().uuidString.prefix(8))")
         defer { try? FileManager.default.removeItem(at: dir) }
         let runner = CoreRunner(executable: TestSupport.xray, assetDirectory: TestSupport.vendorCore, runDirectory: dir)
+        let socket = try #require(runner.apiSocket)
+        let options = RunOptions(inbound: InboundSettings(port: try PortUtil.freePort()), metricsPort: try PortUtil.freePort(), apiSocket: socket)
+        let port = options.inbound.port
+        // A SOCKS server nobody runs: every request fails until the outbound is replaced.
+        let dead: JSONValue = ["protocol": "socks", "settings": ["address": "127.0.0.1", "port": .number(Double(try PortUtil.freePort()))]]
         try await runner.start(config: ConfigBuilder.buildGlobal(outbound: dead, options: options), readyPort: port)
         let pid = try String(contentsOf: dir.appendingPathComponent("xray.pid"), encoding: .utf8)
         #expect(await status(port: port) == -1)
+        // Only this user may connect: no loopback port, a 0600 socket in a 0700 folder.
+        #expect(try FileManager.default.attributesOfItem(atPath: socket)[.posixPermissions] as? Int == 0o600)
+        #expect(try FileManager.default.attributesOfItem(atPath: dir.path)[.posixPermissions] as? Int == 0o700)
 
-        try await runner.replaceOutbound(tag: ConfigBuilder.proxyTag, with: ConfigBuilder.proxyOutbound(["protocol": "freedom"], options: options), apiPort: api)
+        try await runner.replaceOutbound(tag: ConfigBuilder.proxyTag, with: ConfigBuilder.proxyOutbound(["protocol": "freedom"], options: options))
         #expect(await status(port: port) == 204)
         #expect(await runner.state == .running)
         #expect(try String(contentsOf: dir.appendingPathComponent("xray.pid"), encoding: .utf8) == pid)
         #expect(try FileManager.default.contentsOfDirectory(atPath: dir.path).filter { $0.hasPrefix("outbound-") }.isEmpty)
 
-        // A port nothing listens on: the failure is reported, not swallowed.
+        // A socket nothing listens on: the failure is reported, not swallowed.
+        try FileManager.default.removeItem(atPath: socket)
         await #expect(throws: CoreError.self) {
-            try await runner.replaceOutbound(tag: ConfigBuilder.proxyTag, with: ["protocol": "freedom"], apiPort: try PortUtil.freePort())
+            try await runner.replaceOutbound(tag: ConfigBuilder.proxyTag, with: ["protocol": "freedom"])
         }
         await runner.stop()
+        #expect(!FileManager.default.fileExists(atPath: socket + ".lock"))
         await #expect(throws: CoreError.self) {
-            try await runner.replaceOutbound(tag: ConfigBuilder.proxyTag, with: ["protocol": "freedom"], apiPort: api)
+            try await runner.replaceOutbound(tag: ConfigBuilder.proxyTag, with: ["protocol": "freedom"])
         }
     }
 }

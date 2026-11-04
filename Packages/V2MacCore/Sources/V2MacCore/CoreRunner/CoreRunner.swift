@@ -25,6 +25,13 @@ public actor CoreRunner {
     private var configURL: URL { runDirectory.appendingPathComponent("config.json") }
     private var pidURL: URL { runDirectory.appendingPathComponent("xray.pid") }
 
+    /// Where the core's API listens (`RunOptions.apiSocket`): inside the 0700 run directory. Nil when
+    /// the path is too long for a Unix socket (104 bytes on macOS); callers then restart instead.
+    public nonisolated var apiSocket: String? {
+        let path = runDirectory.appendingPathComponent("api.sock").path
+        return path.utf8.count < 104 ? path : nil
+    }
+
     public init(
         executable: URL,
         assetDirectory: URL,
@@ -148,18 +155,19 @@ public actor CoreRunner {
 
     // MARK: Live switch
 
-    /// Replaces the outbound tagged `tag` in the running core through its API (`apiPort` is the
-    /// `api.listen` port of the config it was started with). Connections already open finish on
+    /// Replaces the outbound tagged `tag` in the running core through its API at `apiSocket`, which
+    /// the config it was started with must listen on. Connections already open finish on
     /// the old outbound. When this throws, the core may be left without that outbound: restart it.
-    public func replaceOutbound(tag: String, with outbound: JSONValue, apiPort: Int) async throws {
-        guard state == .running else { throw CoreError.apiFailed(String(localized: "The core is not running.")) }
+    public func replaceOutbound(tag: String, with outbound: JSONValue) async throws {
+        // No socket only with an over-long run directory, where callers never start an API.
+        guard let apiSocket, state == .running else { throw CoreError.apiFailed(String(localized: "The core is not running.")) }
         let file = runDirectory.appendingPathComponent("outbound-\(UUID().uuidString).json")
         let data = try JSONValue.object(["outbounds": .array([outbound])]).data()
         guard FileManager.default.createFile(atPath: file.path, contents: data, attributes: [.posixPermissions: 0o600]) else {
             throw CoreError.apiFailed(String(localized: "Could not write the outbound file."))
         }
         defer { try? FileManager.default.removeItem(at: file) }
-        let server = "--server=127.0.0.1:\(apiPort)"
+        let server = "--server=unix://\(apiSocket)"
         try await Self.runAPI(executable, ["rmo", server, tag])
         try await Self.runAPI(executable, ["ado", server, file.path])
     }
@@ -250,5 +258,6 @@ public actor CoreRunner {
     private func removeRunFiles() {
         try? FileManager.default.removeItem(at: configURL)
         try? FileManager.default.removeItem(at: pidURL)
+        if let apiSocket { for path in [apiSocket, apiSocket + ".lock"] { try? FileManager.default.removeItem(atPath: path) } }
     }
 }

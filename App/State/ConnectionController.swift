@@ -658,9 +658,9 @@ final class ConnectionController {
         if tunLink == nil { tun.down() }
         let inbound = Prefs.inbound
         let plan = routingPlan
-        func options(metrics: Int, api: Int?) -> RunOptions {
+        func options(metrics: Int, api: String?) -> RunOptions {
             RunOptions(inbound: inbound, logLevel: Prefs.logLevel, logConnections: true, metricsPort: metrics,
-                       tun: tunLink, dialer: Prefs.dialer, dns: Prefs.dns, apiPort: api, warpExit: Prefs.warpExit,
+                       tun: tunLink, dialer: Prefs.dialer, dns: Prefs.dns, apiSocket: api, warpExit: Prefs.warpExit,
                        outboundInterface: outboundInterface)
         }
 
@@ -679,12 +679,12 @@ final class ConnectionController {
         // Same settings, only the server differs: swap the outbound and keep the core. Not in TUN
         // mode, whose config lists the server's name for its own lookups (`ConfigBuilder.tunDNS`).
         if mayLiveSwitch, Prefs.liveSwitch, coreState == .running, server.kind == .outbound,
-           let running, running.options.tun == nil, let api = running.options.apiPort,
+           let running, running.options.tun == nil, let api = running.options.apiSocket,
            options(metrics: running.options.metricsPort, api: api) == running.options, plan == running.plan, custom == running.custom {
             isSwitching = true
             do {
                 let outbound = ConfigBuilder.proxyOutbound(outboundConfig, options: running.options)
-                try await runner.replaceOutbound(tag: ConfigBuilder.serverTag(running.options), with: outbound, apiPort: api)
+                try await runner.replaceOutbound(tag: ConfigBuilder.serverTag(running.options), with: outbound)
                 logs.append("[v2mac] Switched to \(server.name) without restarting the core")
                 noteRecent(server.id)
                 checkExit()
@@ -716,7 +716,7 @@ final class ConnectionController {
             var started: RunOptions?
             switch server.kind {
             case .outbound:
-                let options = options(metrics: metrics, api: Prefs.liveSwitch ? try PortUtil.freePort() : nil)
+                let options = options(metrics: metrics, api: Prefs.liveSwitch ? runner.apiSocket : nil)
                 config = try ConfigBuilder.build(outbound: outboundConfig, options: options, routing: plan, custom: custom)
                 started = options
             case .custom:

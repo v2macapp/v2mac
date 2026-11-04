@@ -164,9 +164,9 @@ publishes state and log lines as `AsyncStream`s.
 
 **Connection settings** (spec 8.4). `RunOptions` also carries `dialer` (TLS fragment and noise:
 a `v2mac-dialer` freedom outbound that proxy outbounds reach through `sockopt.dialerProxy`), `dns`
-(the core's own resolver) and `apiPort`. Links that say `allowInsecure` keep that flag in the stored
+(the core's own resolver) and `apiSocket`. Links that say `allowInsecure` keep that flag in the stored
 outbound as a marker only: `InsecureTLS` (spec 8.5) pins the server's certificate at connect time when
-the setting is on, and `ConfigBuilder.proxyOutbound` always strips the flag, because Xray refuses it. With an API port, picking another share-link server swaps
+the setting is on, and `ConfigBuilder.proxyOutbound` always strips the flag, because Xray refuses it. With an API socket (`CoreRunner.apiSocket`, 0600 in `run/`), picking another share-link server swaps
 the `proxy` outbound in the running core (`CoreRunner.replaceOutbound`, which shells out to
 `xray api rmo/ado`) instead of restarting it; any other change, and every full config, restarts.
 

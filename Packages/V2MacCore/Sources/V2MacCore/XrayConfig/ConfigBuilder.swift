@@ -35,8 +35,8 @@ public struct RunOptions: Sendable, Hashable {
     public var dialer: DialerSettings
     /// The core's own resolver; nil leaves name resolution as each routing mode needs it.
     public var dns: DNSSettings?
-    /// Loopback port for the outbound API, set when servers may be switched without a restart.
-    public var apiPort: Int?
+    /// Unix socket path for the outbound API (`CoreRunner.apiSocket`), set when servers may be switched without a restart.
+    public var apiSocket: String?
     /// A WARP outbound that traffic leaves through after the server (spec 9.10).
     public var warpExit: JSONValue?
     /// The network the user picked for the core's connections (spec 8.4); nil leaves it to macOS.
@@ -54,7 +54,7 @@ public struct RunOptions: Sendable, Hashable {
         tun: TunLink? = nil,
         dialer: DialerSettings = DialerSettings(),
         dns: DNSSettings? = nil,
-        apiPort: Int? = nil,
+        apiSocket: String? = nil,
         warpExit: JSONValue? = nil,
         outboundInterface: String? = nil
     ) {
@@ -65,7 +65,7 @@ public struct RunOptions: Sendable, Hashable {
         self.tun = tun
         self.dialer = dialer
         self.dns = dns
-        self.apiPort = apiPort
+        self.apiSocket = apiSocket
         self.warpExit = warpExit
         self.outboundInterface = outboundInterface
     }
