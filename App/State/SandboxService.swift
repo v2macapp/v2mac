@@ -199,7 +199,16 @@ final class SandboxService {
         var argv: [UnsafeMutablePointer<CChar>?] = [strdup(path), nil]
         defer { argv.forEach { free($0) } }
         var pid: pid_t = 0
-        let status = posix_spawn(&pid, path, &actions, &attributes, &argv, environ)
+        #if DEBUG
+        let passes = { (_: String) in true }
+        #else
+        let passes = { (name: String) in !name.hasPrefix("V2MAC_SANDBOX_") } // test switches reach dev builds only
+        #endif
+        var env: [UnsafeMutablePointer<CChar>?] = ProcessInfo.processInfo.environment.compactMap {
+            passes($0.key) ? strdup("\($0.key)=\($0.value)") : nil
+        } + [nil]
+        defer { env.forEach { free($0) } }
+        let status = posix_spawn(&pid, path, &actions, &attributes, &argv, &env)
         guard status == 0 else {
             close(fds[0])
             throw POSIXError(.init(rawValue: status) ?? .EIO)
