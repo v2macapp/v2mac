@@ -58,20 +58,20 @@ public struct DownloadProgress: Sendable, Equatable {
     }
 }
 
-/// Downloads a file, trying each route in order (spec 11: local proxy first, then direct).
+/// Downloads a file, trying each route in order (spec 11, `NetworkPolicy`).
 public struct FileDownloader: Sendable {
     public var routes: [FetchRoute]
     public var timeout: TimeInterval
     public var maxBytes: Int
 
     public init(routes: [FetchRoute], timeout: TimeInterval = 60, maxBytes: Int = 64 * 1024 * 1024) {
-        self.routes = routes.isEmpty ? [.direct] : routes
+        self.routes = routes  // empty: nothing is sent (NetworkPolicy)
         self.timeout = timeout
         self.maxBytes = maxBytes
     }
 
     public func download(_ url: URL, onProgress: (@Sendable (DownloadProgress) -> Void)? = nil) async throws -> Data {
-        var lastError: Error = DownloadError.network("No route available.")
+        var lastError: Error = DownloadError.network(NetworkPolicy.noRouteMessage)
         for route in routes {
             do {
                 return try await download(url, route: route, onProgress: onProgress)

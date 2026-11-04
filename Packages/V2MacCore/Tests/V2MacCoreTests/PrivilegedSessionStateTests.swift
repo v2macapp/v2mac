@@ -22,6 +22,9 @@ import Testing
             var invalid = valid
             invalid.allowedAddresses = [address]
             #expect(throws: (any Error).self) { try invalid.validate() }
+            invalid = valid
+            invalid.resolverAddresses = [address]
+            #expect(throws: (any Error).self) { try invalid.validate() }
         }
         var invalid = valid
         invalid.proxyPort = 0
@@ -37,14 +40,17 @@ import Testing
         let directory = try TestSupport.makeTempDirectory()
         defer { try? FileManager.default.removeItem(at: directory) }
         let running = PrivilegedSessionState(tunEnabled: true, proxyPort: 10818, killSwitchEnabled: true,
-                                            allowedAddresses: ["192.0.2.1", "2001:db8::1"])
+                                            allowedAddresses: ["192.0.2.1", "2001:db8::1"],
+                                            resolverAddresses: ["192.168.1.1"], killSwitchBlocksLAN: true)
         try running.write(to: directory)
+        #expect(try String(contentsOf: directory.appendingPathComponent(KillSwitch.resolverFile), encoding: .utf8) == "192.168.1.1\n")
+        #expect(FileManager.default.fileExists(atPath: directory.appendingPathComponent(KillSwitch.blockLANFlag).path))
         #expect(try String(contentsOf: directory.appendingPathComponent(SystemProxy.flag), encoding: .utf8) == "10818\n")
         #expect(FileManager.default.fileExists(atPath: directory.appendingPathComponent(TunHelper.onFlag).path))
         let stopped = PrivilegedSessionState(tunEnabled: false, proxyPort: nil, killSwitchEnabled: false, allowedAddresses: [])
         try stopped.write(to: directory)
         #expect(try String(contentsOf: directory.appendingPathComponent(KillSwitch.allowFile), encoding: .utf8) == "\n")
-        for flag in [TunHelper.onFlag, SystemProxy.flag, KillSwitch.flag] {
+        for flag in [TunHelper.onFlag, SystemProxy.flag, KillSwitch.flag, KillSwitch.blockLANFlag] {
             #expect(!FileManager.default.fileExists(atPath: directory.appendingPathComponent(flag).path))
         }
     }

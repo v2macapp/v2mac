@@ -525,6 +525,7 @@ import Testing
           echo "pfctl $*" >> "$CALLS"
           case "$*" in
             "-s rules") \(anchors ? #"echo 'anchor "com.apple/*" all'"# : ":") ;;
+            "-s info") echo 'Status: Enabled for 0 days' ;;
             -E) echo 'pf enabled'; echo 'Token : 42' ;;
           esac
           return 0

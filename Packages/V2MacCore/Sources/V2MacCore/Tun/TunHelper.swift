@@ -83,8 +83,17 @@ public enum TunHelper {
     tick=0
     while kill -0 "$APP_PID" 2>/dev/null && [ -e "$STATE_DIR/tun.session" ]; do
       if [ -e "$STATE_DIR/killswitch.on" ]; then
-        [ "$ks_armed" = 1 ] || ks_arm || rm -f "$STATE_DIR/killswitch.on"
-        [ "$ks_armed" = 1 ] && ks_allow
+        ks_tick=$((ks_tick + 1))
+        if [ "$ks_armed" = 1 ]; then
+          ks_allow
+          [ $((ks_tick % 10)) -eq 0 ] && ks_check
+        elif [ "$ks_armed" = broken ]; then
+          # The block was armed and then changed under it: put it back every few seconds, and
+          # keep the request, so a failing retry never lifts what is left of it.
+          [ $((ks_tick % 10)) -eq 0 ] && ks_arm
+        else
+          ks_arm || rm -f "$STATE_DIR/killswitch.on"
+        fi
       elif [ -n "$ks_armed" ]; then
         ks_disarm
       fi
@@ -204,12 +213,24 @@ public enum TunHelper {
 
     /// Kill switch (spec 9.8): while `killswitch.on` is there, the rules from the command are
     /// loaded into their anchor and pf is enabled with a token of its own, kept in the marker.
-    /// `killswitch.allow` fills the table of servers; only lines that look like an address
-    /// count, and the root copy is readable by root alone.
+    /// `killswitch.allow` fills the table of servers and `killswitch.dns` the resolvers'; only
+    /// lines that look like an address count, and the root copies are readable by root alone.
+    /// The local network table holds `KillSwitch.lanRanges` unless `killswitch.blocklan` is there.
+    ///
+    /// What the app shows comes from `ks_check`, which reads pf back: enabled, Apple's anchors
+    /// in the main rules, and our anchor's rules as pf printed them right after loading. Its
+    /// verdict, `armed` or the reason, is `killswitch.status` in the root directory. A failed
+    /// check re-arms every few seconds until it passes.
     static let killSwitchFunctions = #"""
+    KS_LAN='\#(KillSwitch.lanRanges)'
     ks_armed=""
     [ -e "$KS_MARKER" ] && ks_armed=stale
     ks_sum=""
+    ks_digest=""
+    ks_tick=0
+    ks_status() {
+      printf '%s\n' "$1" > "$ROOT_DIR/killswitch.status.new" && mv -f "$ROOT_DIR/killswitch.status.new" "$ROOT_DIR/\#(KillSwitch.statusFile)"
+    }
     ks_arm() {
       if ! pfctl -s rules 2>/dev/null | grep -q 'anchor "com.apple/\*"'; then
         echo "The firewall's main rules do not include Apple's anchors (see /etc/pf.conf)." > "$ROOT_DIR/killswitch.error"
@@ -227,19 +248,76 @@ public enum TunHelper {
       [ -n "$old" ] && [ "$old" != "$token" ] && pfctl -X "$old" > /dev/null 2>&1
       printf '%s\n' "$token" > "$KS_MARKER"
       rm -f "$ROOT_DIR/killswitch.error"
+      ks_digest=$(pfctl -a "$KS_ANCHOR" -s rules 2>/dev/null | shasum)
       ks_armed=1
       ks_sum=""
+      ks_allow
+      ks_kill_states
+      ks_check
+    }
+    ks_check() {
+      why=""
+      if ! pfctl -s info 2>/dev/null | grep -q '^Status: Enabled'; then
+        why="The firewall was turned off."
+      elif ! pfctl -s rules 2>/dev/null | grep -q 'anchor "com.apple/\*"'; then
+        why="The firewall's main rules no longer include Apple's anchors."
+      elif [ "$(pfctl -a "$KS_ANCHOR" -s rules 2>/dev/null | shasum)" != "$ks_digest" ]; then
+        why="The kill switch's firewall rules were changed or removed."
+      fi
+      if [ -z "$why" ]; then ks_status armed; return 0; fi
+      ks_status "$why"
+      ks_armed=broken
+      return 1
+    }
+    ks_table() {
+      if [ -f "$2" ] && [ ! -L "$2" ]; then
+        ( umask 077; grep -E '^[0-9A-Fa-f:.]{2,45}$' < "$2" > "$ROOT_DIR/$3" )
+      else
+        ( umask 077; : > "$ROOT_DIR/$3" )
+      fi
+      pfctl -a "$KS_ANCHOR" -t "$1" -T replace -f "$ROOT_DIR/$3" > /dev/null 2>&1
     }
     ks_allow() {
-      f="$STATE_DIR/killswitch.allow"
-      [ -f "$f" ] && [ ! -L "$f" ] || return 0
-      # Builtins only: it runs on every turn of the loop, and the list is a few lines.
-      sum=""
-      while IFS= read -r line || [ -n "$line" ]; do sum="$sum$line;"; done < "$f"
+      a="$STATE_DIR/\#(KillSwitch.allowFile)"; d="$STATE_DIR/\#(KillSwitch.resolverFile)"
+      lan=yes
+      [ -e "$STATE_DIR/\#(KillSwitch.blockLANFlag)" ] && lan=no
+      # Builtins only: it runs on every turn of the loop, and the lists are a few lines.
+      sum="$lan|"
+      for f in "$a" "$d"; do
+        [ -f "$f" ] && [ ! -L "$f" ] && while IFS= read -r line || [ -n "$line" ]; do sum="$sum$line;"; done < "$f"
+        sum="$sum|"
+      done
       [ "$sum" = "$ks_sum" ] && return 0
-      ( umask 077; grep -E '^[0-9A-Fa-f:.]{2,45}$' < "$f" > "$ROOT_DIR/allow" )
-      pfctl -a "$KS_ANCHOR" -t v2mac_allow -T replace -f "$ROOT_DIR/allow" > /dev/null 2>&1
+      ks_table \#(KillSwitch.table) "$a" allow
+      ks_table \#(KillSwitch.resolverTable) "$d" dns
+      if [ "$lan" = yes ]; then
+        printf '%s\n' $KS_LAN | pfctl -a "$KS_ANCHOR" -t \#(KillSwitch.lanTable) -T replace -f - > /dev/null 2>&1
+      else
+        pfctl -a "$KS_ANCHOR" -t \#(KillSwitch.lanTable) -T flush > /dev/null 2>&1
+      fi
       ks_sum=$sum
+    }
+    # The address part of a host as `pfctl -s states` prints it: `1.2.3.4:443`, `2001:db8::1[443]`.
+    ks_host() {
+      h=${1#(}; h=${h%)}
+      case "$h" in *\[*) h=${h%%\[*} ;; *.*:*) h=${h%:*} ;; esac
+      printf '%s\n' "$h"
+    }
+    # Spec 9.8: a flow pf already tracks would pass without meeting the rules, so states whose
+    # far end the block refuses are killed, by that pair of hosts only, never `-F states`. Flows
+    # of the TUN and of loopback stay, found by this Mac's own address on `utun*` and `lo*`.
+    # shortcut: three pfctl calls per tracked flow, once per arm; batch them if a busy pf is slow.
+    ks_kill_states() {
+      own=" $(ifconfig -a 2>/dev/null | awk '/^[^ \t]/ {i = $1} /^[ \t]+inet6? / && i ~ /^(lo|utun)[0-9]*:$/ {a = $2; sub(/%.*/, "", a); print a}' | tr '\n' ' ') "
+      pfctl -s states 2>/dev/null | awk '{for (i = 3; i < NF; i++) if ($i == "->" || $i == "<-") {print $(i - 1), $(i + 1); break}}' |
+      while read -r here there; do
+        here=$(ks_host "$here"); there=$(ks_host "$there")
+        case "$own" in *" $here "*) continue ;; esac
+        for t in \#(KillSwitch.table) \#(KillSwitch.resolverTable) \#(KillSwitch.lanTable); do
+          pfctl -a "$KS_ANCHOR" -t "$t" -T test "$there" > /dev/null 2>&1 && continue 2
+        done
+        pfctl -k "$here" -k "$there" > /dev/null 2>&1
+      done
     }
     ks_disarm() {
       [ -n "$ks_armed" ] || [ -e "$KS_MARKER" ] || return 0
@@ -247,9 +325,10 @@ public enum TunHelper {
       pfctl -a "$KS_ANCHOR" -F Tables > /dev/null 2>&1
       token=$(cat "$KS_MARKER" 2>/dev/null)
       [ -n "$token" ] && pfctl -X "$token" > /dev/null 2>&1
-      rm -f "$KS_MARKER" "$ROOT_DIR/allow"
+      rm -f "$KS_MARKER" "$ROOT_DIR/allow" "$ROOT_DIR/dns" "$ROOT_DIR/\#(KillSwitch.statusFile)"
       ks_armed=""
       ks_sum=""
+      ks_digest=""
     }
     """#
 

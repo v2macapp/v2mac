@@ -183,13 +183,13 @@ public struct ResumableDownload: Sendable {
     public var timeout: TimeInterval
 
     public init(routes: [FetchRoute], timeout: TimeInterval = 60) {
-        self.routes = routes.isEmpty ? [.direct] : routes
+        self.routes = routes  // empty: nothing is sent (NetworkPolicy)
         self.timeout = timeout
     }
 
     public func fetch(_ url: URL, to destination: URL, expectedSize: Int64,
                       onProgress: (@Sendable (DownloadProgress) -> Void)? = nil) async throws {
-        var lastError: Error = DownloadError.network("No route available.")
+        var lastError: Error = DownloadError.network(NetworkPolicy.noRouteMessage)
         for route in routes {
             do {
                 return try await fetch(url, to: destination, expectedSize: expectedSize, route: route, onProgress: onProgress)

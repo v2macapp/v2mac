@@ -125,7 +125,7 @@ enum Prefs {
         case .routing: ["routingMode", "unmatchedRoute"]
         case .connection:
             ["liveSwitch", "autoSelectServer", "switchOnDelay", "switchDelayMs", "switchOnSlowSpeed", "switchSpeedKBps",
-             "switchSpeedMinutes", "tunFailurePolicy", "killSwitch", "allowInsecure", "checkExit", "menuBarCountry",
+             "switchSpeedMinutes", "tunFailurePolicy", "killSwitch", "killSwitchBlocksLAN", "allowInsecure", "checkExit", "menuBarCountry",
              "menuBarSpeed", "fragmentEnabled", "fragmentPackets", "fragmentLength", "fragmentInterval", "noiseEnabled",
              "noisePacket", "noiseDelay", "dnsEnabled", "dnsServers", "dnsQueryStrategy", "outboundInterface"]
         case .warp: ["warpExit"]
@@ -161,6 +161,7 @@ enum Prefs {
             "proxyClientsKeepVia": false,
             "unmatchedRoute": "mode",
             "killSwitch": false,
+            "killSwitchBlocksLAN": false,
             "outboundInterface": "",
             "autoUpdateSubscriptions": true,
             "subscriptionUpdateViaProxy": false,
@@ -293,6 +294,12 @@ enum Prefs {
     static var killSwitch: Bool {
         get { defaults.bool(forKey: "killSwitch") }
         set { defaults.set(newValue, forKey: "killSwitch") }
+    }
+
+    /// Spec 9.8: the kill switch blocks the local network too.
+    static var killSwitchBlocksLAN: Bool {
+        get { defaults.bool(forKey: "killSwitchBlocksLAN") }
+        set { defaults.set(newValue, forKey: "killSwitchBlocksLAN") }
     }
 
     /// Changing servers swaps the outbound in the running core instead of restarting it.

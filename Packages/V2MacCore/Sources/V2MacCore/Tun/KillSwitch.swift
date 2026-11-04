@@ -3,7 +3,8 @@ import Foundation
 
 /// Spec 9.8. The kill switch is a pf anchor the root helper loads while the app wants a
 /// connection: everything that leaves this Mac is refused except loopback, the session's TUN,
-/// the local network, DHCP, name lookups and the servers the core dials. It stays in place
+/// DHCP and IPv6 neighbour discovery, name lookups to the resolvers the core uses, the local
+/// network unless the user blocks it too, and the servers the core dials. It stays in place
 /// while the core restarts or crashes and while the app is gone, until the user disconnects.
 public enum KillSwitch {
     /// Present while the app wants the block in place.
@@ -11,9 +12,27 @@ public enum KillSwitch {
     /// Addresses the core may reach directly, one per line. The helper takes only lines that
     /// look like an address, so this file cannot carry anything else into the firewall.
     public static let allowFile = "killswitch.allow"
+    /// The resolvers the core looks its servers up with, one address per line, checked like
+    /// `allowFile`. Only port 53 is open to them.
+    public static let resolverFile = "killswitch.dns"
+    /// Present when the local network is blocked too (spec 9.8).
+    public static let blockLANFlag = "killswitch.blocklan"
     /// Why the last attempt to arm failed, in the helper's root directory.
     public static let errorFile = "killswitch.error"
+    /// The helper's last read-back of pf, in its root directory: `armed`, or why not (spec 9.8).
+    public static let statusFile = "killswitch.status"
     static let table = "v2mac_allow"
+    static let resolverTable = "v2mac_dns"
+    static let lanTable = "v2mac_lan"
+    /// What the local network table holds unless the user blocks it: private, link-local and
+    /// multicast ranges, v4 and v6, and the v4 broadcast.
+    static let lanRanges = "10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 169.254.0.0/16 224.0.0.0/4 255.255.255.255 fe80::/10 ff00::/8 fc00::/7"
+
+    /// The resolvers the core uses on `interface` (nil: the primary one), as `TunLink` picks them.
+    public static func resolvers(on interface: String?) -> [String] {
+        let found = NetworkInterfaces.dnsServers(on: interface)
+        return found.isEmpty ? TunLink.fallbackResolvers : found
+    }
 
     /// The system's own `/etc/pf.conf` evaluates every anchor under `com.apple`, so a child
     /// anchor there needs no change to the main ruleset.
@@ -25,18 +44,21 @@ public enum KillSwitch {
         URL(fileURLWithPath: "/var/run/\(name)-killswitch-\(uid)")
     }
 
-    /// Stateless passes: nothing inbound is filtered, so replies need no state, and connections
-    /// that were open before the block (to the server, or on loopback) keep working.
+    /// Stateless passes: nothing inbound is filtered, so replies need no state. The tables are
+    /// filled by the helper (`TunHelper.killSwitchFunctions`); an empty one passes nothing, so
+    /// until it is filled the block is stricter, never looser.
     public static func rules(tunInterface: String) -> String {
         """
         table <\(table)> persist
+        table <\(resolverTable)> persist
+        table <\(lanTable)> persist
         pass quick on lo0 all flags any no state
         pass out quick on \(tunInterface) all flags any no state
         pass out quick inet proto udp from any port 68 to any port 67 no state
         pass out quick inet6 proto udp from any port 546 to any port 547 no state
-        pass out quick proto { tcp, udp } from any to any port 53 flags any no state
-        pass out quick inet from any to { 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16, 224.0.0.0/4, 255.255.255.255 } flags any no state
-        pass out quick inet6 from any to { fe80::/10, ff00::/8, fc00::/7 } flags any no state
+        pass out quick inet6 proto ipv6-icmp from any to { fe80::/10, ff02::/16 } icmp6-type { routersol, neighbrsol, neighbradv } no state
+        pass out quick proto { tcp, udp } from any to <\(resolverTable)> port 53 flags any no state
+        pass out quick from any to <\(lanTable)> flags any no state
         pass out quick from any to <\(table)> flags any no state
         block return out quick all
         """

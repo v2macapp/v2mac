@@ -44,6 +44,8 @@ final class TunController {
     func requestSystemProxy(port: Int?) { privilegedState.proxyPort = port }
     func requestKillSwitch(_ enabled: Bool) { privilegedState.killSwitchEnabled = enabled }
     func requestAllowedAddresses(_ addresses: [String]) { privilegedState.allowedAddresses = addresses }
+    func requestResolvers(_ addresses: [String]) { privilegedState.resolverAddresses = addresses }
+    func requestKillSwitchBlocksLAN(_ on: Bool) { privilegedState.killSwitchBlocksLAN = on }
     /// The apps the core's rules name, for the forwarder to look for (spec 9.5). The managed helper
     /// gets them with the state; the prompted one reads the file, each line checked as root.
     func requestApps(_ apps: [String]) {
@@ -283,7 +285,7 @@ final class TunController {
 
     private func removeFlags() {
         privilegedState = PrivilegedSessionState(tunEnabled: false, proxyPort: nil, killSwitchEnabled: false, allowedAddresses: [])
-        for name in [TunHelper.onFlag, TunHelper.sessionFlag, SystemProxy.flag, KillSwitch.flag, KillSwitch.allowFile, TunApps.file] {
+        for name in [TunHelper.onFlag, TunHelper.sessionFlag, SystemProxy.flag, KillSwitch.flag, KillSwitch.allowFile, KillSwitch.resolverFile, KillSwitch.blockLANFlag, TunApps.file] {
             try? FileManager.default.removeItem(at: stateDirectory.appendingPathComponent(name))
         }
     }

@@ -141,8 +141,8 @@ final class AppModel {
             for result in results { try? await latencyStore.apply(id: result.id, outcome: result.outcome, kind: "real") }
         }
         let routes: () -> [FetchRoute] = {
-            guard connection.isRunning else { return [.direct] }
-            return [.localProxy(port: connection.port), .direct]
+            NetworkPolicy.routes(proxyPort: connection.isRunning ? connection.port : nil,
+                                 strict: Prefs.killSwitch || connection.killSwitch.isBlocking)
         }
         regionPacks.downloadRoutes = routes
         regionPacks.onChangeInUse = { connection.reconnectIfRunning() }
@@ -163,7 +163,7 @@ final class AppModel {
         connection.onTunChanged = { [weak self] in self?.sandbox.serversChanged() }
         updates.isCoreRunning = { connection.isRunning }
         updates.restartCore = { connection.reconnectIfRunning() }
-        warp.route = { routes()[0] }
+        warp.route = { routes().first ?? .localProxy(port: connection.port) }  // none: a closed port, nothing leaves
         warp.onAccountChanged = { if UserDefaults.standard.bool(forKey: "warpExit") { connection.reconnectIfRunning() } }
         let subscriptions = subscriptions
         warp.addServer = { try await subscriptions.addCustom($0) }
@@ -382,7 +382,7 @@ final class AppModel {
                 connection.setSystemProxyEnabled(false)
                 do { try Prefs.setProxyPassword("") } catch { logs.append("[v2mac] Could not clear the proxy password: \(error.localizedDescription)") }
             case .routing: connection.setRoutingMode(.global)
-            case .connection: connection.setKillSwitchEnabled(false)
+            case .connection: connection.setKillSwitchEnabled(false); connection.setKillSwitchBlocksLAN(false)
             default: break
             }
             for key in Prefs.resetKeys(tab) { UserDefaults.standard.removeObject(forKey: key) }

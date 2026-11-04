@@ -4,6 +4,51 @@
     "" : {
       "shouldTranslate" : false
     },
+    "Block local network too" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "شبکه محلی هم مسدود شود"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Блокировать и локальную сеть"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "同时拦截局域网"
+          }
+        }
+      }
+    },
+    "Connect first: with the kill switch on, V2Mac downloads only through the connection." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اول وصل شوید: وقتی کلید قطع اضطراری روشن است، V2Mac فقط از راه اتصال دانلود می‌کند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сначала подключитесь: при включённой блокировке трафика V2Mac загружает только через соединение."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请先连接：开启断网保护时，V2Mac 只通过连接下载。"
+          }
+        }
+      }
+    },
     "Copy and Open GitHub" : {
       "localizations" : {
         "fa" : {
@@ -48,6 +93,28 @@
         }
       }
     },
+    "Off: printers, file shares and other devices on your network stay reachable. On: only joining the network and the name servers stay reachable." : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خاموش: چاپگرها، پوشه‌های اشتراکی و دستگاه‌های دیگر شبکه شما در دسترس می‌مانند. روشن: فقط پیوستن به شبکه و سرورهای نام در دسترس می‌مانند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выключено: принтеры, общие папки и другие устройства в вашей сети остаются доступны. Включено: доступны только подключение к сети и DNS-серверы."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭：打印机、共享文件夹和网络中的其他设备仍可访问。开启：只保留加入网络和域名服务器。"
+          }
+        }
+      }
+    },
     "Server names and addresses, subscription links, keys, sites you visit and your account name were removed. Nothing is sent: V2Mac copies this text and opens GitHub, where you paste it. Read it first, and delete anything you don't want to share." : {
       "localizations" : {
         "fa" : {
@@ -66,6 +133,75 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "服务器名称和地址、订阅链接、密钥、您访问的网站以及您的账户名称均已移除。不会发送任何内容:V2Mac 会复制此文本并打开 GitHub,由您在那里粘贴。请先阅读,并删除任何您不想分享的内容。"
+          }
+        }
+      }
+    },
+    "The firewall was turned off." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "دیوار آتش خاموش شد."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Брандмауэр был выключен."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "防火墙已被关闭。"
+          }
+        }
+      }
+    },
+    "The firewall's main rules no longer include Apple's anchors." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قوانین اصلی دیوار آتش دیگر لنگرهای Apple را شامل نمی‌شوند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Основные правила брандмауэра больше не включают якоря Apple."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "防火墙的主规则不再包含 Apple 的锚点。"
+          }
+        }
+      }
+    },
+    "The kill switch's firewall rules were changed or removed." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قوانین دیوار آتش کلید قطع اضطراری تغییر کرد یا حذف شد."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Правила брандмауэра блокировки трафика изменены или удалены."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "断网保护的防火墙规则已被更改或删除。"
           }
         }
       }
@@ -110,6 +246,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "此沙盒需要更新版本的 V2Mac。请更新 V2Mac 后使用。"
+          }
+        }
+      }
+    },
+    "While V2Mac is connected or reconnecting, this Mac can reach only the server, the local network and the network's name servers. Everything else is blocked, also when the connection drops or V2Mac stops unexpectedly, until you disconnect. Direct mode and bypassed regions cannot reach the internet while it is on. It needs administrator access once each time V2Mac opens." : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تا وقتی V2Mac متصل است یا دوباره وصل می‌شود، این مک فقط به سرور، شبکه محلی و سرورهای نام همین شبکه دسترسی دارد. بقیه چیزها مسدود است، حتی وقتی اتصال قطع شود یا V2Mac ناگهان بسته شود، تا وقتی که قطع اتصال کنید. وقتی روشن است، حالت مستقیم و مناطق دورزده‌شده به اینترنت نمی‌رسند. هر بار که V2Mac باز شود یک بار دسترسی مدیر لازم دارد."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пока V2Mac подключён или переподключается, этот Mac может обращаться только к серверу, локальной сети и DNS-серверам этой сети. Всё остальное блокируется, даже если соединение оборвалось или V2Mac неожиданно закрылся, пока вы не отключитесь. Когда она включена, режим «Напрямую» и обходимые регионы не выходят в интернет. Нужен доступ администратора один раз при каждом запуске V2Mac."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "当 V2Mac 已连接或正在重新连接时，这台 Mac 只能访问服务器、局域网和当前网络的域名服务器。其他一切都会被拦截，即使连接断开或 V2Mac 意外退出也是如此，直到你断开连接。开启时，直连模式和绕过的区域无法访问互联网。每次打开 V2Mac 时需要一次管理员授权。"
           }
         }
       }
@@ -26545,28 +26703,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "连接时，上传和下载速度显示在菜单栏图标旁。"
-          }
-        }
-      }
-    },
-    "While V2Mac is connected or reconnecting, this Mac can reach only the server, the local network and name servers. Everything else is blocked, also when the connection drops or V2Mac stops unexpectedly, until you disconnect. Direct mode and bypassed regions cannot reach the internet while it is on. It needs administrator access once each time V2Mac opens." : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تا وقتی V2Mac متصل است یا دوباره وصل می‌شود، این مک فقط به سرور، شبکه محلی و سرورهای نام دسترسی دارد. بقیه چیزها مسدود است، حتی وقتی اتصال قطع شود یا V2Mac ناگهان بسته شود، تا وقتی که قطع اتصال کنید. وقتی روشن است، حالت مستقیم و مناطق دورزده‌شده به اینترنت نمی‌رسند. هر بار که V2Mac باز شود یک بار دسترسی مدیر لازم دارد."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Пока V2Mac подключён или переподключается, этот Mac может обращаться только к серверу, локальной сети и DNS-серверам. Всё остальное блокируется, даже если соединение оборвалось или V2Mac неожиданно закрылся, пока вы не отключитесь. Когда она включена, режим «Напрямую» и обходимые регионы не выходят в интернет. Нужен доступ администратора один раз при каждом запуске V2Mac."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "当 V2Mac 已连接或正在重新连接时，这台 Mac 只能访问服务器、局域网和域名服务器。其他一切都会被拦截，即使连接断开或 V2Mac 意外退出也是如此，直到你断开连接。开启时，直连模式和绕过的区域无法访问互联网。每次打开 V2Mac 时需要一次管理员授权。"
           }
         }
       }

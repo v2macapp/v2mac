@@ -1216,10 +1216,34 @@ token of its own (`pfctl -E`) and keeps the token in a marker file,
 state and connections open before the block keep working):
 
 - pass loopback, and everything out on the session's `utun`;
-- pass DHCP (v4 and v6), name lookups (port 53, TCP and UDP), the local network
-  (private, link-local and multicast ranges, v4 and v6);
+- pass DHCP (v4 and v6) and IPv6 router and neighbour discovery;
+- pass port 53 (TCP and UDP) only to the table `v2mac_dns`: the resolvers the core
+  uses, the chosen network's DNS servers or 1.1.1.1 and 8.8.8.8 when it has none
+  (`KillSwitch.resolvers`, written to `run/killswitch.dns` on each arm);
+- pass the table `v2mac_lan` (private, link-local and multicast ranges, v4 and v6),
+  emptied when "Block local network too" is on (`run/killswitch.blocklan`, off by
+  default; it takes effect without re-arming);
 - pass the table `v2mac_allow`;
 - `block return out quick all`.
+
+The exact rules are pinned by a golden test (`rulesPassExactlyTheAllowList`). pf can
+match `user <uid>` (S3.1), but the core runs as the logged-in user and system lookups
+leave from mDNSResponder, so no uid singles out the core; the resolver table narrows
+port 53 instead. While the TUN forwarder is gone, system lookups can still reach
+those resolvers.
+
+**Flows opened before the block.** Rules are stateless, so a flow pf already tracks
+would keep its state. Each arm kills the tracked states whose far end none of the three
+tables allows, one pair of hosts at a time (`pfctl -k`), leaving loopback's, the
+`utun`'s and allowed ones alone; never `-F states`.
+
+**Read-back.** What the app shows comes from pf, not from the request (F02). After
+arming and every few seconds while armed the helper checks that pf is enabled, that
+the main ruleset still has `anchor "com.apple/*"` and that the anchor's rules are
+unchanged (a digest taken at arm), and writes `armed` or the reason to
+`killswitch.status` in its root folder. On a mismatch it puts the rules back every few
+seconds. The app shows "On" only for a fresh `armed`; a reason, or no answer for 15
+seconds, shows as an error under the toggle.
 
 **Allowed servers.** Before each connect and switch the app resolves the server
 addresses the core dials (every outbound's, for a full config) and writes the
@@ -1230,7 +1254,7 @@ the table with it. A server behind a CDN may answer the core with an address the
 did not see; that connection is then refused, not leaked.
 
 **Lifetime.** The app writes `run/killswitch.on` before the session starts; the helper
-arms and writes the marker, or writes `killswitch.error`, removes the flag, and the
+arms, writes the marker and reports `armed` (read-back), or writes `killswitch.error`, removes the flag, and the
 connect stops with "The kill switch could not be turned on … V2Mac did not connect".
 Disconnecting, turning the setting off and quitting remove the flag: the helper
 flushes the anchor's rules and tables (never `-F all`, which would clear pf's states
@@ -1241,8 +1265,9 @@ without the flag, and that helper lifts the block; connecting again replaces it 
 new one. Nothing survives a reboot.
 
 **What it means for routing.** Direct mode, bypassed regions and "without proxy"
-downloads cannot reach the internet while the block is up. Name lookups and the local
-network stay reachable, so a network can still see which names are looked up.
+downloads cannot reach the internet while the block is up, and V2Mac's own downloads
+take no direct route (11). Lookups to the core's resolvers and, unless blocked, the
+local network stay reachable, so a network can still see which names are looked up.
 
 ### 9.9 System proxy
 
@@ -1371,7 +1396,10 @@ shortcut: IPv4 and Cloudflare only.
 ## 11. Updates and downloads
 
 All downloads try the local proxy first when the core is running, then fall
-back to a direct connection.
+back to a direct connection (`NetworkPolicy`). With the kill switch on (9.8), or its
+block up, they go only through the local proxy: no direct fallback, and without a
+connection nothing is sent ("Connect first: …"). Turning the kill switch off is the
+explicit choice for direct.
 
 ### 11.1 Xray core
 
@@ -1938,8 +1966,8 @@ section covers only V2Mac's part, which is all the sandbox code V2Mac has (`Sand
   the old file (paths stay inside `Contents/`, names beside the manifest). Each file is planned
   against the installed bundle: the same hash is copied (an APFS clone), a patch's `from` hash is
   patched with `/usr/bin/bspatch`, anything else comes in full. For an update the sheet shows what
-  that plan downloads. Downloads go to `sandbox/download/<sha256>` through the usual routes (local
-  proxy if connected, then direct; spec 11), resuming with a `Range` request, and each is checked
+  that plan downloads. Downloads go to `sandbox/download/<sha256>` through the usual routes (spec 11:
+  local proxy if connected, then direct unless the kill switch is on), resuming with a `Range` request, and each is checked
   against the manifest before use. A failed patch falls back to that file's zip; any other failure
   keeps the installed sandbox. The new bundle is built in a staging folder and replaces the old one
   only after its executable matches the pin too.

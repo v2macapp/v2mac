@@ -13,6 +13,7 @@ struct ConnectionSettings: View {
     @AppStorage("switchSpeedMinutes") private var switchSpeedMinutes = 2
     @AppStorage("tunFailurePolicy") private var tunFailurePolicy = TunFailurePolicy.continueProxy.rawValue
     @AppStorage("killSwitch") private var killSwitch = false
+    @AppStorage("killSwitchBlocksLAN") private var killSwitchBlocksLAN = false
     @AppStorage("allowInsecure") private var allowInsecure = false
     @AppStorage("checkExit") private var checkExit = true
     @AppStorage("menuBarCountry") private var menuBarCountry = true
@@ -107,7 +108,12 @@ struct ConnectionSettings: View {
                 Toggle("Kill switch", isOn: Binding(get: { killSwitch }, set: { on in model.connection.setKillSwitchEnabled(on) }))
                 killSwitchState
             } footer: {
-                note("While V2Mac is connected or reconnecting, this Mac can reach only the server, the local network and name servers. Everything else is blocked, also when the connection drops or V2Mac stops unexpectedly, until you disconnect. Direct mode and bypassed regions cannot reach the internet while it is on. It needs administrator access once each time V2Mac opens.")
+                note("While V2Mac is connected or reconnecting, this Mac can reach only the server, the local network and the network's name servers. Everything else is blocked, also when the connection drops or V2Mac stops unexpectedly, until you disconnect. Direct mode and bypassed regions cannot reach the internet while it is on. It needs administrator access once each time V2Mac opens.")
+            }
+            Section {
+                Toggle("Block local network too", isOn: Binding(get: { killSwitchBlocksLAN }, set: { on in model.connection.setKillSwitchBlocksLAN(on) }))
+            } footer: {
+                note("Off: printers, file shares and other devices on your network stay reachable. On: only joining the network and the name servers stay reachable.")
             }
             Section {
                 Toggle("Switch servers without restarting", isOn: $liveSwitch)

@@ -138,6 +138,7 @@ final class ConnectionController {
         let tun = tun ?? TunController(logs: logs)
         self.tun = tun
         killSwitch = KillSwitchController(session: tun)
+        killSwitch.blocksLAN = Prefs.killSwitchBlocksLAN
         systemProxy = SystemProxyController(session: tun)
         runner = CoreRunner(
             executable: executable(),
@@ -228,8 +229,15 @@ final class ConnectionController {
             Task { await killSwitch.lift() }
         } else if userWantsRunning, let server = activeServer {
             let via = running?.custom.viaHosts ?? []
-            Task { _ = await killSwitch.arm(allowing: KillSwitch.hosts(in: server.config, kind: server.kind) + via) }
+            let resolvers = KillSwitch.resolvers(on: chosenInterface())
+            Task { _ = await killSwitch.arm(allowing: KillSwitch.hosts(in: server.config, kind: server.kind) + via, resolvers: resolvers) }
         }
+    }
+
+    /// Spec 9.8. Takes effect at once while the block is up.
+    func setKillSwitchBlocksLAN(_ on: Bool) {
+        Prefs.killSwitchBlocksLAN = on
+        killSwitch.blocksLAN = on
     }
 
     /// Spec 8.4, Outgoing network. Restarts a running core on the new network.
@@ -635,9 +643,11 @@ final class ConnectionController {
         }
         let custom = await currentRules()
         guard commandGeneration == generation, userWantsRunning else { return }
+        let outboundInterface = chosenInterface()
         // Before anything connects, so nothing leaves around the connection meanwhile (spec 9.8).
         if Prefs.killSwitch {
-            let armed = await killSwitch.arm(allowing: KillSwitch.hosts(in: server.config, kind: server.kind) + custom.viaHosts)
+            let armed = await killSwitch.arm(allowing: KillSwitch.hosts(in: server.config, kind: server.kind) + custom.viaHosts,
+                                             resolvers: KillSwitch.resolvers(on: outboundInterface))
             guard commandGeneration == generation, userWantsRunning else { return }
             guard armed else {
                 stopForKillSwitchFailure()
@@ -646,7 +656,6 @@ final class ConnectionController {
         }
         // Before the running core stops: the administrator prompt can stay open for a while.
         let requestedTun = tun.isEnabled
-        let outboundInterface = chosenInterface()
         let tunLink = requestedTun ? await tun.prepare(outboundInterface: outboundInterface) : nil
         guard commandGeneration == generation, userWantsRunning else { return }
         if requestedTun, tunLink == nil, Prefs.tunFailurePolicy.stopsProxy {

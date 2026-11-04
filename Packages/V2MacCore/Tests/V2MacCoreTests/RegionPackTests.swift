@@ -1,4 +1,5 @@
 import Foundation
+import os
 import Testing
 @testable import V2MacCore
 
@@ -67,6 +68,28 @@ import Testing
         await #expect(throws: DownloadError.http(404)) {
             try await FileDownloader(routes: [.direct]).download(URL(string: "http://127.0.0.1:\(server.port)/x")!)
         }
+    }
+
+    /// F17: with the kill switch on the app's downloads go only through the connection, and
+    /// without one nothing is sent, not even to a server that answers.
+    @Test func strictPolicyNeverFallsBackToDirect() async throws {
+        #expect(NetworkPolicy.routes(proxyPort: 10808, strict: false) == [.localProxy(port: 10808), .direct])
+        #expect(NetworkPolicy.routes(proxyPort: nil, strict: false) == [.direct])
+        #expect(NetworkPolicy.routes(proxyPort: 10808, strict: true) == [.localProxy(port: 10808)])
+        #expect(NetworkPolicy.routes(proxyPort: nil, strict: true).isEmpty)
+        let hits = OSAllocatedUnfairLock(initialState: 0)
+        let server = try await TestHTTPServer.start { _ in hits.withLock { $0 += 1 }; return .init(body: Data("x".utf8)) }
+        defer { server.stop() }
+        let url = URL(string: "http://127.0.0.1:\(server.port)/x")!
+        await #expect(throws: DownloadError.network(NetworkPolicy.noRouteMessage)) {
+            try await FileDownloader(routes: NetworkPolicy.routes(proxyPort: nil, strict: true)).download(url)
+        }
+        let file = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: file) }
+        await #expect(throws: DownloadError.network(NetworkPolicy.noRouteMessage)) {
+            try await ResumableDownload(routes: []).fetch(url, to: file, expectedSize: 1)
+        }
+        #expect(hits.withLock { $0 } == 0)
     }
 
     @Test func downloadSizeIsCapped() async throws {
