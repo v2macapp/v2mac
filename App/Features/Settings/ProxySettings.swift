@@ -60,33 +60,33 @@ struct ProxySettings: View {
                 note("Where apps that were set to use V2Mac's proxy port themselves go, before any rule. Not used while the system proxy is on, since then every app comes through that port.")
             }
             Section {
-                TextField("Username", text: $username)
-                    .onChange(of: username) { restartSoon() }
-                SecureField("Password", text: $password)
-                    .onChange(of: password) {
-                        do {
-                            try Prefs.setProxyPassword(password)
-                            passwordError = nil
-                            restartSoon()
-                        } catch { passwordError = error.localizedDescription }
-                    }
-                if let passwordError { Text(passwordError).font(.caption).foregroundStyle(.red) }
-            } header: {
-                Text("Authentication")
-            } footer: {
-                note("Optional. When both are set, every app and device must send them to use the proxy; browsers ask for them once. Choose how secrets are stored in General settings.")
-            }
-            Section("Local network") {
                 Toggle("Allow connections from LAN", isOn: $allowLAN)
                     .onChange(of: allowLAN) { restartSoon() }
                 if allowLAN {
                     Text("Other devices can use \(lanAddress ?? String(localized: "this Mac's address")):\(String(port))")
                         .font(.caption).foregroundStyle(.secondary).textSelection(.enabled)
+                    TextField("Username", text: $username)
+                        .onChange(of: username) { restartSoon() }
+                    SecureField("Password", text: $password)
+                        .onChange(of: password) {
+                            do {
+                                try Prefs.setProxyPassword(password)
+                                passwordError = nil
+                                restartSoon()
+                            } catch { passwordError = error.localizedDescription }
+                        }
+                    if let passwordError { Text(passwordError).font(.caption).foregroundStyle(.red) }
+                    if !Prefs.inbound.hasCredentials {
+                        Label("Anyone on your network can use this proxy. Set a username and password.",
+                              systemImage: "exclamationmark.triangle.fill")
+                            .font(.caption).foregroundStyle(.orange)
+                    }
                 }
-                if allowLAN && !(Prefs.inbound.hasCredentials) {
-                    Label("Anyone on your network can use this proxy. Set a username and password.",
-                          systemImage: "exclamationmark.triangle.fill")
-                        .font(.caption).foregroundStyle(.orange)
+            } header: {
+                Text("Local network")
+            } footer: {
+                if allowLAN {
+                    note("Optional. When both are set, other devices must send them to use the proxy; apps on this Mac never need them. Choose how secrets are stored in General settings.")
                 }
             }
             ResetSettingsSection(tab: .proxy) {

@@ -63,10 +63,10 @@ extension ConfigBuilder {
         let localNames: JSONValue = ["type": "field", "ruleTag": .string(RuleTag.localNames), "domain": .array(CustomRules.localNames.map { .string($0) }), "outboundTag": .string(directTag)]
         // Direct mode keeps everything off the server, the proxy port included.
         if let route = custom.proxyClientsRoute, plan != .direct {
-            customRules.insert(["type": "field", "ruleTag": .string(RuleTag.proxyPort), "inboundTag": [.string(inboundTag)], "outboundTag": .string(route.tag)], at: 0)
+            customRules.insert(["type": "field", "ruleTag": .string(RuleTag.proxyPort), "inboundTag": .array(portInboundTags.map { .string($0) }), "outboundTag": .string(route.tag)], at: 0)
             // Xray wants unique tags; the suffix keeps the rule's ID, so Connections still names it.
             if custom.proxyClientsKeepVia {
-                customRules.insert(contentsOf: viaRules.map { $0.setting("inboundTag", to: [.string(inboundTag)])
+                customRules.insert(contentsOf: viaRules.map { $0.setting("inboundTag", to: .array(portInboundTags.map { .string($0) }))
                     .setting("ruleTag", to: .string(($0["ruleTag"]?.stringValue ?? "") + "-port")) }, at: 0)
             }
         }
@@ -197,7 +197,7 @@ extension ConfigBuilder {
                     guard let name = tag.stringValue else { continue }
                     if proxyInboundTags.contains(name) {
                         // TUN traffic follows the rules written for the config's own proxy inbounds.
-                        let ours = options.tun == nil ? [inboundTag] : trafficInboundTags
+                        let ours = options.tun == nil ? portInboundTags : trafficInboundTags
                         for tag in ours where !newTags.contains(.string(tag)) { newTags.append(.string(tag)) }
                     } else if otherInboundTags.contains(name) {
                         continue // that inbound no longer exists

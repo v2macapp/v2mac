@@ -22,7 +22,7 @@ public struct TunLink: Sendable, Hashable {
 extension ConfigBuilder {
     public static let tunInboundTag = "tun-in"
     /// Inbounds that carry user traffic; rules and traffic counters cover all of them.
-    public static let trafficInboundTags = [inboundTag, tunInboundTag]
+    public static let trafficInboundTags = portInboundTags + [tunInboundTag]
 
     /// Loopback SOCKS inbound that receives everything the TUN forwarder captures.
     static func tunInbound(port: Int) -> JSONValue {
@@ -42,6 +42,7 @@ extension ConfigBuilder {
 
     static func inbounds(for options: RunOptions) -> JSONValue {
         var list = [mixedInbound(options.inbound)]
+        if let lan = lanInbound(options.inbound) { list.append(lan) }
         if let tun = options.tun { list.append(tunInbound(port: tun.port)) }
         return .array(list)
     }
@@ -149,7 +150,7 @@ extension ConfigBuilder {
             // looks the app up and arrives as the SOCKS user of the entry it matched, so the rule's
             // TUN copy matches those users instead, in the same place in the order.
             let explicit = (rule["inboundTag"]?.arrayValue).flatMap { $0.isEmpty ? nil : $0 }
-            let directTags = (explicit ?? [.string(inboundTag)]).filter { $0 != .string(tunInboundTag) }
+            let directTags = (explicit ?? portInboundTags.map { .string($0) }).filter { $0 != .string(tunInboundTag) }
             var out: [JSONValue] = directTags.isEmpty ? [] : [rule.setting("inboundTag", to: .array(directTags))]
             let users = apps.filter { found in processes.contains { TunApps.implies(found, $0) } }
             if explicit?.contains(.string(tunInboundTag)) ?? true, !users.isEmpty {

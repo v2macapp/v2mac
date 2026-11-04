@@ -4119,28 +4119,6 @@
         }
       }
     },
-    "Authentication" : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "احراز هویت"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Аутентификация"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "认证"
-          }
-        }
-      }
-    },
     "Authority" : {
       "localizations" : {
         "fa" : {
@@ -15396,24 +15374,24 @@
         }
       }
     },
-    "Optional. When both are set, every app and device must send them to use the proxy; browsers ask for them once. Choose how secrets are stored in General settings." : {
+    "Optional. When both are set, other devices must send them to use the proxy; apps on this Mac never need them. Choose how secrets are stored in General settings." : {
       "localizations" : {
         "fa" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "اختیاری. اگر هر دو تنظیم شوند، هر برنامه و دستگاهی برای استفاده از پروکسی باید آن‌ها را بفرستد؛ مرورگرها یک بار می‌پرسند. روش ذخیره اطلاعات محرمانه را در تنظیمات عمومی انتخاب کنید."
+            "value" : "اختیاری. اگر هر دو تنظیم شوند، دستگاه‌های دیگر برای استفاده از پروکسی باید آن‌ها را بفرستند؛ برنامه‌های همین مک هرگز به آن‌ها نیاز ندارند. روش ذخیره اطلاعات محرمانه را در تنظیمات عمومی انتخاب کنید."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Необязательно. Если заданы оба, каждое приложение и устройство должно передавать их, чтобы пользоваться прокси; браузеры спросят один раз. Способ хранения секретов выбирается в основных настройках."
+            "value" : "Необязательно. Если заданы оба, другие устройства должны передавать их, чтобы пользоваться прокси; приложениям на этом Mac они не нужны. Способ хранения секретов выбирается в основных настройках."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "可选。两者都设置后，所有应用和设备都必须提供它们才能使用代理；浏览器会询问一次。请在通用设置中选择凭据的存储方式。"
+            "value" : "可选。两者都设置后，其他设备必须提供它们才能使用代理；这台 Mac 上的应用永远不需要。在“通用”设置中选择密钥的存储方式。"
           }
         }
       }

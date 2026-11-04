@@ -145,6 +145,7 @@ struct LiveSwitchIntegrationTests {
 
     @Test func everySettingPassesXrayTest() throws {
         let options = RunOptions(
+            inbound: InboundSettings(port: try PortUtil.freePort(), allowLAN: true, username: "u", password: "p"),
             metricsPort: try PortUtil.freePort(),
             tun: TunLink(port: try PortUtil.freePort(), outboundInterface: "lo0"),
             dialer: DialerSettings(fragment: FragmentSettings(), noise: NoiseSettings()),

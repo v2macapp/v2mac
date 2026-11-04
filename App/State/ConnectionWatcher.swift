@@ -145,7 +145,7 @@ final class ConnectionWatcher {
             connection.rules = customRules.rules.filter { routingMode != .direct || $0.action == .block }
             connection.routing = compiledRouting
         }
-        connection.proxySettingRoute = routingMode != nil && seen.inbound == ConfigBuilder.inboundTag ? customRules.proxyClientsRoute : nil
+        connection.proxySettingRoute = routingMode != nil && ConfigBuilder.portInboundTags.contains(seen.inbound) ? customRules.proxyClientsRoute : nil
         pending.append(connection)
         guard pending.count == 1 else { return }
         Task { [weak self] in

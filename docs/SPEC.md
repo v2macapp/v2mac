@@ -514,7 +514,7 @@ vendored binary; this is the guard against upstream format drift.
 
 ```json
 { "tag": "mixed-in",
-  "listen": "127.0.0.1",            // "0.0.0.0" when Allow LAN is on
+  "listen": "127.0.0.1",
   "port": 10808,
   "protocol": "mixed",
   "settings": { "auth": "noauth", "udp": true },
@@ -528,8 +528,13 @@ so another device cannot use the proxy to reach the API, the metrics or any
 other service that listens only on this Mac. Freedom checks the address it
 dials, so a domain that resolves to loopback is refused as well.
 
-With credentials: `"auth": "password", "accounts": [{"user": "...",
-"pass": "..."}]`.
+With Allow LAN on, a second inbound `lan-in` takes the same port on `0.0.0.0`
+(macOS hands loopback connections to the more specific `127.0.0.1` socket), with
+`"auth": "password", "accounts": [{"user": "...", "pass": "..."}]` when both
+credentials are set. The credentials only ever apply to other devices: apps on
+this Mac can reach the core anyway, so `mixed-in` stays `noauth` and the app's
+own fetches through it send none. Rules for "apps using the proxy port" and
+the traffic counters cover both tags (`portInboundTags`).
 
 **Routing per mode**
 
@@ -1985,8 +1990,8 @@ is in one list or the other).
 | | Backup: Export Backup…, Restore Backup… (section 12.9) | — |
 | Proxy | Port | 10808 |
 | | Set as system proxy, with its dot (section 9.9) | Off |
-| | Username / Password, optional; the password uses the selected secret store (an older plaintext preference moves there on launch, and is removed only after a successful save) | Empty |
 | | Allow connections from LAN (shows the Mac's LAN address; warning when it is on and there are no credentials) | Off |
+| | Username / Password, shown only with Allow LAN on, optional, asked of other devices only; the password uses the selected secret store (an older plaintext preference moves there on launch, and is removed only after a successful save) | Empty |
 | Routing | Mode: Global / Bypass regions / Direct / Rules only | Global |
 | | Bypass regions list: enable, status, Update Now, auto-update interval | None enabled |
 | | Open Rules… (the rules themselves are in the Rules window, section 8.6) | Empty |
@@ -2185,7 +2190,9 @@ v2mac/
 - Listeners bind to `127.0.0.1` unless "Allow LAN" is on. The metrics endpoint
   and latency-test inbounds are always loopback-only on random ports.
 - With LAN on and no credentials the app shows a persistent warning: anyone on
-  the network can use the proxy.
+  the network can use the proxy. Credentials are optional and asked of LAN
+  devices only (`lan-in`); the loopback inbound never asks for them (X3, decided
+  2026-11-04).
 - Generated configs contain server credentials; they are `0600` and removed on
   stop. The data directory is `0700`.
 - Subscription URLs usually embed a token. They are shown only in the edit

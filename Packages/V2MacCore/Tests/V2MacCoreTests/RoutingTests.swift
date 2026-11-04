@@ -100,10 +100,10 @@ import Testing
     @Test func rewritesInboundTagsInRules() throws {
         let rules = try #require(try ConfigBuilder.buildCustom(config: config, options: options)["routing"]?["rules"]?.arrayValue)
         // rule 1: both proxy inbounds collapse to the single mixed inbound
-        #expect(rules[0]["inboundTag"]?.arrayValue == ["mixed-in"])
+        #expect(rules[0]["inboundTag"]?.arrayValue == ["mixed-in", "lan-in"])
         // rule 2 referenced only the removed tun inbound -> dropped
         // rule 3 keeps the rewritten socks tag
-        #expect(rules[1]["inboundTag"]?.arrayValue == ["mixed-in"])
+        #expect(rules[1]["inboundTag"]?.arrayValue == ["mixed-in", "lan-in"])
         // rules without inboundTag survive untouched
         #expect(rules[2]["domain"]?[0]?.stringValue == "geosite:ir")
         #expect(rules.count == 3)
@@ -136,7 +136,7 @@ import Testing
     @Test func proxyExceptionUsesTheImportedServerTag() throws {
         let custom = CustomRules(rules: [CustomRule(name: "Blocked", action: .block, hosts: "priority.example")], proxyClientsRoute: .proxy)
         let out = try ConfigBuilder.buildCustom(config: config, options: options, routing: .global, custom: custom)
-        #expect(out["routing"]?["rules"]?[2]?.removing("ruleTag") == ["type": "field", "inboundTag": ["mixed-in"], "outboundTag": "p"])
+        #expect(out["routing"]?["rules"]?[2]?.removing("ruleTag") == ["type": "field", "inboundTag": ["mixed-in", "lan-in"], "outboundTag": "p"])
     }
 
     @Test func priorityIPRulesResolveBeforeTheImportedCatchAll() throws {

@@ -77,24 +77,39 @@ public enum ConfigBuilderError: Error, Sendable, Equatable {
 
 public enum ConfigBuilder {
     public static let inboundTag = "mixed-in"
+    /// The proxy port as other devices reach it, only while LAN access is on.
+    public static let lanInboundTag = "lan-in"
+    /// The proxy port's inbounds: rules for "apps using the proxy port" cover both.
+    public static let portInboundTags = [inboundTag, lanInboundTag]
     public static let proxyTag = "proxy"
     public static let directTag = "direct"
     public static let blockTag = "block"
     public static let metricsTag = "metrics"
 
+    /// The proxy port on loopback. Never asks for the username and password: they only keep out
+    /// other devices (`lanInbound`), and apps on this Mac can already reach the core anyway.
     public static func mixedInbound(_ s: InboundSettings) -> JSONValue {
-        var settings: JSONValue = ["udp": true]
+        portInbound(tag: inboundTag, listen: "127.0.0.1", port: s.port, settings: ["udp": true, "auth": "noauth"])
+    }
+
+    /// The same port on every other address while LAN access is on, with the credentials when both are set.
+    /// macOS sends loopback connections to the more specific `127.0.0.1` socket, so they never reach this one.
+    public static func lanInbound(_ s: InboundSettings) -> JSONValue? {
+        guard s.allowLAN else { return nil }
+        var settings: JSONValue = ["udp": true, "auth": "noauth"]
         if s.hasCredentials {
             settings = settings
                 .setting("auth", to: "password")
                 .setting("accounts", to: [["user": .string(s.username ?? ""), "pass": .string(s.password ?? "")]])
-        } else {
-            settings = settings.setting("auth", to: "noauth")
         }
-        return [
-            "tag": .string(inboundTag),
-            "listen": .string(s.listenAddress),
-            "port": .number(Double(s.port)),
+        return portInbound(tag: lanInboundTag, listen: "0.0.0.0", port: s.port, settings: settings)
+    }
+
+    private static func portInbound(tag: String, listen: String, port: Int, settings: JSONValue) -> JSONValue {
+        [
+            "tag": .string(tag),
+            "listen": .string(listen),
+            "port": .number(Double(port)),
             "protocol": "mixed",
             "settings": settings,
             "sniffing": [

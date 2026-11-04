@@ -95,7 +95,7 @@ import Testing
         var custom = lists(proxy: "a.com")
         custom.proxyClientsRoute = .direct
         let rules = try #require(try build(.global, custom)["routing"]?["rules"]?.arrayValue).map { $0.removing("ruleTag") }
-        #expect(rules[2] == ["type": "field", "inboundTag": ["mixed-in"], "outboundTag": "direct"])
+        #expect(rules[2] == ["type": "field", "inboundTag": ["mixed-in", "lan-in"], "outboundTag": "direct"])
     }
 
     @Test(arguments: [false, true])
@@ -128,7 +128,7 @@ import Testing
         #expect(rules[0]["domain"]?[0]?.stringValue == "full:localhost")
         #expect(rules[1]["ip"]?[0]?.stringValue == "geoip:private")
         if skip {
-            #expect(rules[2] == ["type": "field", "inboundTag": ["mixed-in"], "outboundTag": "proxy"])
+            #expect(rules[2] == ["type": "field", "inboundTag": ["mixed-in", "lan-in"], "outboundTag": "proxy"])
         } else {
             #expect(!rules.contains { $0["inboundTag"] != nil })
         }

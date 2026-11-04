@@ -74,7 +74,7 @@ import Testing
             #expect(appRules.count == 2)
             for rule in appRules {
                 #expect(rule["process"] == ["curl"])
-                #expect(rule["inboundTag"] == (tun == nil ? nil : ["mixed-in"]))
+                #expect(rule["inboundTag"] == (tun == nil ? nil : ["mixed-in", "lan-in"]))
             }
             #expect(appRules[1]["domain"] == ["domain:example.com"])
             #expect(rules.contains { $0["domain"] == ["domain:example.org"] && $0["inboundTag"] == nil })
@@ -131,11 +131,11 @@ import Testing
         let rules = try #require(config["routing"]?["rules"]?.arrayValue)
         let appRules = rules.filter { $0["process"] != nil }
         #expect(appRules.map { $0["process"] } == [["curl"], ["git"]])
-        #expect(appRules.allSatisfy { $0["inboundTag"] == ["mixed-in"] })
+        #expect(appRules.allSatisfy { $0["inboundTag"] == ["mixed-in", "lan-in"] })
         let tunRules = rules.filter { $0["user"] != nil }
         #expect(tunRules.map { $0["user"] } == [["curl"], ["git"], ["xray"]])
         #expect(tunRules.allSatisfy { $0["inboundTag"] == ["tun-in"] })
-        #expect(rules.contains { $0["domain"] == ["domain:example.org"] && $0["inboundTag"] == ["mixed-in", "tun-in"] })
+        #expect(rules.contains { $0["domain"] == ["domain:example.org"] && $0["inboundTag"] == ["mixed-in", "lan-in", "tun-in"] })
     }
 
     @Test func tunAppEntriesAreCheckedAndOrdered() {
@@ -239,10 +239,10 @@ import Testing
         #expect(c["outbounds"]?[1]?["streamSettings"]?["sockopt"]?["interface"]?.stringValue == "en7")
         #expect(c["outbounds"]?[2]?["streamSettings"] == nil)
         // After the two DNS rules of TUN mode.
-        #expect(c["routing"]?["rules"]?[2]?["inboundTag"] == ["mixed-in", "tun-in"])
+        #expect(c["routing"]?["rules"]?[2]?["inboundTag"] == ["mixed-in", "lan-in", "tun-in"])
 
         let plain = try ConfigBuilder.buildCustom(config: custom, options: options())
-        #expect(plain["routing"]?["rules"]?[0]?["inboundTag"] == ["mixed-in"])
+        #expect(plain["routing"]?["rules"]?[0]?["inboundTag"] == ["mixed-in", "lan-in"])
         #expect(plain["outbounds"]?[0]?["streamSettings"] == nil)
     }
 

@@ -396,8 +396,7 @@ final class ConnectionController {
             return
         }
         exit = .checking
-        let inbound = Prefs.inbound
-        let route = FetchRoute.localProxy(port: port, username: inbound.username, password: inbound.password)
+        let route = FetchRoute.localProxy(port: port)
         exitTask = Task { [weak self] in
             for attempt in 0..<3 {
                 if attempt > 0 { try? await Task.sleep(for: .seconds(2)) }
@@ -568,9 +567,8 @@ final class ConnectionController {
                     requestConnect(server, selection: .fallback)
                     return
                 }
-                let inbound = Prefs.inbound
                 let outcome = await ProxyHealthProbe.measure(
-                    route: .localProxy(port: port, username: inbound.username, password: inbound.password),
+                    route: .localProxy(port: port),
                     url: Prefs.latencyOptions.url, timeout: Prefs.latencyOptions.timeout
                 )
                 guard !Task.isCancelled, commandGeneration == generation else { return }

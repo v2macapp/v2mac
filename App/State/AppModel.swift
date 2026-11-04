@@ -142,8 +142,7 @@ final class AppModel {
         }
         let routes: () -> [FetchRoute] = {
             guard connection.isRunning else { return [.direct] }
-            let inbound = Prefs.inbound
-            return [.localProxy(port: connection.port, username: inbound.username, password: inbound.password), .direct]
+            return [.localProxy(port: connection.port), .direct]
         }
         regionPacks.downloadRoutes = routes
         regionPacks.onChangeInUse = { connection.reconnectIfRunning() }

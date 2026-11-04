@@ -43,7 +43,12 @@ import Testing
 
     @Test func lanAndCredentials() throws {
         let c = try build(InboundSettings(port: 9000, allowLAN: true, username: "u", password: "p"))
-        let inbound = c["inbounds"]?[0]
+        // Apps on this Mac never need the credentials; only the LAN inbound asks for them.
+        let local = c["inbounds"]?[0]
+        #expect(local?["tag"]?.stringValue == "mixed-in" && local?["listen"]?.stringValue == "127.0.0.1")
+        #expect(local?["port"]?.intValue == 9000 && local?["settings"]?["auth"]?.stringValue == "noauth")
+        let inbound = c["inbounds"]?[1]
+        #expect(inbound?["tag"]?.stringValue == "lan-in")
         #expect(inbound?["listen"]?.stringValue == "0.0.0.0")
         #expect(inbound?["port"]?.intValue == 9000)
         #expect(inbound?["settings"]?["auth"]?.stringValue == "password")
@@ -52,7 +57,13 @@ import Testing
     }
 
     @Test func partialCredentialsAreIgnored() throws {
-        let c = try build(InboundSettings(username: "u", password: ""))
+        let c = try build(InboundSettings(allowLAN: true, username: "u", password: ""))
+        #expect(c["inbounds"]?[1]?["settings"]?["auth"]?.stringValue == "noauth")
+    }
+
+    @Test func credentialsWithoutLANChangeNothing() throws {
+        let c = try build(InboundSettings(username: "u", password: "p"))
+        #expect(c["inbounds"]?.arrayValue?.count == 1)
         #expect(c["inbounds"]?[0]?["settings"]?["auth"]?.stringValue == "noauth")
     }
 
