@@ -257,6 +257,19 @@ import Testing
         #expect(!FileManager.default.fileExists(atPath: d.core.path))
     }
 
+    /// Security plan S6: a swapped release whose own `.dgst` matches is still refused for the pinned core.
+    @Test func pinnedCoreIgnoresAMatchingReleaseDigest() async throws {
+        let zip = try makeZip(script: "#!/bin/sh\necho 'Xray 9.9.9'\n")
+        let (server, release) = try await serve(zip: zip)  // .dgst matches the swapped zip
+        defer { server.stop() }
+        let d = try dirs()
+        await #expect(throws: DownloadError.checksumMismatch(file: CoreUpdater.assetName)) {
+            _ = try await CoreUpdater.install(release, downloader: FileDownloader(routes: [.direct]), coreDirectory: d.core,
+                                              assetDirectory: d.assets, expectedSHA256: String(repeating: "a", count: 64))
+        }
+        #expect(!FileManager.default.fileExists(atPath: d.core.path))
+    }
+
     @Test func rejectsACoreThatFailsItsSelfTest() async throws {
         let zip = try makeZip(script: "#!/bin/sh\n[ \"$1\" = version ] && echo 'Xray 9.9.9' && exit 0\necho 'bad config' >&2\nexit 1\n")
         let (server, release) = try await serve(zip: zip)
