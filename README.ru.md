@@ -84,6 +84,7 @@ brew install --cask v2macapp/tap/v2mac
 | [Строка меню и быстрые команды](https://github.com/v2macapp/v2mac/wiki/ru-Menu-Bar-and-Shortcuts) | Панель, клавиатура, Команды, уведомления |
 | [Справочник настроек](https://github.com/v2macapp/v2mac/wiki/ru-Settings-Reference) | Все настройки, резервная копия, приватность |
 | [Решение проблем и FAQ](https://github.com/v2macapp/v2mac/wiki/ru-Troubleshooting-and-FAQ) | Частые проблемы и вопросы |
+| [Известные ограничения](https://github.com/v2macapp/v2mac/wiki/ru-Known-Limitations) | Что покрывает каждый режим, а что нет; как сообщить об уязвимости |
 
 Для защиты от утечек в Chrome используйте V2Mac вместе с [**noleaker**](https://github.com/v2macapp/noleaker), бесплатным расширением того же автора.
 

@@ -84,6 +84,7 @@ The **[V2Mac Wiki](https://github.com/v2macapp/v2mac/wiki)** covers everything i
 | [Menu Bar and Shortcuts](https://github.com/v2macapp/v2mac/wiki/Menu-Bar-and-Shortcuts) | Panel, keyboard, Shortcuts, notifications |
 | [Settings Reference](https://github.com/v2macapp/v2mac/wiki/Settings-Reference) | Every setting, backup, privacy |
 | [Troubleshooting and FAQ](https://github.com/v2macapp/v2mac/wiki/Troubleshooting-and-FAQ) | Common problems and questions |
+| [Known Limitations](https://github.com/v2macapp/v2mac/wiki/Known-Limitations) | What each mode covers and what it does not; how to report a vulnerability |
 
 For leak protection in Chrome, pair V2Mac with [**noleaker**](https://github.com/v2macapp/noleaker), a free extension from the same author.
 

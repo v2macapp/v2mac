@@ -84,6 +84,7 @@ brew install --cask v2macapp/tap/v2mac
 | [菜单栏与快捷方式](https://github.com/v2macapp/v2mac/wiki/zh-Menu-Bar-and-Shortcuts) | 面板、键盘、快捷指令、通知 |
 | [设置参考](https://github.com/v2macapp/v2mac/wiki/zh-Settings-Reference) | 所有设置、备份、隐私 |
 | [故障排除与常见问题](https://github.com/v2macapp/v2mac/wiki/zh-Troubleshooting-and-FAQ) | 常见问题与解答 |
+| [已知限制](https://github.com/v2macapp/v2mac/wiki/zh-Known-Limitations) | 每种模式覆盖什么、不覆盖什么；如何报告漏洞 |
 
 如需在 Chrome 中防止泄漏，可搭配同一作者的免费扩展 [**noleaker**](https://github.com/v2macapp/noleaker)。
 

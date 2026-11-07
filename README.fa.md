@@ -94,6 +94,7 @@ brew install --cask v2macapp/tap/v2mac
 | [نوار منو و میان‌برها](https://github.com/v2macapp/v2mac/wiki/fa-Menu-Bar-and-Shortcuts) | پنل، صفحه‌کلید، Shortcuts، اعلان‌ها |
 | [مرجع تنظیمات](https://github.com/v2macapp/v2mac/wiki/fa-Settings-Reference) | همهٔ تنظیمات، پشتیبان‌گیری، حریم خصوصی |
 | [عیب‌یابی و پرسش‌های رایج](https://github.com/v2macapp/v2mac/wiki/fa-Troubleshooting-and-FAQ) | مشکلات و پرسش‌های رایج |
+| [محدودیت‌های شناخته‌شده](https://github.com/v2macapp/v2mac/wiki/fa-Known-Limitations) | هر حالت چه چیزی را پوشش می‌دهد و چه چیزی را نه؛ گزارش آسیب‌پذیری |
 
 برای جلوگیری از نشت اطلاعات در کروم، V2Mac را همراه [**noleaker**](https://github.com/v2macapp/noleaker)، افزونهٔ رایگان همین سازنده، استفاده کنید.
 
