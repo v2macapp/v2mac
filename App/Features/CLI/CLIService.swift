@@ -6,49 +6,60 @@ import SwiftData
 import V2MacCore
 
 @MainActor
-final class CLIService: NSObject, NSXPCListenerDelegate, V2MacCLIProtocol {
+final class CLIService {
     private weak var model: AppModel?
-    private let listener = NSXPCListener.anonymous()
+    private let source: DispatchSourceRead?
     private var appHash = ""
 
     init(model: AppModel) {
         self.model = model
-        super.init()
-        listener.delegate = self
+        let path = V2MacCLIIdentity.endpointURL.path
+        unlink(path)
+        let fd = CLISocket.open()
+        if fd >= 0, CLISocket.withAddress({ bind(fd, $0, $1) }) == 0, chmod(path, 0o600) == 0, listen(fd, 16) == 0 {
+            source = DispatchSource.makeReadSource(fileDescriptor: fd, queue: .global())
+        } else {
+            model.logs.append("[v2mac] Could not open the CLI socket: \(String(cString: strerror(errno)))")
+            if fd >= 0 { close(fd) }
+            source = nil
+        }
         appHash = Self.hash(Bundle.main.executableURL!) ?? ""
-        listener.resume()
-        do {
-            let data = try NSKeyedArchiver.archivedData(withRootObject: listener.endpoint, requiringSecureCoding: true)
-            try data.write(to: V2MacCLIIdentity.endpointURL, options: [.atomic])
-            try FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: V2MacCLIIdentity.endpointURL.path)
-        } catch {
-            model.logs.append("[v2mac] Could not publish the CLI endpoint: \(error.localizedDescription)")
+        // @Sendable: these run on a global queue, not the main actor.
+        source?.setEventHandler { @Sendable [weak self] in Self.accept(fd, service: self) }
+        source?.setCancelHandler { @Sendable in close(fd) }
+        source?.resume()
+    }
+
+    deinit {
+        source?.cancel()
+        unlink(V2MacCLIIdentity.endpointURL.path)
+    }
+
+    nonisolated private static func accept(_ listener: Int32, service: CLIService?) {
+        let client = Darwin.accept(listener, nil, nil)
+        guard client >= 0 else { return }
+        var on: Int32 = 1
+        setsockopt(client, SOL_SOCKET, SO_NOSIGPIPE, &on, socklen_t(MemoryLayout<Int32>.size))
+        CLISocket.setTimeout(client, seconds: 15)
+        var pid: pid_t = 0, size = socklen_t(MemoryLayout<pid_t>.size)
+        guard getsockopt(client, SOL_LOCAL, LOCAL_PEERPID, &pid, &size) == 0, validClient(pid: pid),
+              let service, let data = CLISocket.readAll(client) else { close(client); return }
+        Task.detached {
+            let reply = await service.request(String(decoding: data, as: UTF8.self))
+            _ = CLISocket.writeAll(client, Data(reply.utf8))
+            close(client)
         }
     }
 
-    deinit { try? FileManager.default.removeItem(at: V2MacCLIIdentity.endpointURL) }
-
-    nonisolated func listener(_ listener: NSXPCListener, shouldAcceptNewConnection connection: NSXPCConnection) -> Bool {
-        guard Self.validClient(pid: connection.processIdentifier) else { return false }
-        connection.exportedInterface = NSXPCInterface(with: V2MacCLIProtocol.self)
-        connection.exportedObject = self
-        connection.resume()
-        return true
-    }
-
-    nonisolated func request(_ json: String, reply: @escaping @Sendable (String) -> Void) {
-        Task { @MainActor in
-            guard let request = try? JSONDecoder().decode(CLIWireRequest.self, from: Data(json.utf8)), request.apiVersion == 1 else {
-                reply(self.response(command: "", error: .init(id: "protocol_mismatch", message: "Unsupported or malformed CLI protocol.", exitCode: EX_DATAERR)))
-                return
-            }
-            let expected = Bundle.main.bundleURL.appendingPathComponent("Contents/Helpers/v2mac")
-            guard request.clientHash == Self.hash(expected) else {
-                reply(self.response(command: request.arguments.first ?? "", error: .init(id: "permission_denied", message: "The client is not this app's embedded CLI.", exitCode: EX_NOPERM)))
-                return
-            }
-            reply(await self.execute(request))
+    private func request(_ json: String) async -> String {
+        guard let request = try? JSONDecoder().decode(CLIWireRequest.self, from: Data(json.utf8)), request.apiVersion == 1 else {
+            return response(command: "", error: .init(id: "protocol_mismatch", message: "Unsupported or malformed CLI protocol.", exitCode: EX_DATAERR))
         }
+        let expected = Bundle.main.bundleURL.appendingPathComponent("Contents/Helpers/v2mac")
+        guard request.clientHash == Self.hash(expected) else {
+            return response(command: request.arguments.first ?? "", error: .init(id: "permission_denied", message: "The client is not this app's embedded CLI.", exitCode: EX_NOPERM))
+        }
+        return await execute(request)
     }
 
     private func execute(_ request: CLIWireRequest) async -> String {

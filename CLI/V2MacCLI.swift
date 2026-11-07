@@ -79,22 +79,15 @@ struct V2MacCommand: ParsableCommand {
                                         error: nil, appHash: (try? hash(app.appendingPathComponent("Contents/MacOS/" + app.deletingPathExtension().lastPathComponent))) ?? "")
             return String(decoding: try JSONEncoder().encode(local), as: UTF8.self)
         }
-        let connection = NSXPCConnection(listenerEndpoint: endpoint)
-        connection.remoteObjectInterface = NSXPCInterface(with: V2MacCLIProtocol.self)
-        connection.resume()
-        defer { connection.invalidate() }
-
+        defer { close(endpoint) }
         let input = arguments.contains("-") ? String(data: FileHandle.standardInput.readDataToEndOfFile(), encoding: .utf8) : nil
         let request = CLIWireRequest(arguments: arguments, stdin: input, clientHash: try hash(Bundle.main.executableURL!))
-        let payload = String(decoding: try JSONEncoder().encode(request), as: UTF8.self)
-        let result = LockedBox<String>()
-        let failure = LockedBox<Error>()
-        let semaphore = DispatchSemaphore(value: 0)
-        let proxy = connection.remoteObjectProxyWithErrorHandler { error in failure.set(error); semaphore.signal() } as! V2MacCLIProtocol
-        proxy.request(payload) { value in result.set(value); semaphore.signal() }
-        guard semaphore.wait(timeout: .now() + 12) == .success, let result = result.get() else {
-            throw CLIClientError(failure.get()?.localizedDescription ?? "V2Mac did not respond.", EX_UNAVAILABLE)
+        CLISocket.setTimeout(endpoint, seconds: 12)
+        guard CLISocket.writeAll(endpoint, try JSONEncoder().encode(request)), shutdown(endpoint, SHUT_WR) == 0,
+              let data = CLISocket.readAll(endpoint), !data.isEmpty else {
+            throw CLIClientError("V2Mac did not respond.", EX_UNAVAILABLE)
         }
+        let result = String(decoding: data, as: UTF8.self)
         let response = try JSONDecoder().decode(CLIWireResponse.self, from: Data(result.utf8))
         let app = containingApp()
         guard response.appHash == (try? hash(app.appendingPathComponent("Contents/MacOS/" + app.deletingPathExtension().lastPathComponent))) else {
@@ -103,9 +96,12 @@ struct V2MacCommand: ParsableCommand {
         return result
     }
 
-    private func loadEndpoint() throws -> NSXPCListenerEndpoint? {
-        guard let data = try? Data(contentsOf: V2MacCLIIdentity.endpointURL) else { return nil }
-        return try NSKeyedUnarchiver.unarchivedObject(ofClass: NSXPCListenerEndpoint.self, from: data)
+    /// A connected socket, or nil while the app is not listening.
+    private func loadEndpoint() throws -> Int32? {
+        let fd = CLISocket.open()
+        guard fd >= 0 else { throw CLIClientError("Could not open a socket.", EX_OSERR) }
+        guard CLISocket.withAddress({ connect(fd, $0, $1) }) == 0 else { close(fd); return nil }
+        return fd
     }
 
     private func launchApp() throws {

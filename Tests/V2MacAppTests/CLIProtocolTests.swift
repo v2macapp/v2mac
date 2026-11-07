@@ -23,4 +23,14 @@ import Testing
         #expect(V2MacCLIIdentity.dataFolder == "v2mac")
         #endif
     }
+
+    @Test func socketCarriesAWholeMessageUntilEOF() throws {
+        var fds: [Int32] = [0, 0]
+        #expect(socketpair(AF_UNIX, SOCK_STREAM, 0, &fds) == 0)
+        defer { close(fds[0]); close(fds[1]) }
+        let message = Data((0..<300_000).map { UInt8($0 & 0xff) }) // bigger than one read and the socket buffer
+        let writer = Thread { _ = CLISocket.writeAll(fds[0], message); shutdown(fds[0], SHUT_WR) }
+        writer.start()
+        #expect(CLISocket.readAll(fds[1]) == message)
+    }
 }
