@@ -49,10 +49,29 @@ jobs:
       - name: Build DMG
         env:
           UPDATE_SIGNING_KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
+          # Optional: a base64 .p12 with an Apple-issued code signing identity and its password. Any team ID
+          # lets Shortcuts run the app's actions; without it the app is ad-hoc signed and they fail.
+          SIGNING_CERT_P12: ${{ secrets.SIGNING_CERT_P12 }}
+          SIGNING_CERT_PASSWORD: ${{ secrets.SIGNING_CERT_PASSWORD }}
         run: |
           # Without the signature, every installed copy would refuse this release as an update.
           if [[ -z "$UPDATE_SIGNING_KEY" && "$GITHUB_REF_TYPE" == "tag" ]]; then
             echo "::error::The UPDATE_SIGNING_KEY secret is not set"; exit 1
+          fi
+          if [[ -n "$SIGNING_CERT_P12" ]]; then
+            KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"; KEYCHAIN_PASSWORD="$(uuidgen)"
+            echo "$SIGNING_CERT_P12" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+            security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+            security set-keychain-settings -lut 3600 "$KEYCHAIN"
+            security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+            security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" -P "$SIGNING_CERT_PASSWORD" -T /usr/bin/codesign
+            rm "$RUNNER_TEMP/cert.p12"
+            security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" >/dev/null
+            security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+            export SIGN_IDENTITY="$(security find-identity -v -p codesigning "$KEYCHAIN" | awk 'NR==1 {print $2}')"
+            [[ -n "$SIGN_IDENTITY" ]] || { echo "::error::SIGNING_CERT_P12 holds no code signing identity"; exit 1; }
+          else
+            echo "::warning::SIGNING_CERT_P12 is not set: ad-hoc signed, Shortcuts actions will not run"
           fi
           Scripts/make-dmg.sh
 

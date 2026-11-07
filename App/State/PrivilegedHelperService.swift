@@ -10,7 +10,12 @@ final class PrivilegedHelperService {
     static let shared = PrivilegedHelperService()
     private(set) var status: SMAppService.Status = .notRegistered
     private(set) var errorMessage: String?
+    #if DEBUG
     let teamIdentifier = PeerCodeSigning.teamIdentifier()
+    #else
+    // A release signed with an Apple Development certificate (for Shortcuts) keeps the osascript helper.
+    let teamIdentifier = PeerCodeSigning.isDeveloperID() ? PeerCodeSigning.teamIdentifier() : nil
+    #endif
     var isSupported: Bool { teamIdentifier != nil }
     @ObservationIgnored private let service = SMAppService.daemon(plistName: PrivilegedHelperIdentity.plistName)
     @ObservationIgnored private var connection: NSXPCConnection?

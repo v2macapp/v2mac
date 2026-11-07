@@ -16,6 +16,15 @@ enum PeerCodeSigning {
         return team
     }
 
+    /// Signed with a Developer ID Application certificate, not just any Apple-issued one.
+    static func isDeveloperID() -> Bool {
+        var code: SecCode?, requirement: SecRequirement?
+        guard SecCodeCopySelf([], &code) == errSecSuccess, let code,
+              SecRequirementCreateWithString("anchor apple generic and certificate leaf[field.1.2.840.113635.100.6.1.13] exists" as CFString, [], &requirement) == errSecSuccess,
+              let requirement else { return false }
+        return SecCodeCheckValidity(code, [], requirement) == errSecSuccess
+    }
+
     static func requirement(identifier: String, team: String) throws -> String {
         guard !team.isEmpty, team.utf8.allSatisfy({ (48...57).contains($0) || (65...90).contains($0) }),
               !identifier.isEmpty, identifier.utf8.allSatisfy({ (48...57).contains($0) || (65...90).contains($0)
