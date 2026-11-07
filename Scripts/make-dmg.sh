@@ -35,6 +35,8 @@ APP="$BUILD_DIR/Build/Products/Release/V2Mac.app"
 CODESIGN_ARGS=(--force --sign "$SIGN_IDENTITY")
 [[ "$SIGN_IDENTITY" != "-" ]] && CODESIGN_ARGS+=(--options runtime --timestamp)
 /usr/bin/codesign "${CODESIGN_ARGS[@]}" --identifier io.github.lordversa.v2mac.xray "$APP/Contents/Helpers/xray"
+# The app accepts only a CLI signed with this identifier (CLIService.validClient).
+/usr/bin/codesign "${CODESIGN_ARGS[@]}" --identifier io.github.lordversa.v2mac.cli "$APP/Contents/Helpers/v2mac"
 /usr/bin/codesign "${CODESIGN_ARGS[@]}" --identifier io.github.lordversa.v2mac.privileged \
   "$APP/Contents/Library/HelperTools/V2MacPrivilegedHelper"
 /usr/bin/codesign "${CODESIGN_ARGS[@]}" --entitlements "$ROOT/Extensions/Control/V2MacControl.entitlements" \
