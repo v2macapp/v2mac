@@ -5,6 +5,8 @@ struct CoreSettings: View {
     @Environment(AppModel.self) private var model
 
     private var updates: UpdateService { model.updates }
+    /// Review F16: a core V2Mac did not sign for is an explicit, warned choice.
+    @State private var confirmInstall: CoreRelease?
 
     var body: some View {
         Form {
@@ -15,20 +17,24 @@ struct CoreSettings: View {
             } header: {
                 Text("Xray-core")
             } footer: {
-                Text("Updates are downloaded through the proxy when it is connected, verified against the published SHA-256, and self-tested before they replace the current core.")
+                Text("This build checks its own core against a hash signed into the app. A newer core from Xray's releases (Advanced) is checked only against the hash Xray publishes beside it, and self-tested before it replaces the current one.")
             }
             HStack {
-                Button("Check for Update") { Task { await updates.checkCore() } }
+                Button("Check for Newer Core (Advanced)") { Task { await updates.checkCore() } }
                     .disabled(updates.coreStatus == .checking || updates.coreStatus == .installing)
                 if case .available(let release) = updates.coreStatus {
-                    Button("Install \(release.version)") { Task { await updates.installCore(release) } }
-                        .buttonStyle(.borderedProminent)
+                    Button("Install \(release.version)…") { confirmInstall = release }
                 }
                 Button("Revert to Bundled") { Task { await updates.revertToBundled() } }
                     .disabled(!updates.coreIsUpdatedCopy || updates.coreStatus == .installing)
             }
         }
         .formStyle(.grouped)
+        .confirmationDialog("Install Xray \(confirmInstall?.version ?? "")?", isPresented: Binding(get: { confirmInstall != nil }, set: { if !$0 { confirmInstall = nil } })) {
+            Button("Install Anyway") { if let release = confirmInstall { Task { await updates.installCore(release) } } }
+        } message: {
+            Text("V2Mac has not checked this version. It is verified only against the hash in the same Xray release, so a tampered release would pass. Revert to Bundled undoes it.")
+        }
         .animation(.default, value: updates.coreStatus)
         .task { await updates.refreshCoreInfo() }
     }

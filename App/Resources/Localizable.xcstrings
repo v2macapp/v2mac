@@ -25277,28 +25277,6 @@
         }
       }
     },
-    "Updates are downloaded through the proxy when it is connected, verified against the published SHA-256, and self-tested before they replace the current core." : {
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "به‌روزرسانی‌ها وقتی پروکسی متصل است از طریق آن دانلود می‌شوند، با SHA-256 منتشرشده بررسی می‌شوند و پیش از جایگزینی هسته فعلی خودآزمایی می‌شوند."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Обновления загружаются через прокси, когда он подключён, сверяются с опубликованным SHA-256 и проходят самопроверку, прежде чем заменить текущее ядро."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "代理连接时，更新会通过代理下载，并与发布的 SHA-256 校验，在替换当前内核前进行自检。"
-          }
-        }
-      }
-    },
     "Upload" : {
       "localizations" : {
         "fa" : {
@@ -29739,6 +29717,138 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ 流量已用完"
+          }
+        }
+      }
+    },
+    "This build checks its own core against a hash signed into the app. A newer core from Xray's releases (Advanced) is checked only against the hash Xray publishes beside it, and self-tested before it replaces the current one." : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "این نسخه هستهٔ خودش را با هشی که در برنامه امضا شده بررسی می‌کند. هستهٔ جدیدتر از انتشارهای Xray (پیشرفته) فقط با هشی که Xray کنار آن منتشر می‌کند بررسی می‌شود و پیش از جایگزینی هستهٔ فعلی خودآزمایی می‌شود."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Эта сборка проверяет своё ядро по хешу, подписанному в приложении. Более новое ядро из релизов Xray (расширенно) сверяется только с хешем, который Xray публикует рядом с ним, и проходит самопроверку, прежде чем заменить текущее."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此版本会用签入应用的哈希校验自带的内核。来自 Xray 发布页的较新内核（高级）只与 Xray 随附发布的哈希比对，并在替换当前内核前进行自检。"
+          }
+        }
+      }
+    },
+    "Check for Newer Core (Advanced)" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بررسی هستهٔ جدیدتر (پیشرفته)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверить новое ядро (расширенно)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "检查较新内核（高级）"
+          }
+        }
+      }
+    },
+    "Install %@…" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نصب %@…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установить %@…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安装 %@…"
+          }
+        }
+      }
+    },
+    "Install Xray %@?" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xray %@ نصب شود؟"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установить Xray %@?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安装 Xray %@？"
+          }
+        }
+      }
+    },
+    "Install Anyway" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "با این حال نصب شود"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Всё равно установить"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仍然安装"
+          }
+        }
+      }
+    },
+    "V2Mac has not checked this version. It is verified only against the hash in the same Xray release, so a tampered release would pass. Revert to Bundled undoes it." : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "V2Mac این نسخه را بررسی نکرده است. فقط با هش موجود در همان انتشار Xray بررسی می‌شود، پس انتشاری که دستکاری شده باشد هم رد نمی‌شود. «بازگشت به نسخهٔ همراه» آن را برمی‌گرداند."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "V2Mac не проверял эту версию. Она сверяется только с хешем из того же релиза Xray, поэтому подменённый релиз тоже пройдёт. «Вернуть встроенное» отменяет это."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "V2Mac 未检查过此版本。它只与同一 Xray 发布中的哈希比对，因此被篡改的发布也会通过。“恢复为内置版本”可撤销。"
           }
         }
       }
