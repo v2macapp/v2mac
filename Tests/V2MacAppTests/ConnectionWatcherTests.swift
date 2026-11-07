@@ -54,10 +54,11 @@ struct ConnectionWatcherTests {
             watcher.record(try #require(SeenConnection(line: "x from 127.0.0.1:50000 accepted tcp:example.com:443 [\(inbound) -> direct]")))
         }
         try await Task.sleep(for: .milliseconds(400))
-        #expect(watcher.connections.count == 2)
-        #expect(watcher.connections.filter(\.usesProxySetting).count == (skip ? 1 : 0))
+        let all = ConfigBuilder.trafficInboundTags.count, ports = ConfigBuilder.portInboundTags.count
+        #expect(watcher.connections.count == all)
+        #expect(watcher.connections.filter(\.usesProxySetting).count == (skip ? ports : 0))
         #expect(watcher.connections.allSatisfy { !$0.skipsRules })
-        #expect(watcher.hosts["example.com"]?.count == (skip ? 1 : 2))
+        #expect(watcher.hosts["example.com"]?.count == (skip ? all - ports : all))
         #expect(watcher.connections.first?.rules.count == (mode == .direct ? 1 : 2))
     }
 }
