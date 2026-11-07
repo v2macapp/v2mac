@@ -87,13 +87,15 @@ public enum SandboxLink {
         public mutating func feed(_ bytes: Data) throws -> [Message] {
             buffer.append(bytes)
             var messages: [Message] = []
-            while buffer.count >= 4 {
-                let length = buffer.prefix(4).reduce(0) { $0 << 8 | Int($1) }
+            // Copied once per feed: once per message is quadratic in a read of many small ones.
+            var rest = buffer[...]
+            defer { buffer = Data(rest) }
+            while rest.count >= 4 {
+                let length = rest.prefix(4).reduce(0) { $0 << 8 | Int($1) }
                 guard length <= SandboxLink.maxFrame else { throw FrameTooLarge() }
-                guard buffer.count >= 4 + length else { break }
-                let body = buffer.dropFirst(4).prefix(length)
-                messages.append(try JSONDecoder().decode(Message.self, from: Data(body)))
-                buffer = Data(buffer.dropFirst(4 + length))
+                guard rest.count >= 4 + length else { break }
+                messages.append(try JSONDecoder().decode(Message.self, from: Data(rest.dropFirst(4).prefix(length))))
+                rest = rest.dropFirst(4 + length)
             }
             return messages
         }
