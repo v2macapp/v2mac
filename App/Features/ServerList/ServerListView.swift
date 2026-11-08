@@ -7,8 +7,18 @@ struct ServerListView: View {
     @Query private var profiles: [Profile]
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    @State private var sortOrder = [KeyPathComparator(\ServerRow.sortIndex)]
+    /// Filtered by the database: reading each server's subscription in Swift took most of the
+    /// time the list spent rebuilding, which a subscription of a thousand servers does on every result.
+    init(selection: SidebarItem) {
+        switch selection {
+        case .all: _profiles = Query()
+        case .favorites: _profiles = Query(filter: #Predicate { $0.isFavorite })
+        case .group(let id): _profiles = Query(filter: #Predicate { $0.group?.id == id })
+        }
+    }
 
+    @State private var sortOrder = [KeyPathComparator(\ServerRow.sortIndex)]
+    @State private var rowCache = RowCache()
 
     private var selectedGroupID: UUID? {
         if case .group(let id) = model.sidebarSelection { return id }
@@ -16,13 +26,7 @@ struct ServerListView: View {
     }
 
     private var rows: [ServerRow] {
-        var items = profiles.filter { p in
-            switch model.sidebarSelection {
-            case .all: true
-            case .favorites: p.isFavorite
-            case .group(let id): p.group?.id == id
-            }
-        }.map(ServerRow.init)
+        var items = profiles.map(ServerRow.init)
 
         let query = model.searchText.trimmingCharacters(in: .whitespaces)
         if !query.isEmpty {
@@ -47,7 +51,7 @@ struct ServerListView: View {
 
     var body: some View {
         @Bindable var model = model
-        let rows = rows
+        let rows = rowCache.rows(for: [model.sidebarSelection, model.searchText, sortOrder, profiles.count]) { rows }
         // Resolved here, in the view body: the toolbar builder runs outside the environment.
         let latency = model.latency
         let isTesting = latency.isRunning
@@ -102,7 +106,7 @@ struct ServerListView: View {
                     }
                     .animation(.smooth(duration: 0.25), value: showsEmptyState)
                 }
-                .overlay(alignment: .bottom) { MissingFavoritesToast(profiles: profiles) }
+                .overlay(alignment: .bottom) { MissingFavoritesToast() }
             }
             // Only when the header comes or goes, so switching between subscriptions stays instant.
             .animation(.snappy(duration: 0.25), value: showsHeader)
@@ -344,17 +348,50 @@ private struct InspectorPane: View {
     }
 }
 
+/// Building the rows reads every server from the database, about 75 ms for 1,600 of them, and
+/// SwiftUI asks again for each server whose result comes in. Results are taken at most twice a
+/// second; a new search, sort, list or server count is shown at once.
+@MainActor @Observable
+private final class RowCache {
+    private var refresh = 0
+    @ObservationIgnored private var rows: [ServerRow] = []
+    @ObservationIgnored private var key: [AnyHashable] = []
+    @ObservationIgnored private var builtAt = ContinuousClock.now
+    @ObservationIgnored private var refreshScheduled = false
+
+    func rows(for key: [AnyHashable], build: () -> [ServerRow]) -> [ServerRow] {
+        _ = refresh
+        guard key == self.key, ContinuousClock.now - builtAt < .milliseconds(500) else {
+            self.key = key
+            builtAt = .now
+            rows = build()
+            return rows
+        }
+        // The servers were not read this time, so nothing tells the list when they change: look again shortly.
+        if !refreshScheduled {
+            refreshScheduled = true
+            Task {
+                try? await Task.sleep(for: .milliseconds(500))
+                refreshScheduled = false
+                refresh += 1
+            }
+        }
+        return rows
+    }
+}
+
 /// Asks what to do with favorites a manual update no longer found in their subscription
 /// (spec 6.6). Reads the list of them itself, so that it does not rebuild the server list.
 private struct MissingFavoritesToast: View {
-    let profiles: [Profile]
+    /// Its own query: the list's holds only the servers on show, and these can be in any subscription.
+    @Query(filter: #Predicate<Profile> { $0.isFavorite && $0.isStale }) private var profiles: [Profile]
     @Environment(AppModel.self) private var model
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         let ids = model.missingFavoriteIDs
         // Counted from what is still there: a favorite can be removed by hand while this shows.
-        let count = ids.isEmpty ? 0 : profiles.count { ids.contains($0.id) && $0.isFavorite && $0.isStale }
+        let count = ids.isEmpty ? 0 : profiles.count { ids.contains($0.id) }
         ZStack {
             if count > 0 {
                 HStack(spacing: 10) {

@@ -139,6 +139,7 @@ final class AppModel {
         let latencyStore = LatencyStore(modelContainer: container)
         connection.onAutomaticResults = { results in
             for result in results { try? await latencyStore.apply(id: result.id, outcome: result.outcome, kind: "real") }
+            try? await latencyStore.flush()
         }
         let routes: () -> [FetchRoute] = {
             NetworkPolicy.routes(proxyPort: connection.isRunning ? connection.port : nil,
@@ -793,6 +794,7 @@ final class AppModel {
             try? await store.apply(id: result.id, outcome: result.outcome, kind: "real")
             if case .ok(let ms) = result.outcome { answered.append((result.id, ms)) }
         }
+        try? await store.flush()
         return answered.sorted { $0.ms < $1.ms }
     }
 

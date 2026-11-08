@@ -144,6 +144,7 @@ final class LatencyService {
     }
 
     func cancel() {
+        Task { [store] in try? await store.flush() }
         task?.cancel()
         task = nil
         queue = []
@@ -235,6 +236,7 @@ final class LatencyService {
         speedTestingIDs = []
         liveSpeed = nil
         task = nil
+        Task { [store] in try? await store.flush() }
         onFinished(total, best)
         #if DEBUG
         print("[v2mac-debug] latency run finished: \(completed)/\(total)")

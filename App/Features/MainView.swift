@@ -33,7 +33,7 @@ struct MainView: View {
                         .buttonStyle(.glassProminent)
                 }
             } else {
-                ServerListView()
+                ServerListView(selection: model.sidebarSelection)
             }
         }
         .frame(minWidth: 760, minHeight: 440)
