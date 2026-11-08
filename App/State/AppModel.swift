@@ -769,7 +769,9 @@ final class AppModel {
 
     /// Selected rows, or every visible row when nothing is selected.
     func testTargets() -> [UUID] {
-        selectedProfileIDs.isEmpty ? visibleProfileIDs : Array(selectedProfileIDs)
+        // The selection outlives a group switch or search, so a hidden selected row doesn't count.
+        let selected = visibleProfileIDs.filter(selectedProfileIDs.contains)
+        return selected.isEmpty ? visibleProfileIDs : selected
     }
 
     func testReal(_ ids: [UUID]? = nil) { latency.testReal(ids ?? testTargets()) }
