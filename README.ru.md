@@ -16,7 +16,7 @@ VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 и WireGuard в быстр
   <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="Звёзды на GitHub"></a>
 </p>
 
-<p align="center"><a href="README.md">English</a> | <a href="README.fa.md">فارسی</a> | <a href="README.zh.md">简体中文</a> | Русский</p>
+<p align="center"><a href="README.md">English</a> | <a href="README.fa.md">فارسی</a> | <a href="README.zh.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | Русский | <a href="README.de.md">Deutsch</a></p>
 
 <p align="center">
   <a href="#установка">Установка</a> ·

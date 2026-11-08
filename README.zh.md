@@ -16,7 +16,7 @@ VLESS、REALITY、VMess、Trojan、Shadowsocks、Hysteria2 和 WireGuard，集�
   <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="GitHub 星标"></a>
 </p>
 
-<p align="center"><a href="README.md">English</a> | <a href="README.fa.md">فارسی</a> | 简体中文 | <a href="README.ru.md">Русский</a></p>
+<p align="center"><a href="README.md">English</a> | <a href="README.fa.md">فارسی</a> | 简体中文 | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.ru.md">Русский</a> | <a href="README.de.md">Deutsch</a></p>
 
 <p align="center">
   <a href="#安装">安装</a> ·
