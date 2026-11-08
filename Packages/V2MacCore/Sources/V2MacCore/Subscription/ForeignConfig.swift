@@ -1,6 +1,6 @@
 import Foundation
 
-/// Servers from other clients' configs (Clash / Mihomo YAML, sing-box JSON), turned into share
+/// Servers from other clients' configs (Clash / Mihomo YAML, sing-box JSON, Shadowrocket JSON), turned into share
 /// links so `ShareLinkParser` builds the outbound exactly as it would for a pasted link.
 enum ForeignConfig {
     /// A Clash or Mihomo config: its `proxies` list.
@@ -157,6 +157,57 @@ enum ForeignConfig {
             throw LinkSkip(String(localized: "\(type.isEmpty ? "unknown" : type) servers are not supported"))
         }
         return try build(scheme: scheme, user: user, host: text(o["server"]), port: text(o["server_port"]), query: q, name: text(o["tag"]))
+    }
+
+    // MARK: Shadowrocket
+
+    /// One server exported from Shadowrocket: `type`, `host`, `port`, `title`, and per-type fields.
+    /// shortcut: field meanings for the stream types are inferred from its exports; checked only against a Hysteria2 one.
+    static func shadowrocketLink(_ p: JSONValue) throws -> String {
+        let type = text(p["type"]).lowercased()
+        var q: [(String, String?)] = []
+        let sni = text(p["peer"])
+        let insecure = ["1", "true"].contains(text(p["allowInsecure"]))
+        func stream() {
+            let obfs = text(p["obfs"]).lowercased()
+            let network = ["websocket": "ws", "none": "tcp", "": "tcp", "h2": "http"][obfs] ?? obfs
+            q += [("type", network), ("path", text(p["path"])), ("host", text(p["obfsParam"]))]
+            if network == "grpc" { q.append(("serviceName", text(p["path"]))) }
+            if !text(p["publicKey"]).isEmpty {
+                q += [("security", "reality"), ("pbk", text(p["publicKey"])), ("sid", text(p["shortId"]))]
+            } else if ["1", "true"].contains(text(p["tls"])) || type == "trojan" {
+                q.append(("security", "tls"))
+            }
+            q += [("sni", sni), ("alpn", text(p["alpn"]))]
+            if insecure { q.append(("allowInsecure", "1")) }
+        }
+        let scheme: String, user: String
+        switch type {
+        case "vless":
+            scheme = "vless"; user = text(p["password"]).isEmpty ? text(p["uuid"]) : text(p["password"])
+            q += [("encryption", "none"), ("flow", text(p["flow"]))]
+            stream()
+        case "vmess":
+            scheme = "vmess"; user = text(p["password"]).isEmpty ? text(p["uuid"]) : text(p["password"])
+            q.append(("encryption", text(p["method"]).isEmpty ? "auto" : text(p["method"])))
+            stream()
+        case "trojan":
+            scheme = "trojan"; user = text(p["password"])
+            stream()
+        case "shadowsocks":
+            scheme = "ss"; user = Data("\(text(p["method"])):\(text(p["password"]))".utf8).base64EncodedString()
+        case "hysteria2":
+            scheme = "hysteria2"; user = text(p["password"])
+            q += [("sni", sni), ("obfs", text(p["obfs"]) == "none" ? "" : text(p["obfs"])), ("obfs-password", text(p["obfsParam"]))]
+            if insecure { q.append(("insecure", "1")) }
+        case "socks5", "http":
+            scheme = type == "http" ? "http" : "socks"
+            let name = text(p["user"])
+            user = name.isEmpty ? "" : "\(name):\(text(p["password"]))"
+        default:
+            throw LinkSkip(String(localized: "\(type.isEmpty ? "unknown" : type) servers are not supported"))
+        }
+        return try build(scheme: scheme, user: user, host: text(p["host"]), port: text(p["port"]), query: q, name: text(p["title"]))
     }
 
     // MARK: Shared

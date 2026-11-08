@@ -71,6 +71,15 @@ import Testing
         #expect(r.profiles[1].port == 8443 && r.profiles[1].transport == "ws")
     }
 
+    @Test func readsShadowrocketExport() throws {
+        let body = #"""
+        {"host":"hy.example.com","port":"4433","title":"SR Hy2","type":"Hysteria2","password":"secret","obfs":"salamander","obfsParam":"obfspass","peer":"","allowInsecure":1,"uuid":"00000000-0000-0000-0000-000000000000","ping":735}
+        """#
+        let r = try SubscriptionParser.parse(text: body)
+        #expect(r.profiles.map(\.name) == ["SR Hy2"])
+        #expect(r.profiles[0].protocolName == "hysteria" && r.profiles[0].port == 4433)
+    }
+
     // MARK: JSON
 
     let customConfig = #"""

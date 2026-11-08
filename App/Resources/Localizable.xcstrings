@@ -4,6 +4,28 @@
     "" : {
       "shouldTranslate" : false
     },
+    "Drop to Import" : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "برای وارد کردن رها کنید"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отпустите для импорта"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "松开以导入"
+          }
+        }
+      }
+    },
     "Block local network too" : {
       "localizations" : {
         "fa" : {

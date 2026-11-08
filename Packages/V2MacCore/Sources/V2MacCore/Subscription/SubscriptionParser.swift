@@ -267,6 +267,9 @@ enum JSONProfile {
         if let proto = value["protocol"]?.stringValue {
             return outbound(value, protocolName: proto)
         }
+        if value["type"] != nil, value["host"] != nil, value["title"] != nil {
+            return try ShareLinkParser.parse(try ForeignConfig.shadowrocketLink(value))
+        }
         throw LinkSkip(String(localized: "JSON entry has neither \"outbounds\" nor \"protocol\""))
     }
 

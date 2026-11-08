@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 struct MainView: View {
     @Environment(AppModel.self) private var model
     @Query(sort: \ServerGroup.sortIndex) private var groups: [ServerGroup]
+    @State private var isDropTargeted = false
 
     private func profile(for request: ServerEditorRequest) -> Profile? {
         switch request.target {
@@ -39,10 +40,28 @@ struct MainView: View {
         // Text fields handle their own paste; this is reached when a list has the focus.
         .onPasteCommand(of: [.plainText, .image]) { _ in model.pasteFromClipboard() }
         // Config files, pictures of QR codes, and links dragged from a browser.
-        .dropDestination(for: URL.self) { urls, _ in
-            for url in urls { url.isFileURL ? model.importFile(url) : model.importText(url.absoluteString) }
-            return !urls.isEmpty
+        .dropDestination(for: DroppedImport.self) { items, _ in
+            for item in items {
+                switch item {
+                case .url(let url): url.isFileURL ? model.importFile(url) : model.importText(url.absoluteString)
+                case .text(let text): model.importText(text)
+                }
+            }
+            return !items.isEmpty
+        } isTargeted: { isDropTargeted = $0 }
+        .overlay {
+            if isDropTargeted {
+                ZStack {
+                    Color.black.opacity(0.45)
+                    Label("Drop to Import", systemImage: "square.and.arrow.down")
+                        .font(.title2.bold())
+                        .foregroundStyle(.white)
+                }
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
+            }
         }
+        .animation(.easeOut(duration: 0.15), value: isDropTargeted)
         .sheet(isPresented: $model.showAddSheet) {
             if model.opensEditorAfterAddSheet {
                 model.opensEditorAfterAddSheet = false
@@ -64,6 +83,17 @@ struct MainView: View {
             RegionPacksView()
         }
         .sheet(isPresented: Bindable(model.sandbox).showEntrySheet) { SandboxEntrySheet() }
+    }
+}
+
+/// What can be dropped on the window: files and dragged links, or a share link dragged as text.
+private enum DroppedImport: Transferable {
+    case url(URL)
+    case text(String)
+
+    static var transferRepresentation: some TransferRepresentation {
+        ProxyRepresentation(importing: { DroppedImport.url($0) })
+        ProxyRepresentation(importing: { DroppedImport.text($0) })
     }
 }
 
