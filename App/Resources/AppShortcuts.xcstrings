@@ -35,6 +35,78 @@
               "添加到 ${applicationName} 规则"
             ]
           }
+        },
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "إضافة إلى قاعدة ${applicationName}"
+            ]
+          }
+        },
+        "vi" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Thêm đến ${applicationName} quy tắc"
+            ]
+          }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "加入到 ${applicationName} 規則"
+            ]
+          }
+        },
+        "my" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} စည်းမျဉ်းသို့ ထည့်ရန်"
+            ]
+          }
+        },
+        "tr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Bir ${applicationName} kuralına ekle"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Ajouter à une règle ${applicationName}"
+            ]
+          }
+        },
+        "ur" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} کے کسی اصول میں شامل کریں"
+            ]
+          }
+        },
+        "pt" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Adicionar a uma regra do ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Zu einer ${applicationName}-Regel hinzufügen"
+            ]
+          }
         }
       }
     },
@@ -69,6 +141,78 @@
             "state" : "translated",
             "values" : [
               "连接${applicationName}"
+            ]
+          }
+        },
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "توصيل ${applicationName}"
+            ]
+          }
+        },
+        "vi" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Kết nối ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "連線${applicationName}"
+            ]
+          }
+        },
+        "my" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} ကို ချိတ်ဆက်ရန်"
+            ]
+          }
+        },
+        "tr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} uygulamasını bağla"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Connecter ${applicationName}"
+            ]
+          }
+        },
+        "ur" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} کو منسلک کریں"
+            ]
+          }
+        },
+        "pt" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Ligar ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} verbinden"
             ]
           }
         }
@@ -111,6 +255,87 @@
               "在${applicationName}中使用${server}"
             ]
           }
+        },
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "توصيل ${applicationName} بالخادم ${server}",
+              "استخدام ${server} في ${applicationName}"
+            ]
+          }
+        },
+        "vi" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Kết nối ${applicationName} đến ${server}",
+              "Dùng ${server} trong ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "將${applicationName}連線到${server}",
+              "在${applicationName}中使用${server}"
+            ]
+          }
+        },
+        "my" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} ကို ${server} သို့ ချိတ်ဆက်ရန်",
+              "${applicationName} တွင် ${server} ကို အသုံးပြုရန်"
+            ]
+          }
+        },
+        "tr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} uygulamasını ${server} sunucusuna bağla",
+              "${server} sunucusunu ${applicationName} içinde kullan"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Connecter ${applicationName} à ${server}",
+              "Utiliser ${server} dans ${applicationName}"
+            ]
+          }
+        },
+        "ur" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} کو ${server} سے منسلک کریں",
+              "${applicationName} میں ${server} استعمال کریں"
+            ]
+          }
+        },
+        "pt" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Ligar ${applicationName} a ${server}",
+              "Usar ${server} no ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} mit ${server} verbinden",
+              "${server} in ${applicationName} verwenden"
+            ]
+          }
         }
       }
     },
@@ -151,6 +376,87 @@
               "查找最快的${applicationName}服务器"
             ]
           }
+        },
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "توصيل ${applicationName} بأسرع خادم",
+              "العثور على أسرع خادم لـ ${applicationName}"
+            ]
+          }
+        },
+        "vi" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Kết nối ${applicationName} đến fastest máy chủ",
+              "Find fastest ${applicationName} máy chủ"
+            ]
+          }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "將${applicationName}連線到最快的伺服器",
+              "查找最快的${applicationName}伺服器"
+            ]
+          }
+        },
+        "my" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} ကို အမြန်ဆုံးဆာဗာသို့ ချိတ်ဆက်ရန်",
+              "${applicationName} အတွက် အမြန်ဆုံးဆာဗာကို ရှာရန်"
+            ]
+          }
+        },
+        "tr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} uygulamasını en hızlı sunucuya bağla",
+              "En hızlı ${applicationName} sunucusunu bul"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Connecter ${applicationName} au serveur le plus rapide",
+              "Trouver le serveur ${applicationName} le plus rapide"
+            ]
+          }
+        },
+        "ur" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} کو تیز ترین سرور سے منسلک کریں",
+              "${applicationName} کا تیز ترین سرور تلاش کریں"
+            ]
+          }
+        },
+        "pt" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Ligar ${applicationName} ao servidor mais rápido",
+              "Encontrar o servidor mais rápido do ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} mit dem schnellsten Server verbinden",
+              "Den schnellsten ${applicationName}-Server finden"
+            ]
+          }
         }
       }
     },
@@ -185,6 +491,78 @@
             "state" : "translated",
             "values" : [
               "断开${applicationName}"
+            ]
+          }
+        },
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "قطع اتصال ${applicationName}"
+            ]
+          }
+        },
+        "vi" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Ngắt kết nối ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "斷開${applicationName}"
+            ]
+          }
+        },
+        "my" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} ကို ချိတ်ဆက်မှုဖြုတ်ရန်"
+            ]
+          }
+        },
+        "tr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} bağlantısını kes"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Déconnecter ${applicationName}"
+            ]
+          }
+        },
+        "ur" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} کا رابطہ منقطع کریں"
+            ]
+          }
+        },
+        "pt" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Desligar ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} trennen"
             ]
           }
         }
@@ -227,6 +605,87 @@
               "${applicationName}状态"
             ]
           }
+        },
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "هل ${applicationName} متصل؟",
+              "حالة ${applicationName}"
+            ]
+          }
+        },
+        "vi" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Là ${applicationName} connected",
+              "${applicationName} trạng thái"
+            ]
+          }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName}連線了嗎",
+              "${applicationName}狀態"
+            ]
+          }
+        },
+        "my" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} ချိတ်ဆက်ထားသလား",
+              "${applicationName} အခြေအနေ"
+            ]
+          }
+        },
+        "tr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} bağlı mı",
+              "${applicationName} durumu"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} est-il connecté",
+              "État de ${applicationName}"
+            ]
+          }
+        },
+        "ur" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "کیا ${applicationName} منسلک ہے",
+              "${applicationName} کی حالت"
+            ]
+          }
+        },
+        "pt" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "O ${applicationName} está ligado",
+              "Estado do ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Ist ${applicationName} verbunden",
+              "${applicationName}-Status"
+            ]
+          }
         }
       }
     },
@@ -267,6 +726,87 @@
               "切换${applicationName}"
             ]
           }
+        },
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "تشغيل ${applicationName} أو إيقافه",
+              "تبديل حالة ${applicationName}"
+            ]
+          }
+        },
+        "vi" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Turn ${applicationName} trên hoặc tắt",
+              "Toggle ${applicationName}"
+            ]
+          }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "開關${applicationName}",
+              "切換${applicationName}"
+            ]
+          }
+        },
+        "my" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} ကို ဖွင့်ရန် သို့မဟုတ် ပိတ်ရန်",
+              "${applicationName} အခြေအနေ ပြောင်းရန်"
+            ]
+          }
+        },
+        "tr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} uygulamasını aç veya kapat",
+              "${applicationName} durumunu değiştir"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Activer ou désactiver ${applicationName}",
+              "Basculer ${applicationName}"
+            ]
+          }
+        },
+        "ur" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} کو چلائیں یا بند کریں",
+              "${applicationName} کی حالت بدلیں"
+            ]
+          }
+        },
+        "pt" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Ligar ou desligar ${applicationName}",
+              "Alternar ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} ein- oder ausschalten",
+              "${applicationName} umschalten"
+            ]
+          }
         }
       }
     },
@@ -301,6 +841,78 @@
             "state" : "translated",
             "values" : [
               "更新${applicationName}订阅"
+            ]
+          }
+        },
+        "ar" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "تحديث اشتراكات ${applicationName}"
+            ]
+          }
+        },
+        "vi" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Cập nhật ${applicationName} các gói đăng ký"
+            ]
+          }
+        },
+        "zh-Hant" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "更新${applicationName}訂閱"
+            ]
+          }
+        },
+        "my" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} စာရင်းသွင်းမှုများကို အပ်ဒိတ်လုပ်ရန်"
+            ]
+          }
+        },
+        "tr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} aboneliklerini güncelle"
+            ]
+          }
+        },
+        "fr" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Mettre à jour les abonnements de ${applicationName}"
+            ]
+          }
+        },
+        "ur" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName} کی رکنیتیں تازہ کریں"
+            ]
+          }
+        },
+        "pt" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Atualizar subscrições do ${applicationName}"
+            ]
+          }
+        },
+        "de" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName}-Abonnements aktualisieren"
             ]
           }
         }

@@ -5,6 +5,8 @@ import SwiftUI
 /// language in System Settings does. It takes effect when V2Mac opens again.
 enum AppLanguage: String, CaseIterable, Identifiable {
     case system = "", english = "en", persian = "fa", chinese = "zh-Hans", russian = "ru"
+    case traditionalChinese = "zh-Hant", arabic = "ar", urdu = "ur", turkish = "tr", vietnamese = "vi",
+         burmese = "my", french = "fr", portuguese = "pt", german = "de"
 
     var id: String { rawValue }
 
@@ -16,6 +18,15 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         case .persian: "فارسی"
         case .chinese: "简体中文"
         case .russian: "Русский"
+        case .traditionalChinese: "繁體中文"
+        case .arabic: "العربية"
+        case .urdu: "اردو"
+        case .turkish: "Türkçe"
+        case .vietnamese: "Tiếng Việt"
+        case .burmese: "မြန်မာ"
+        case .french: "Français"
+        case .portuguese: "Português"
+        case .german: "Deutsch"
         }
     }
 
