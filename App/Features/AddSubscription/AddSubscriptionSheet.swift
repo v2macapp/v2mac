@@ -18,7 +18,6 @@ struct AddSubscriptionSheet: View {
     /// The last direct fetch failed on the network, so the host may only be reachable through a proxy.
     @State private var directFetchBlocked = false
     @FocusState private var urlFocused: Bool
-    @FocusState private var configFocused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -26,8 +25,8 @@ struct AddSubscriptionSheet: View {
 
             Form {
                 Picker("Type", selection: $kind.animation(.snappy)) {
-                    Text("Subscription URL").tag(AddDraft.Kind.subscription)
                     Text("Custom Config").tag(AddDraft.Kind.custom)
+                    Text("Subscription URL").tag(AddDraft.Kind.subscription)
                 }
                 // Separate groups so the fields of one type blur out as the other's blur in.
                 switch kind {
@@ -47,17 +46,28 @@ struct AddSubscriptionSheet: View {
                     .transition(.blurReplace)
                 case .custom:
                     Group {
-                        // A text field rather than a text editor: it never swaps in smart quotes, which break JSON.
-                        TextField("Configs", text: $configText, prompt: Text("Paste one or more share links or Xray JSON configs"), axis: .vertical)
-                            .lineLimit(12...12)
-                            .font(.callout.monospaced())
-                            .focused($configFocused)
+                        LabeledContent("Configs") {
+                            ConfigTextEditor(text: $configText)
+                                .overlay(alignment: .topLeading) {
+                                    if configText.isEmpty {
+                                        Text("Paste one or more share links or Xray JSON configs")
+                                            .font(.callout.monospaced())
+                                            .foregroundStyle(.tertiary)
+                                            .padding(.horizontal, 7).padding(.vertical, 6)
+                                            .allowsHitTesting(false)
+                                    }
+                                }
+                                .background(.background.secondary, in: .rect(cornerRadius: 6))
+                                .overlay(RoundedRectangle(cornerRadius: 6).stroke(.separator))
+                                .frame(minHeight: 120, maxHeight: .infinity)
+                        }
                         Text("They are added to the Custom Configs group.")
                             .font(.caption).foregroundStyle(.secondary)
                     }
                     .transition(.blurReplace)
                 }
             }
+            .frame(maxHeight: .infinity)
             .disabled(isFetching)
             .onChange(of: kind) { clearError() }
 
@@ -109,8 +119,10 @@ struct AddSubscriptionSheet: View {
                 }
             }
         }
+        // Resizable, so a long config can be read; the editor takes the extra height. The padding
+        // goes outside the flexible frame, or the sheet is sized without the bottom padding.
+        .frame(minWidth: 420, idealWidth: 480, maxWidth: .infinity, minHeight: kind == .custom ? 380 : nil, maxHeight: .infinity, alignment: .top)
         .padding(20)
-        .frame(width: 460)
         .animation(.snappy, value: errorMessage)
         .animation(.snappy, value: isFetching)
         .onAppear(perform: start)
@@ -127,7 +139,7 @@ struct AddSubscriptionSheet: View {
         // The next one in the row, so a new subscription differs from the last without choosing.
         let groups = (try? model.context.fetch(FetchDescriptor<ServerGroup>())) ?? []
         color = .automatic(groups.filter { !$0.isManual }.count)
-        if kind == .subscription { urlFocused = true } else { configFocused = true }
+        if kind == .subscription { urlFocused = true }
         name = draft.name
         if !draft.url.isEmpty {
             url = draft.url
@@ -184,5 +196,86 @@ struct AddSubscriptionSheet: View {
                 if !viaProxy, case SubscriptionError.network = error { directFetchBlocked = true }
             }
         }
+    }
+}
+
+/// A plain-text editor for pasted configs: scrolls, never swaps in smart quotes (they break JSON),
+/// and colours JSON so keys, strings, numbers and literals are told apart.
+private struct ConfigTextEditor: NSViewRepresentable {
+    @Binding var text: String
+
+    private static let font = NSFont.monospacedSystemFont(ofSize: NSFont.preferredFont(forTextStyle: .callout).pointSize, weight: .regular)
+    private static let string = #""(?:[^"\\\n]|\\.)*""#
+    /// Applied in order, so a later rule wins: a number inside a string stays a string, a string before `:` is a key.
+    private static let rules: [(NSRegularExpression, NSColor)] = ([
+        (#"-?\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b"#, NSColor.systemPurple),
+        (#"\b(?:true|false|null)\b"#, .systemOrange),
+        (string, .systemRed),
+        (string + #"(?=\s*:)"#, .systemBlue),
+    ] as [(String, NSColor)]).map { (try! NSRegularExpression(pattern: $0.0), $0.1) }
+
+    func makeNSView(context: Context) -> NSScrollView {
+        let scroll = NSTextView.scrollableTextView()
+        scroll.drawsBackground = false
+        let view = scroll.documentView as! NSTextView
+        view.delegate = context.coordinator
+        view.isRichText = false
+        view.allowsUndo = true
+        view.isAutomaticQuoteSubstitutionEnabled = false
+        view.isAutomaticDashSubstitutionEnabled = false
+        view.isAutomaticTextReplacementEnabled = false
+        view.isAutomaticSpellingCorrectionEnabled = false
+        view.isContinuousSpellCheckingEnabled = false
+        view.drawsBackground = false
+        view.font = Self.font
+        view.textContainerInset = NSSize(width: 2, height: 6)
+        view.string = text
+        Self.highlight(view)
+        DispatchQueue.main.async {
+            view.window?.makeFirstResponder(view)
+            // SwiftUI sheets have a fixed size; let this one be dragged larger to read a long config.
+            view.window?.styleMask.insert(.resizable)
+        }
+        return scroll
+    }
+
+    func updateNSView(_ scroll: NSScrollView, context: Context) {
+        context.coordinator.text = $text
+        let view = scroll.documentView as! NSTextView
+        view.isEditable = context.environment.isEnabled
+        if view.string != text {
+            view.string = text
+            Self.highlight(view)
+        }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(text: $text) }
+
+    final class Coordinator: NSObject, NSTextViewDelegate {
+        var text: Binding<String>
+        init(text: Binding<String>) { self.text = text }
+
+        func textDidChange(_ notification: Notification) {
+            guard let view = notification.object as? NSTextView else { return }
+            text.wrappedValue = view.string
+            ConfigTextEditor.highlight(view)
+        }
+    }
+
+    static func highlight(_ view: NSTextView) {
+        guard let storage = view.textStorage else { return }
+        let all = NSRange(location: 0, length: storage.length)
+        storage.beginEditing()
+        storage.setAttributes([.font: font, .foregroundColor: NSColor.textColor], range: all)
+        // Share links are left plain; only text that starts like JSON is coloured.
+        if let first = view.string.first(where: { !$0.isWhitespace }), first == "{" || first == "[" {
+            for (regex, color) in rules {
+                regex.enumerateMatches(in: storage.string, range: all) { match, _, _ in
+                    if let range = match?.range { storage.addAttribute(.foregroundColor, value: color, range: range) }
+                }
+            }
+        }
+        storage.endEditing()
+        view.typingAttributes = [.font: font, .foregroundColor: NSColor.textColor]
     }
 }
