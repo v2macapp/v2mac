@@ -72,9 +72,14 @@ struct LatencyIntegrationTests {
     }
 
     @Test func hundredServersWithBadOnesAmongThemWhileLiveConnectionRuns() async throws {
+        // Stress the proxy batches without depending on a public site's rate limits or reachability.
+        let probe = try await TestHTTPServer.start { _ in .init(status: 204) }
+        defer { probe.stop() }
+        let probeURL = URL(string: "http://example.com/generate_204")!
+        let redirect = JSONValue.string("127.0.0.1:\(probe.port)")
         // Live connection that must not be disturbed.
         let options = RunOptions(inbound: InboundSettings(port: try PortUtil.freePort()), metricsPort: try PortUtil.freePort())
-        let liveConfig = try ConfigBuilder.buildGlobal(outbound: ["protocol": "freedom"], options: options)
+        let liveConfig = try ConfigBuilder.buildGlobal(outbound: ["protocol": "freedom", "settings": ["redirect": redirect]], options: options)
         let liveDir = try TestSupport.makeTempDirectory()
         defer { try? FileManager.default.removeItem(at: liveDir) }
         let live = CoreRunner(executable: Self.xray, assetDirectory: TestSupport.vendorCore, runDirectory: liveDir)
@@ -85,7 +90,7 @@ struct LatencyIntegrationTests {
         var targets: [LatencyTarget] = []
         var good: Set<UUID> = [], invalid: Set<UUID> = [], dead: Set<UUID> = []
         for i in 0..<96 {
-            let t = LatencyTarget(id: UUID(), config: ["protocol": "freedom", "settings": ["userLevel": .number(Double(i))]], kind: .outbound)
+            let t = LatencyTarget(id: UUID(), config: ["protocol": "freedom", "settings": ["userLevel": .number(Double(i)), "redirect": redirect]], kind: .outbound)
             targets.append(t); good.insert(t.id)
         }
         for _ in 0..<2 {
@@ -98,7 +103,7 @@ struct LatencyIntegrationTests {
 
         let collected = OSLockedBox<[LatencyResult]>([])
         let started = ContinuousClock.now
-        await tester().run(targets) { collected.append($0) }
+        await tester(LatencyOptions(url: probeURL)).run(targets) { collected.append($0) }
         let elapsed = ContinuousClock.now - started
         let results = collected.value
 
@@ -123,7 +128,7 @@ struct LatencyIntegrationTests {
         let endpoint = NWEndpoint.hostPort(host: "127.0.0.1", port: NWEndpoint.Port(rawValue: UInt16(options.inbound.port))!)
         let cfg = URLSessionConfiguration.ephemeral
         cfg.proxyConfigurations = [ProxyConfiguration(socksv5Proxy: endpoint)]
-        let (_, response) = try await URLSession(configuration: cfg).data(from: URL(string: "https://www.gstatic.com/generate_204")!)
+        let (_, response) = try await URLSession(configuration: cfg).data(from: probeURL)
         #expect((response as? HTTPURLResponse)?.statusCode == 204)
         #expect(xrayCount() == 1, "only the live core should remain")
         await live.stop()
