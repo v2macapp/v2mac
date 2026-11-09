@@ -148,14 +148,16 @@ struct LatencyIntegrationTests {
     }
 
     @Test func customProfileIsTestedThroughItsOwnCore() async throws {
+        let http = try await TestHTTPServer.start { _ in .init(status: 204) }
+        defer { http.stop() }
         let custom = LatencyTarget(
             id: UUID(),
-            config: ["outbounds": [["tag": "p", "protocol": "freedom"]], "routing": ["rules": [["type": "field", "inboundTag": ["old-in"], "outboundTag": "p"]]],
+            config: ["outbounds": [["tag": "p", "protocol": "freedom", "settings": ["redirect": .string("127.0.0.1:\(http.port)")]]], "routing": ["rules": [["type": "field", "inboundTag": ["old-in"], "outboundTag": "p"]]],
                      "inbounds": [["tag": "old-in", "protocol": "socks", "port": 1080]]],
             kind: .custom
         )
         let collected = OSLockedBox<[LatencyResult]>([])
-        await tester().run([custom]) { collected.append($0) }
+        await tester(LatencyOptions(url: URL(string: "http://example.com/probe")!)).run([custom]) { collected.append($0) }
         guard case .ok? = collected.value.first.map({ r -> LatencyOutcome in
             if case .ok = r.outcome { return .ok(ms: 0) } else { return r.outcome }
         }) else { Issue.record("custom -> \(String(describing: collected.value.first))"); return }
