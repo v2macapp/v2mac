@@ -19,7 +19,7 @@ fixed. Phase 1 keeps building until the errors stop.
 | Glass code | `if #available(macOS 26, *)` keeps today's code; the `else` branch uses a material | The look on 26 stays exactly as it is now. |
 | Architecture | **Two thin builds** (arm64 and x86_64), not one universal app | A universal app would add about 55 MB for everyone (the amd64 Xray is about 33 MB, the Swift slices about 25 MB) on top of today's 68 MB. Thin builds keep both downloads about the size of today's. |
 | Existing users' update path | arm64 keeps today's asset names (`V2Mac-X.dmg`, `files.json`, the per-file zips) | 1.9.x installs already read these names. Intel gets new names that start with `intel`. |
-| Secure Sandbox | Only on macOS 26 + Apple Silicon. Hidden everywhere else | The helper (`../sandbox/Package.swift`) needs macOS 26, and the kernel, rootfs and images are arm64 only. |
+| Secure Sandbox | Only on macOS 26 + Apple Silicon. Turned off and hidden everywhere else, for now (decided 2026-11-09) | The helper (`../sandbox/Package.swift`) needs macOS 26, and the kernel, rootfs and images are arm64 only. See "Secure Sandbox: later" for what enabling it would take. |
 | Free size win | Remove the duplicate copies of `v2mac` and `V2MacPrivilegedHelper` in `Contents/Resources` | They are 5.6 MB of the installed 68 MB, and nothing reads them (the copies that are used live in `Helpers/` and `Library/HelperTools/`). |
 
 ## What blocks macOS 14 (the trial build's findings)
@@ -119,7 +119,8 @@ Apple Silicon. Phase 4 adds Intel. They can ship separately.
 
 ### Phase 3: Gating features that cannot exist
 
-- **T3.1** One `SandboxService.isSupported` (`#available(macOS 26, *)` and `#if arch(arm64)`). When it is false,
+- **T3.1** Turn the Secure Sandbox off on macOS 14/15 and on Intel (decided; see "Secure Sandbox: later").
+  One `SandboxService.isSupported` (`#available(macOS 26, *)` and `#if arch(arm64)`). When it is false,
   hide the sidebar button (`SidebarTools`), the menu bar entry (`MenuBarPanel`), the Sandbox update row
   and notification, the entry sheet and the Settings tab (or keep the tab with one line: "The Secure
   Sandbox needs a Mac with Apple Silicon and macOS 26 or later.", in all 13 languages). The service
@@ -160,6 +161,22 @@ Apple Silicon. Phase 4 adds Intel. They can ship separately.
 - **T7.2** `docs/SPEC.md`: lines 5, 42, 80, section 12.5 (glass only on 26, material fallback), Sandbox requirements.
 - **T7.3** Wiki: `Home`, `Installation`, `Troubleshooting-and-FAQ`, `Known-Limitations`, `Sandbox` in every language that has them.
 - **T7.4** `app/CLAUDE.md` first line and the "Building" section (Intel core, `ARCH=x86_64`); workspace `PLAN.md` status.
+
+## Secure Sandbox: later (not part of this plan)
+
+For now the sandbox stays on macOS 26 + Apple Silicon only (T3.1 turns it off elsewhere). The `sandbox`
+repo does not change in this plan. When it is worth doing, the two steps are:
+
+- **macOS 14/15 on Apple Silicon (small).** A trial build of `../sandbox` at macOS 14 (2026-11-09) found only
+  `Mutex`/`Atomic` in `Relay.swift` and `Pty.swift` (macOS 15; use `OSAllocatedUnfairLock`) and
+  `.glass`/`.glassProminent` button styles in `SandboxWindow.swift` and `StoreWindow.swift` (macOS 26). The
+  Virtualization APIs it uses all exist on macOS 12–13. Also: lower `platforms` in `sandbox/Package.swift`,
+  check the generated stub apps' minimum version, test a real VM boot on 14 and 15, then widen `isSupported`
+  to `#available(macOS 14, *)` with arm64.
+- **Intel (large, separate project).** Everything inside the VM is arm64: kernel (`kernel/build.sh`,
+  `arch/arm64`), rootfs and base images (Docker `linux/arm64`), the agent (`aarch64-swift-linux-musl`), the
+  Xray in the rootfs (`rootfs/xray.lock`), every plugin and the signed store index, and the helper's
+  update manifest. All would need x86_64 copies across `sandbox`, `store`, `plugin-template` and the plugin repos.
 
 ## How to test without old Macs
 
