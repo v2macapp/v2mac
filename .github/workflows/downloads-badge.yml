@@ -1,0 +1,38 @@
+# Counts real downloads (DMG installs + in-app updates) for the README badge.
+# shields' github/downloads badge sums every asset, so one delta update counts ~25 times.
+name: Downloads badge
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  badge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Count downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          total=$(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
+            --jq '.[].assets[] | select(.name | test("\\.dmg$|^MacOS_V2Mac\\.(zip|from-.*\\.bsdiff)$")) | .download_count' \
+            | awk '{s+=$1} END{print s+0}')
+          echo "Total: $total"
+          mkdir out
+          echo "{\"schemaVersion\":1,\"label\":\"downloads\",\"message\":\"$total\",\"color\":\"34C759\"}" > out/downloads.json
+
+      - name: Publish to badges branch
+        run: |
+          cd out
+          git init -q -b badges
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add downloads.json
+          git commit -qm "Update downloads badge"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/$GITHUB_REPOSITORY.git" badges

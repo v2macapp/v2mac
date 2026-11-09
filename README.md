@@ -7,7 +7,7 @@ VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 and WireGuard in a fast Sw
 
 <p align="center">
   <a href="https://github.com/v2macapp/v2mac/releases/latest"><img src="https://img.shields.io/github/v/release/v2macapp/v2mac?label=release&color=0A84FF" alt="Latest release"></a>
-  <a href="https://github.com/v2macapp/v2mac/releases"><img src="https://img.shields.io/github/downloads/v2macapp/v2mac/total?color=34C759" alt="Total downloads"></a>
+  <a href="https://github.com/v2macapp/v2mac/releases"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fv2macapp%2Fv2mac%2Fbadges%2Fdownloads.json" alt="Total downloads"></a>
   <a href="https://github.com/v2macapp/v2mac/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/v2macapp/v2mac/ci.yml?branch=main&label=CI" alt="CI status"></a>
   <img src="https://img.shields.io/badge/macOS-26%2B-000000?logo=apple" alt="macOS 26 or later">
   <img src="https://img.shields.io/badge/Apple%20Silicon-arm64-555555" alt="Apple Silicon">
