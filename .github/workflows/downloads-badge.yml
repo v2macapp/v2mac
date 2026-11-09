@@ -21,7 +21,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           total=$(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
-            --jq '.[].assets[] | select(.name | test("\\.dmg$|^MacOS_V2Mac\\.(zip|from-.*\\.bsdiff)$")) | .download_count' \
+            --jq '.[].assets[] | select(.name | test("\\.dmg$|^(intel_)?MacOS_V2Mac\\.(zip|from-.*\\.bsdiff)$")) | .download_count' \
             | awk '{s+=$1} END{print s+0}')
           echo "Total: $total"
           mkdir out
