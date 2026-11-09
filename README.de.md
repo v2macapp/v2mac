@@ -16,8 +16,7 @@ VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 und WireGuard in einer sch
   <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="GitHub-Sterne"></a>
 </p>
 
-<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
-<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a> <a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
 
 <p align="center"><a href="README.md">English</a> | <a href="README.fa.md">فارسی</a> | <a href="README.zh.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.ru.md">Русский</a> | Deutsch</p>
 
@@ -35,8 +34,7 @@ Fügen Sie einen Abonnementlink ein und wählen Sie einen Server, um einen lokal
 
 ## Installation
 
-<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
-<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a> <a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
 
 <p align="center"><sub>Unsicher? Apple-Menü → <b>Über diesen Mac</b>: Steht dort <b>Chip</b>, ist es Apple Silicon, steht dort <b>Prozessor</b>, ist es Intel.</sub></p>
 

@@ -16,8 +16,7 @@ VLESS、REALITY、VMess、Trojan、Shadowsocks、Hysteria2 和 WireGuard，集�
   <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="GitHub 星標"></a>
 </p>
 
-<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
-<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a> <a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
 
 <p align="center"><a href="README.md">English</a> | <a href="README.fa.md">فارسی</a> | <a href="README.zh.md">简体中文</a> | 繁體中文 | <a href="README.ru.md">Русский</a> | <a href="README.de.md">Deutsch</a></p>
 
@@ -35,8 +34,7 @@ VLESS、REALITY、VMess、Trojan、Shadowsocks、Hysteria2 和 WireGuard，集�
 
 ## 安裝
 
-<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
-<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a> <a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
 
 <p align="center"><sub>不確定選哪個？蘋果選單 → <b>關於這台 Mac</b>：顯示<b>晶片</b>的是 Apple Silicon，顯示<b>處理器</b>的是 Intel。</sub></p>
 

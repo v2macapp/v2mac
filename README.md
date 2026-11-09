@@ -16,8 +16,7 @@ VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 and WireGuard in a fast Sw
   <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="GitHub stars"></a>
 </p>
 
-<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
-<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a> <a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
 
 <p align="center">English | <a href="README.fa.md">فارسی</a> | <a href="README.zh.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.ru.md">Русский</a> | <a href="README.de.md">Deutsch</a></p>
 
@@ -35,8 +34,7 @@ Paste a subscription link, pick a server, and you have a local SOCKS5 + HTTP pro
 
 ## Install
 
-<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
-<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a> <a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
 
 <p align="center"><sub>Not sure which one? Apple menu → <b>About This Mac</b>: <b>Chip</b> means Apple Silicon, <b>Processor</b> means Intel.</sub></p>
 
