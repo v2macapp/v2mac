@@ -43,7 +43,7 @@ jobs:
       - run: Scripts/fetch-core.sh
 
       - name: Package tests
-        run: swift test
+        run: swift test --no-parallel
         working-directory: Packages/V2MacCore
 
       - name: Build DMG
@@ -74,6 +74,8 @@ jobs:
             echo "::warning::SIGNING_CERT_P12 is not set: ad-hoc signed, Shortcuts actions will not run"
           fi
           Scripts/make-dmg.sh
+          ARCH=x86_64 Scripts/fetch-core.sh
+          ARCH=x86_64 Scripts/make-dmg.sh
 
       # The in-app updater's file-by-file release (docs/app-auto-update.md): per-file zips, bsdiff patches
       # from the last 3 releases' DMGs, and the signed files.json.
@@ -83,7 +85,12 @@ jobs:
           UPDATE_SIGNING_KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
         run: |
           Scripts/package-update.sh build/Build/Products/Release/V2Mac.app dist/update "${{ steps.v.outputs.tag }}"
-          if [[ -n "$UPDATE_SIGNING_KEY" ]]; then Scripts/sign-update.swift dist/update/files.json; fi
+          Scripts/package-update.sh build-intel/Build/Products/Release/V2Mac.app dist/update-intel "${{ steps.v.outputs.tag }}" intel_
+          if [[ -n "$UPDATE_SIGNING_KEY" ]]; then
+            Scripts/sign-update.swift dist/update/files.json
+            Scripts/sign-update.swift dist/update-intel/files-intel.json
+          fi
+          find dist -type f | sort
 
       - name: Release notes
         run: |
@@ -114,7 +121,8 @@ jobs:
         run: |
           # The website's Download button uses releases/latest/download/V2Mac.dmg, which needs a name without the version.
           cp "dist/V2Mac-${{ steps.v.outputs.version }}.dmg" "$RUNNER_TEMP/V2Mac.dmg"
-          gh release create "${{ steps.v.outputs.tag }}" dist/*.dmg "$RUNNER_TEMP/V2Mac.dmg" dist/*.sha256 dist/*.sig dist/update/* \
+          cp "dist/V2Mac-${{ steps.v.outputs.version }}-intel.dmg" "$RUNNER_TEMP/V2Mac-Intel.dmg"
+          gh release create "${{ steps.v.outputs.tag }}" dist/*.dmg "$RUNNER_TEMP/V2Mac.dmg" "$RUNNER_TEMP/V2Mac-Intel.dmg" dist/*.sha256 dist/*.sig dist/update/* dist/update-intel/* \
             --title "V2Mac ${{ steps.v.outputs.version }}" --notes-file notes.md
 
       # Rebuilds the website with the new version and notes. Needs a SITE_TOKEN secret that can write
@@ -140,9 +148,19 @@ jobs:
             exit 1
           fi
           SHA="$(shasum -a 256 "dist/V2Mac-$VERSION.dmg" | cut -d' ' -f1)"
+          INTEL_SHA="$(shasum -a 256 "dist/V2Mac-$VERSION-intel.dmg" | cut -d' ' -f1)"
           git clone -q "https://x-access-token:$TAP_TOKEN@github.com/v2macapp/homebrew-tap.git" tap
           cd tap
-          sed -i '' -e "s/^  version \".*\"/  version \"$VERSION\"/" -e "s/^  sha256 \".*\"/  sha256 \"$SHA\"/" Casks/v2mac.rb
+          VERSION="$VERSION" ARM_SHA="$SHA" INTEL_SHA="$INTEL_SHA" python3 - <<'PYTHON'
+          import os, re
+          from pathlib import Path
+          p = Path("Casks/v2mac.rb")
+          text = re.sub(r'^  version ".*"', '  version "' + os.environ["VERSION"] + '"', p.read_text(), flags=re.M)
+          for block, key in [("arm", "ARM_SHA"), ("intel", "INTEL_SHA")]:
+              text, count = re.subn(r'(on_' + block + r' do\s+sha256 )[^\n]+', r'\g<1>"' + os.environ[key] + '"', text)
+              assert count == 1, "Missing cask architecture block: " + block
+          p.write_text(text)
+          PYTHON
           git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
             commit -qam "Update v2mac to $VERSION"
           git push -q

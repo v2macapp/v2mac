@@ -8,14 +8,59 @@ jobs:
       - run: brew install xcodegen
       - run: Scripts/fetch-core.sh
       - name: Package tests
-        run: swift test
+        run: swift test --no-parallel
         working-directory: Packages/V2MacCore
       - name: Build app
         run: |
           xcodegen generate
           xcodebuild -project v2mac.xcodeproj -scheme v2mac -configuration Debug \
             CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO build
+      - name: Upload arm64 dev app
+        run: ditto -c -k --keepParent "$HOME/Library/Developer/Xcode/DerivedData"/v2mac-*/Build/Products/Debug/V2MacDev.app arm64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: debug-arm64
+          path: arm64.zip
+      - name: Build Intel app
+        run: |
+          ARCH=x86_64 Scripts/fetch-core.sh
+          xcodebuild -project v2mac.xcodeproj -scheme v2mac -configuration Debug \
+            -derivedDataPath build-intel ARCHS=x86_64 CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO build
+          ditto -c -k --keepParent build-intel/Build/Products/Debug/V2MacDev.app x86_64.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: debug-x86_64
+          path: x86_64.zip
       - name: State tests
         run: |
           xcodebuild test -project v2mac.xcodeproj -scheme v2macStateTests -destination 'platform=macOS' \
             CODE_SIGN_IDENTITY=- CODE_SIGNING_REQUIRED=NO
+
+  smoke:
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # macos-14 was retired on 2026-11-02; Sonoma still needs a VM acceptance run.
+          - runner: macos-15
+            arch: arm64
+          - runner: macos-15-intel
+            arch: x86_64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: debug-${{ matrix.arch }}
+      - name: Smoke test
+        run: |
+          ditto -x -k "${{ matrix.arch }}.zip" .
+          Scripts/smoke-macos.sh "$PWD/V2MacDev.app" "$PWD/snapshot"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-${{ matrix.runner }}
+          path: |
+            snapshot*.png
+            snapshot.log
