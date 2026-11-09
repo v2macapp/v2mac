@@ -894,7 +894,7 @@ import Testing
         try ("curl\n" + String(repeating: "x", count: 262_144)).write(to: apps, atomically: true, encoding: .utf8)
         #expect(await wait { runs().count == 5 })
         #expect(json()?["outbounds"] == [])
-        #expect(s.childRunning)
+        #expect(await wait { s.childRunning })
     }
 }
 

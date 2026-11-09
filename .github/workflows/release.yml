@@ -43,6 +43,9 @@ jobs:
       - run: Scripts/fetch-core.sh
 
       - name: Package tests
+        timeout-minutes: 8
+        env:
+          NSUnbufferedIO: "YES"
         run: swift test
         working-directory: Packages/V2MacCore
 

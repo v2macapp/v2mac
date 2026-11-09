@@ -12,25 +12,7 @@ jobs:
         env:
           NSUnbufferedIO: "YES"
         working-directory: Packages/V2MacCore
-        run: |
-          swift test &
-          test_pid=$!
-          (
-            sleep 240
-            for worker in $(pgrep -f '[s]wiftpm-testing'); do
-              sample "$worker" 1 -file "$RUNNER_TEMP/package-tests-$worker.sample.txt" || true
-            done
-          ) &
-          sampler_pid=$!
-          trap 'kill "$sampler_pid" 2>/dev/null || true' EXIT
-          wait "$test_pid"
-      - name: Upload test worker trace
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: package-test-trace
-          path: ${{ runner.temp }}/package-tests-*.sample.txt
-          if-no-files-found: ignore
+        run: swift test
       - name: Build app
         run: |
           xcodegen generate
