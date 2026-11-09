@@ -109,7 +109,11 @@ jobs:
             echo
             echo "With Homebrew: \`brew install --cask v2macapp/tap/v2mac\` (or \`brew upgrade --cask v2mac\`)."
             echo
-            echo "Or download \`V2Mac-${{ steps.v.outputs.version }}.dmg\`, check it against the \`.sha256\` file, and follow the first-launch steps in the README (the app is ad-hoc signed)."
+            echo "Requires macOS 14 or later. Choose \`V2Mac-${{ steps.v.outputs.version }}.dmg\` for Apple Silicon or \`V2Mac-${{ steps.v.outputs.version }}-intel.dmg\` for Intel. Check the matching \`.sha256\` file and follow the first-launch steps in the README."
+            echo
+            echo "Secure Sandbox requires Apple Silicon and macOS 26 or later. Control Center and Liquid Glass require macOS 26."
+            echo
+            echo "Validation: both architectures build locally; the native core and app-state suites pass. Full macOS 14/15 behavior, real Intel TUN, and live glass equivalence remain acceptance checks."
             [[ -n "$PREVIOUS" ]] && echo && echo "Full changelog: https://github.com/${{ github.repository }}/compare/$PREVIOUS...$TAG"
           } > notes.md
           cat notes.md
@@ -156,6 +160,14 @@ jobs:
           from pathlib import Path
           p = Path("Casks/v2mac.rb")
           text = re.sub(r'^  version ".*"', '  version "' + os.environ["VERSION"] + '"', p.read_text(), flags=re.M)
+          if "on_arm do" not in text:
+              def architectures(match):
+                  url = match[1]
+                  return ('\n  on_arm do\n    sha256 "' + os.environ["ARM_SHA"] + '"\n\n    url "' + url + '"\n  end\n'
+                          '  on_intel do\n    sha256 "' + os.environ["INTEL_SHA"] + '"\n\n    url "' + url.removesuffix(".dmg") + '-intel.dmg"\n  end\n')
+              text, count = re.subn(r'^  sha256 "[^\n]+"\n\n  url "([^\n]+)"', architectures, text, flags=re.M)
+              assert count == 1, "Unrecognized legacy cask layout"
+          text = text.replace("  depends_on arch: :arm64\n", "").replace("depends_on macos: :tahoe", "depends_on macos: :sonoma")
           for block, key in [("arm", "ARM_SHA"), ("intel", "INTEL_SHA")]:
               text, count = re.subn(r'(on_' + block + r' do\s+sha256 )[^\n]+', r'\g<1>"' + os.environ[key] + '"', text)
               assert count == 1, "Missing cask architecture block: " + block
