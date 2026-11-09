@@ -51,7 +51,7 @@ struct ServerListView: View {
 
     var body: some View {
         @Bindable var model = model
-        let rows = rowCache.rows(for: [model.sidebarSelection, model.searchText, sortOrder, profiles.count]) { rows }
+        let rows = rowCache.rows(for: [model.sidebarSelection, model.searchText, sortOrder, profiles.count]) { self.rows }
         // Resolved here, in the view body: the toolbar builder runs outside the environment.
         let latency = model.latency
         let isTesting = latency.isRunning
