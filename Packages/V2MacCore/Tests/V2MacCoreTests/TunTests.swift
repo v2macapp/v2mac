@@ -451,6 +451,7 @@ import Testing
         let marker: URL
         let helper: Process
         let app: Process
+        let exitStatus: OSLockedBox<Int32?>
 
         var flag: URL { state.appendingPathComponent(TunHelper.onFlag) }
         var session: URL { state.appendingPathComponent(TunHelper.sessionFlag) }
@@ -507,8 +508,10 @@ import Testing
                             "v2mac-tun-helper", "\(app.processIdentifier)", state.path, fake.path,
                             hash ?? sha, #"{"log":{}}"#, root.path, KillSwitch.rules(tunInterface: "utun123"), "com.apple/v2mac-test",
                             dir.appendingPathComponent("ks-marker").path, "10890"]
+        let exitStatus = OSLockedBox<Int32?>(nil)
+        helper.terminationHandler = { process in exitStatus.mutate { $0 = process.terminationStatus } }
         try helper.run()
-        return Session(dir: dir, state: state, root: root, marker: marker, helper: helper, app: app)
+        return Session(dir: dir, state: state, root: root, marker: marker, helper: helper, app: app, exitStatus: exitStatus)
     }
 
     let liveCore = "trap 'rm -f \"$MARKER\"; exit 0' TERM\ntouch \"$MARKER\"\nwhile :; do sleep 0.1; done"
@@ -818,11 +821,12 @@ import Testing
         #expect(s.calls.filter { $0.hasSuffix("proxystate Wi-Fi off") }.count == before + 3, "the session's end turns the proxies off")
     }
 
-    @Test func refusesACoreThatChangedAfterItWasHashed() async throws {
+    @Test(arguments: 0..<20) func refusesACoreThatChangedAfterItWasHashed(_ attempt: Int) async throws {
         let s = try await start(core: liveCore, hash: String(repeating: "0", count: 64))
         defer { s.cleanUp() }
-        #expect(await wait { !s.helper.isRunning })
-        #expect(s.helper.terminationStatus == 1)
+        // Capture status in the exit callback; a synchronous getter can block the test worker.
+        try #require(await wait { s.exitStatus.value != nil })
+        #expect(s.exitStatus.value == 1)
         #expect(!FileManager.default.fileExists(atPath: s.root.path))
     }
 
