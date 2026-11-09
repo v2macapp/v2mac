@@ -8,11 +8,11 @@ extension Tag {
 }
 
 enum TestSupport {
-    /// <repo>/Vendor/core, resolved from this file's location.
+    /// The matching vendored core, resolved from this file's location.
     static let vendorCore: URL = {
         var url = URL(fileURLWithPath: #filePath)
         for _ in 0..<5 { url.deleteLastPathComponent() }
-        return url.appendingPathComponent("Vendor/core")
+        return url.appendingPathComponent(AppInstaller.Architecture.current == .x86_64 ? "Vendor/core-x86_64" : "Vendor/core")
     }()
 
     static var xray: URL { vendorCore.appendingPathComponent("xray") }

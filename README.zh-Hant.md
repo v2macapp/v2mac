@@ -100,6 +100,8 @@ xcodegen generate
 xcodebuild -project v2mac.xcodeproj -scheme v2mac -configuration Debug build
 ```
 
+建置 Intel Debug 版本時，用 `ARCH=x86_64 Scripts/fetch-core.sh` 取得核心，並為 `xcodebuild` 加上 `ARCHS=x86_64`。用 `ARCH=x86_64 Scripts/make-dmg.sh` 封裝 Intel DMG。
+
 需要 Xcode 26+ 和 [XcodeGen](https://github.com/yonaskolb/XcodeGen)。設計文檔：[docs/SPEC.md](docs/SPEC.md)。測試：`cd Packages/V2MacCore && swift test`。歡迎在 [Issues](https://github.com/v2macapp/v2mac/issues) 提交問題和 PR。
 
 ## 許可證

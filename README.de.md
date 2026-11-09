@@ -100,6 +100,8 @@ xcodegen generate
 xcodebuild -project v2mac.xcodeproj -scheme v2mac -configuration Debug build
 ```
 
+Für einen Intel-Debug-Build laden Sie den Kern mit `ARCH=x86_64 Scripts/fetch-core.sh` und ergänzen `xcodebuild` um `ARCHS=x86_64`. Ein Intel-DMG erstellen Sie mit `ARCH=x86_64 Scripts/make-dmg.sh`.
+
 Benötigt Xcode 26+ und [XcodeGen](https://github.com/yonaskolb/XcodeGen). Entwurf: [docs/SPEC.md](docs/SPEC.md). Tests: `cd Packages/V2MacCore && swift test`. Fehlerberichte und Pull Requests sind unter [Issues](https://github.com/v2macapp/v2mac/issues) willkommen.
 
 ## Lizenz

@@ -112,6 +112,8 @@ xcodegen generate
 xcodebuild -project v2mac.xcodeproj -scheme v2mac -configuration Debug build
 ```
 
+برای ساخت Debug اینتل، هسته را با `ARCH=x86_64 Scripts/fetch-core.sh` بگیرید و `ARCHS=x86_64` را به `xcodebuild` اضافه کنید. برای ساخت DMG اینتل از `ARCH=x86_64 Scripts/make-dmg.sh` استفاده کنید.
+
 <div dir="rtl">
 
 به Xcode 26 به بعد و [XcodeGen](https://github.com/yonaskolb/XcodeGen) نیاز دارد. طراحی: [docs/SPEC.md](docs/SPEC.md). تست‌ها: `cd Packages/V2MacCore && swift test`. گزارش مشکل و pull request در [Issues](https://github.com/v2macapp/v2mac/issues).
