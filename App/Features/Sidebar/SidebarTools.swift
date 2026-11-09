@@ -6,18 +6,20 @@ struct SidebarTools: View {
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        GlassEffectContainer(spacing: 8) {
+        CompatGlassGroup(spacing: 8) {
             VStack(alignment: .leading, spacing: 8) {
                 SidebarGlassButton(title: "Connections", systemImage: "point.3.connected.trianglepath.dotted") {
                     model.openConnections(openWindow)
                 }
                 SidebarGlassButton(title: "Rules", systemImage: "arrow.triangle.branch") { model.openRules(openWindow) }
-                HStack(spacing: 8) {
-                    SidebarGlassButton(title: "Sandbox (beta)", systemImage: "shield.lefthalf.filled", loading: model.sandbox.isOpening,
-                                       badge: model.sandbox.phase == .installed ? nil : "arrow.down.circle.fill") { model.sandbox.open() }
-                    // The same update button as V2Mac's own, for the sandbox's update.
-                    if model.sandbox.updateAvailable {
-                        UpdateButton(title: "Sandbox Update Available", opensTrailing: true, tab: .sandbox)
+                if SandboxService.isSupported {
+                    HStack(spacing: 8) {
+                        SidebarGlassButton(title: "Sandbox (beta)", systemImage: "shield.lefthalf.filled", loading: model.sandbox.isOpening,
+                                           badge: model.sandbox.phase == .installed ? nil : "arrow.down.circle.fill") { model.sandbox.open() }
+                        // The same update button as V2Mac's own, for the sandbox's update.
+                        if model.sandbox.updateAvailable {
+                            UpdateButton(title: "Sandbox Update Available", opensTrailing: true, tab: .sandbox)
+                        }
                     }
                 }
             }
@@ -70,7 +72,7 @@ struct SidebarGlassButton: View {
         .buttonStyle(.plain)
         .disabled(loading)
         .animation(reduceMotion ? nil : .spring(duration: 0.35, bounce: 0.2), value: loading)
-        .glassEffect(.regular.tint(isHovering ? Color.accentColor.opacity(0.25) : nil).interactive(), in: .capsule)
+        .glassSurface(tint: isHovering ? Color.accentColor.opacity(0.25) : nil, interactive: true, in: .capsule)
         .shadow(color: Color.accentColor.opacity(isHovering ? 0.55 : 0), radius: isHovering ? 12 : 0)
         .onHover { hovering in
             withAnimation(reduceMotion ? nil : .spring(duration: 0.35, bounce: 0.25)) { isHovering = hovering }

@@ -61,13 +61,15 @@ struct NotificationSettings: View {
             } footer: {
                 note("Sent when a delay or speed test ends while V2Mac is in the background.")
             }
-            Section {
-                NotificationToggle(kind: .sandboxReady)
-                NotificationToggle(kind: .sandboxExitDown)
-            } header: {
-                Text("Secure Sandbox (beta)")
-            } footer: {
-                note("A mini VM whose exit stops working is blocked until you pick another server; it never switches by itself.")
+            if SandboxService.isSupported {
+                Section {
+                    NotificationToggle(kind: .sandboxReady)
+                    NotificationToggle(kind: .sandboxExitDown)
+                } header: {
+                    Text("Secure Sandbox (beta)")
+                } footer: {
+                    note("A mini VM whose exit stops working is blocked until you pick another server; it never switches by itself.")
+                }
             }
             ResetSettingsSection(tab: .notifications)
         }

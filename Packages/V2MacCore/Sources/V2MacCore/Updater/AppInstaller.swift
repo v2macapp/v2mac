@@ -25,6 +25,15 @@ public enum AppInstallError: Error, Sendable, Equatable, LocalizedError {
 
 /// Downloads a release of the app, checks it, and swaps it for the running copy (spec 11.3).
 public enum AppInstaller {
+    public enum Architecture: Sendable {
+        case arm64, x86_64
+        #if arch(x86_64)
+        public static let current: Self = .x86_64
+        #else
+        public static let current: Self = .arm64
+        #endif
+    }
+
     public static let appName = "V2Mac.app"
 
     /// Public half of the Ed25519 key the release workflow signs each DMG with
@@ -45,8 +54,8 @@ public enum AppInstaller {
     // MARK: Release files
 
     /// The DMG the release workflow publishes for `tag`, and its checksum file.
-    public static func assetURLs(repository: String, tag: String) -> (dmg: URL, checksum: URL)? {
-        let name = "V2Mac-\(VersionCompare.normalized(tag)).dmg"
+    public static func assetURLs(repository: String, tag: String, architecture: Architecture = .current) -> (dmg: URL, checksum: URL)? {
+        let name = "V2Mac-\(VersionCompare.normalized(tag))\(architecture == .x86_64 ? "-intel" : "").dmg"
         guard let tagPart = tag.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed),
               let dmg = URL(string: "https://github.com/\(repository)/releases/download/\(tagPart)/\(name)"),
               let checksum = URL(string: dmg.absoluteString + ".sha256") else { return nil }
@@ -54,9 +63,9 @@ public enum AppInstaller {
     }
 
     /// The release's file-by-file manifest (`BundleManifest`); its signature is `<url>.sig`.
-    public static func manifestURL(repository: String, tag: String) -> URL? {
+    public static func manifestURL(repository: String, tag: String, architecture: Architecture = .current) -> URL? {
         guard let tagPart = tag.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else { return nil }
-        return URL(string: "https://github.com/\(repository)/releases/download/\(tagPart)/files.json")
+        return URL(string: "https://github.com/\(repository)/releases/download/\(tagPart)/files\(architecture == .x86_64 ? "-intel" : "").json")
     }
 
     /// The hash in a `shasum -a 256` line ("<hex>  <file>").

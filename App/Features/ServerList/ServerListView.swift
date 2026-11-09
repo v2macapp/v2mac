@@ -100,7 +100,7 @@ struct ServerListView: View {
                             .fixedSize()
                             .padding(.horizontal, 36)
                             .padding(.vertical, 28)
-                            .glassEffect(.regular, in: .rect(cornerRadius: 28))
+                            .glassSurface(in: .rect(cornerRadius: 28))
                             .transition(.blurReplace)
                         }
                     }
@@ -138,20 +138,20 @@ struct ServerListView: View {
             ToolbarItem {
                 UpdateButton()
             }
-            .sharedBackgroundVisibility(.hidden)
-            ToolbarSpacer(.fixed)
+            .compatHiddenBackground()
+            CompatToolbarSpacer()
         }
         ToolbarItem {
             NotificationsButton(notifications: model.notifications) { model.windowRequest = $0 }
         }
-        ToolbarSpacer(.fixed)
+        CompatToolbarSpacer()
         ToolbarItem {
             Button { model.showAddSheet = true } label: {
                 Label("Add", systemImage: "plus")
             }
             .help("Add a subscription or custom configs (⌘N)")
         }
-        ToolbarSpacer(.fixed)
+        CompatToolbarSpacer()
         ToolbarItem {
             ToolbarSplitButton(
                 title: "Update", systemImage: "arrow.clockwise", isSpinning: isUpdating,
@@ -164,7 +164,7 @@ struct ServerListView: View {
                     .disabled(!model.connection.isRunning)
             }
         }
-        ToolbarSpacer(.fixed)
+        CompatToolbarSpacer()
         ToolbarItem {
             // Test stays available while a run goes on: what it asks for is queued after it.
             HStack(spacing: 0) {
@@ -185,7 +185,7 @@ struct ServerListView: View {
                 }
             }
         }
-        ToolbarSpacer(.fixed)
+        CompatToolbarSpacer()
         ToolbarItem {
             Button { model.showInspector.toggle() } label: {
                 Label("Inspector", systemImage: "sidebar.right")
@@ -308,7 +308,7 @@ private struct ToolbarSplitButton<MenuContent: View>: View {
             Button(action: action) {
                 Image(systemName: systemImage)
                     .font(.system(size: 15, weight: .medium))
-                    .symbolEffect(.rotate, isActive: isSpinning)
+                    .rotatingSymbol(isActive: isSpinning)
                     .frame(width: 33, height: 28)
                     .contentShape(Rectangle())
             }
@@ -412,7 +412,7 @@ private struct MissingFavoritesToast: View {
                 .padding(.leading, 14)
                 .padding(.trailing, 10)
                 .padding(.vertical, 8)
-                .glassEffect(.regular, in: .capsule)
+                .glassSurface(in: .capsule)
                 .padding(.horizontal, 12)
                 .padding(.bottom, 10)
                 .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))

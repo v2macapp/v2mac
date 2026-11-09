@@ -3,7 +3,7 @@ options:
   bundleIdPrefix: io.github.lordversa
   developmentLanguage: en
   deploymentTarget:
-    macOS: "26.0"
+    macOS: "14.0"
   createIntermediateGroups: true
 settings:
   base:
@@ -35,8 +35,10 @@ targets:
       - target: V2MacControl
       - target: V2MacPrivilegedHelper
         link: false
+        embed: false
       - target: V2MacCLI
         link: false
+        embed: false
     preBuildScripts:
       - name: Embed Xray core
         script: '"$SRCROOT/Scripts/embed-core.sh"'
@@ -115,6 +117,7 @@ targets:
           PRODUCT_BUNDLE_IDENTIFIER: io.github.lordversa.v2mac.dev.cli
   # The Control Center switch (spec 12.4). WidgetKit needs the extension sandboxed.
   V2MacControl:
+    deploymentTarget: "26.0"
     type: app-extension
     platform: macOS
     sources:

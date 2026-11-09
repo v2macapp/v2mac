@@ -6,7 +6,7 @@
 #   NOTARY_PROFILE=my-profile Scripts/make-dmg.sh
 #                                           Developer ID signing + notarization
 #
-# Parameters (environment): SIGN_IDENTITY (default "-", ad-hoc), NOTARY_PROFILE
+# Parameters (environment): ARCH (arm64 default, or x86_64), SIGN_IDENTITY (default "-", ad-hoc), NOTARY_PROFILE
 # (a `notarytool store-credentials` profile; skipped when empty), OUT_DIR (default dist).
 set -euo pipefail
 
@@ -14,17 +14,23 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 NOTARY_PROFILE="${NOTARY_PROFILE:-}"
 OUT_DIR="${OUT_DIR:-$ROOT/dist}"
-BUILD_DIR="$ROOT/build"
+ARCH="${ARCH:-arm64}"
+case "$ARCH" in
+  arm64) SUFFIX=""; CORE_DIR=core ;;
+  x86_64) SUFFIX="-intel"; CORE_DIR=core-x86_64 ;;
+  *) echo "Unsupported architecture: $ARCH" >&2; exit 1 ;;
+esac
+BUILD_DIR="$ROOT/build$SUFFIX"
 ENTITLEMENTS="$ROOT/App/Resources/v2mac.entitlements"
 
 cd "$ROOT"
-[[ -x Vendor/core/xray ]] || Scripts/fetch-core.sh
+[[ -x "Vendor/$CORE_DIR/xray" ]] || ARCH="$ARCH" Scripts/fetch-core.sh
 command -v xcodegen >/dev/null && xcodegen generate >/dev/null
 
 rm -rf "$BUILD_DIR"
 xcodebuild -project v2mac.xcodeproj -scheme v2mac -configuration Release \
   -destination 'platform=macOS' -derivedDataPath "$BUILD_DIR" \
-  CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
+  ARCHS="$ARCH" CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO \
   build | tail -n 3
 
 APP="$BUILD_DIR/Build/Products/Release/V2Mac.app"
@@ -42,11 +48,11 @@ CODESIGN_ARGS=(--force --sign "$SIGN_IDENTITY")
 /usr/bin/codesign "${CODESIGN_ARGS[@]}" --entitlements "$ROOT/Extensions/Control/V2MacControl.entitlements" \
   "$APP/Contents/PlugIns/V2MacControl.appex"
 /usr/bin/codesign "${CODESIGN_ARGS[@]}" --entitlements "$ENTITLEMENTS" "$APP"
-/usr/bin/codesign --verify --deep --strict "$APP"
+"$ROOT/Scripts/check-bundle.sh" "$APP" "$ARCH"
 
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print CFBundleShortVersionString' "$APP/Contents/Info.plist")"
 mkdir -p "$OUT_DIR"
-DMG="$OUT_DIR/V2Mac-$VERSION.dmg"
+DMG="$OUT_DIR/V2Mac-$VERSION$SUFFIX.dmg"
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 cp -R "$APP" "$STAGE/"

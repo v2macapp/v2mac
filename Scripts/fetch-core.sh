@@ -3,7 +3,11 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 source "$ROOT/Scripts/core.lock"
-DEST="$ROOT/Vendor/core"
+case "${ARCH:-arm64}" in
+  arm64) DEST="$ROOT/Vendor/core" ;;
+  x86_64) DEST="$ROOT/Vendor/core-x86_64"; ASSET="$ASSET_X86_64"; SHA256="$SHA256_X86_64" ;;
+  *) echo "Unsupported architecture: $ARCH" >&2; exit 1 ;;
+esac
 
 if [[ -x "$DEST/xray" && -f "$DEST/.version" && "$(cat "$DEST/.version")" == "$VERSION" ]]; then
   echo "Xray $VERSION already present."

@@ -312,6 +312,7 @@ final class AppModel {
     /// Spec 12.4: the switch in Control Center and the menu bar asks through `ControlBridge`,
     /// and is told when the connection goes on or off.
     private func wireControls() {
+        guard #available(macOS 26, *) else { return }
         let connection = self.connection
         ControlBridge.handler = { on in
             switch (on, connection.phase) {
@@ -332,6 +333,7 @@ final class AppModel {
     }
 
     private func publishControlState() {
+        guard #available(macOS 26, *) else { return }
         withObservationTracking {
             let on: Bool
             switch connection.phase {
@@ -410,6 +412,7 @@ final class AppModel {
     }
 
     private func scheduleServerIndex() {
+        guard #available(macOS 15, *) else { return }
         indexTask?.cancel()
         indexTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(3))
@@ -807,7 +810,7 @@ final class AppModel {
     }
 
     func openSettings(_ action: OpenSettingsAction, tab: SettingsTab? = nil) {
-        if let tab { settingsTab = tab }
+        if let tab { settingsTab = tab == .sandbox && !SandboxService.isSupported ? .general : tab }
         NSApp.setActivationPolicy(.regular)
         action()
         NSApp.activate()
@@ -1015,6 +1018,7 @@ final class AppModel {
             let top = NSScreen.screens.first?.frame.maxY ?? 0
             let frames = windows.map { "\(Int($0.frame.minX)),\(Int(top - $0.frame.maxY)) \(Int($0.frame.width))x\(Int($0.frame.height))" }
             print("[v2mac-debug] snapshot: \(windows.count) windows: \(frames.joined(separator: " | "))")
+            print("[v2mac-debug] sandbox supported: \(SandboxService.isSupported)")
             print("[v2mac-debug] layout \(NSApp.userInterfaceLayoutDirection == .rightToLeft ? "rtl" : "ltr"), localizations \(Bundle.main.preferredLocalizations)")
         }
     }
@@ -1320,6 +1324,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // The main window opens on launch, so show the Dock icon until it closes.
         NSApp.setActivationPolicy(.regular)
         NSApp.activate()
+        if #unavailable(macOS 15) {
+            // SwiftUI on Sonoma restores auxiliary windows without a launch-behaviour API.
+            DispatchQueue.main.async {
+                let hidden = ["logs", RulesWindow.windowID, ConnectionsView.windowID]
+                for window in NSApp.windows {
+                    let id = window.identifier?.rawValue ?? ""
+                    if hidden.contains(id) || (id == "main" && ProcessInfo.processInfo.arguments.contains("--cli-background")) {
+                        window.close()
+                    }
+                }
+                Self.dockCheck(excluding: nil)
+            }
+        }
         closeObserver = NotificationCenter.default.addObserver(
             forName: NSWindow.willCloseNotification, object: nil, queue: .main
         ) { note in

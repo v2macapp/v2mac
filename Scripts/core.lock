@@ -6,3 +6,7 @@ SHA256=926cc55fda2a8757dabe4f22dc98772f218ace025f101bd0b68aee232e59d5dc
 # on a newer core; outside the range the bundled core is used.
 MIN=26.10.21
 MAX_EXCLUSIVE=27.0.0
+
+# Intel build of the same pinned release (verified against its .dgst).
+ASSET_X86_64=Xray-macos-64.zip
+SHA256_X86_64=8e5169b429e76ce5f550c8294db465bc259f30c158ba900aa40802b76ad2f66e

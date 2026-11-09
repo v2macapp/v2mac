@@ -169,9 +169,16 @@ private struct CountryMap: View {
     private func toggleCountry(at coordinate: CLLocationCoordinate2D) async {
         lookingUp = true
         defer { lookingUp = false }
-        let request = MKReverseGeocodingRequest(location: CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude))
-        let items = try? await request?.mapItems
-        guard let code = items?.first?.addressRepresentations?.region?.identifier.lowercased(),
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let code: String?
+        if #available(macOS 26, *) {
+            let request = MKReverseGeocodingRequest(location: location)
+            let items = try? await request?.mapItems
+            code = items?.first?.addressRepresentations?.region?.identifier.lowercased()
+        } else {
+            code = try? await CLGeocoder().reverseGeocodeLocation(location).first?.isoCountryCode?.lowercased()
+        }
+        guard let code,
               let country = catalog.country(code) else {
             notice = String(localized: "No country there")
             try? await Task.sleep(for: .seconds(2))
@@ -192,9 +199,15 @@ private struct CountryMap: View {
         let missing = catalog.countries.filter { selected.contains($0.code) && coordinates[$0.code] == nil }
         for country in missing {
             guard !Task.isCancelled else { return }
-            let items = try? await MKGeocodingRequest(addressString: country.englishName)?.mapItems
-            let match = items?.first { $0.addressRepresentations?.region?.identifier.lowercased() == country.code } ?? items?.first
-            if let location = match?.location { coordinates[country.code] = location.coordinate }
+            if #available(macOS 26, *) {
+                let items = try? await MKGeocodingRequest(addressString: country.englishName)?.mapItems
+                let match = items?.first { $0.addressRepresentations?.region?.identifier.lowercased() == country.code } ?? items?.first
+                if let location = match?.location { coordinates[country.code] = location.coordinate }
+            } else {
+                let places = try? await CLGeocoder().geocodeAddressString(country.englishName)
+                let match = places?.first { $0.isoCountryCode?.lowercased() == country.code } ?? places?.first
+                if let location = match?.location { coordinates[country.code] = location.coordinate }
+            }
         }
         if !missing.isEmpty { withAnimation { position = selected.isEmpty ? .rect(.world) : .automatic } }
     }

@@ -1,6 +1,6 @@
 import CryptoKit
 import Foundation
-import Synchronization
+import os
 import Testing
 @testable import V2MacCore
 
@@ -58,7 +58,7 @@ import Testing
         let next = home.appendingPathComponent("next/V2Mac.app")
         try await makeApp(at: next, version: "1.1.0", data: "two")
 
-        let served = Mutex<[String: Data]>([:]), requested = Mutex<[String]>([])
+        let served = OSAllocatedUnfairLock(initialState: [String: Data]()), requested = OSAllocatedUnfairLock(initialState: [String]())
         let server = try await TestHTTPServer.start { path in
             let name = String(path.dropFirst())
             requested.withLock { $0.append(name) }
@@ -153,8 +153,8 @@ import Testing
         #expect(pin.accepts("26.10.21") && pin.accepts("Xray 26.12.1 (go)"))
         #expect(!pin.accepts("26.10.17") && !pin.accepts("27.0.0") && !pin.accepts(""))
         #expect(pin.sha256 == String(repeating: "a", count: 64))
-        #expect(pin.release.assetURL.absoluteString == "https://github.com/XTLS/Xray-core/releases/download/v26.10.21/Xray-macos-arm64-v8a.zip")
+        #expect(pin.release.assetURL.absoluteString == "https://github.com/XTLS/Xray-core/releases/download/v26.10.21/\(CoreUpdater.assetName)")
         #expect(CorePin(info: [:]) == nil)
-        #expect(AppInstaller.manifestURL(repository: "o/r", tag: "v1.2.0")?.absoluteString == "https://github.com/o/r/releases/download/v1.2.0/files.json")
+        #expect(AppInstaller.manifestURL(repository: "o/r", tag: "v1.2.0", architecture: .arm64)?.absoluteString == "https://github.com/o/r/releases/download/v1.2.0/files.json")
     }
 }

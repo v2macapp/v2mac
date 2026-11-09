@@ -47,10 +47,11 @@ struct ProblemReportSheet: View {
         let versions = ["V2Mac \(Prefs.appVersion)", "Xray \(model.updates.coreVersion ?? "?")", "macOS \(ProcessInfo.processInfo.operatingSystemVersionString)"]
         let appLog = model.logs.lines.map(\.text).joined(separator: "\n")
         let sandbox = model.sandbox.files.root
+        let sandboxSupported = SandboxService.isSupported
         // Reading the files and redacting against every server name takes a moment with long lists.
         return await Task.detached {
-            let names = ["sandbox.log", "sandbox.log.1", "vm.log", "vm.log.1"]
-            let vms = (try? Data(contentsOf: sandbox.appendingPathComponent("vms.json")))
+            let names = sandboxSupported ? ["sandbox.log", "sandbox.log.1", "vm.log", "vm.log.1"] : []
+            let vms = (sandboxSupported ? try? Data(contentsOf: sandbox.appendingPathComponent("vms.json")) : nil)
                 .flatMap { try? JSONSerialization.jsonObject(with: $0) as? [[String: Any]] } ?? []
             return ProblemReport.build(.init(
                 versions: versions, appLog: appLog,

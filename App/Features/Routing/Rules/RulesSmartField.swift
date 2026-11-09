@@ -63,7 +63,7 @@ struct SmartField: View {
                         }
                         .buttonStyle(.plain)
                     }
-                    if SystemLanguageModel.default.isAvailable, !text.isEmpty, !RuleMatchers.isIP(text) {
+                    if #available(macOS 26, *), SystemLanguageModel.default.isAvailable, !text.isEmpty, !RuleMatchers.isIP(text) {
                         Button { suggestDomains() } label: {
                             Label(suggesting ? String(localized: "Asking Apple Intelligence…") : String(localized: "Suggest domains for “\(text)”"),
                                   systemImage: "apple.intelligence")
@@ -142,6 +142,7 @@ struct SmartField: View {
     }
 
     /// On-device Apple Intelligence names the domains a service uses.
+    @available(macOS 26, *)
     private func suggestDomains() {
         let request = text.trimmingCharacters(in: .whitespaces)
         suggesting = true
@@ -170,6 +171,7 @@ struct SmartField: View {
         """
 }
 
+@available(macOS 26, *)
 @Generable
 struct SuggestedDomains {
     @Guide(description: "Every domain the services use: their main site, video and image servers (CDNs), APIs and short links", .count(1...20))

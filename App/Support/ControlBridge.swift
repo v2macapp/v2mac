@@ -27,6 +27,7 @@ enum ControlBridge {
 
     /// The app says whether it is connected (or connecting).
     static func publish(connected: Bool) {
+        guard #available(macOS 26, *) else { return }
         setState(of: stateName, to: connected ? 1 : 0)
     }
 
@@ -60,6 +61,7 @@ enum ControlBridge {
 
     /// A request: the time it was made, doubled, plus one for "connect".
     @MainActor static func request(connect: Bool) {
+        guard #available(macOS 26, *) else { return }
         if let handler { return handler(connect) }
         setState(of: requestName, to: UInt64(Date().timeIntervalSince1970) * 2 + (connect ? 1 : 0))
         notify_post(requestName)
@@ -72,6 +74,7 @@ enum ControlBridge {
 
     /// In the app: a request made in the last half minute, or nil.
     static func pendingRequest() -> Bool? {
+        guard #available(macOS 26, *) else { return nil }
         let value = state(of: requestName)
         guard value > 0, Date().timeIntervalSince1970 - Double(value / 2) < 30 else { return nil }
         setState(of: requestName, to: 0)

@@ -326,20 +326,22 @@ struct MenuBarPanel: View {
                 Button("Connections", systemImage: "point.3.connected.trianglepath.dotted") { model.openConnections(openWindow) }
                     .labelStyle(.iconOnly)
                     .help("Connections")
-                Button {
-                    // The entry sheet belongs to the main window.
-                    if model.sandbox.phase != .installed { model.openMainWindow(openWindow) }
-                    model.sandbox.open()
-                } label: {
-                    if model.sandbox.isOpening {
-                        ProgressView().controlSize(.small).accessibilityLabel("Loading…")
-                    } else {
-                        Label("Sandbox (beta)", systemImage: "shield.lefthalf.filled")
+                if SandboxService.isSupported {
+                    Button {
+                        // The entry sheet belongs to the main window.
+                        if model.sandbox.phase != .installed { model.openMainWindow(openWindow) }
+                        model.sandbox.open()
+                    } label: {
+                        if model.sandbox.isOpening {
+                            ProgressView().controlSize(.small).accessibilityLabel("Loading…")
+                        } else {
+                            Label("Sandbox (beta)", systemImage: "shield.lefthalf.filled")
+                        }
                     }
+                    .labelStyle(.iconOnly)
+                    .disabled(model.sandbox.isOpening)
+                    .help("Open the Secure Sandbox (beta)")
                 }
-                .labelStyle(.iconOnly)
-                .disabled(model.sandbox.isOpening)
-                .help("Open the Secure Sandbox (beta)")
                 Button("Settings", systemImage: "gearshape") { model.openSettings(openSettings) }
                     .labelStyle(.iconOnly)
                     .help("Settings")
@@ -515,7 +517,7 @@ private struct PowerOrb: View {
                     .symbolEffect(.bounce, value: isOn)
                     .frame(width: 44, height: 44)
                     // Not interactive glass: it takes the click for itself, and the button misses some.
-                    .glassEffect(.regular.tint(color), in: .circle)
+                    .glassSurface(tint: color, in: .circle)
             }
             .frame(width: 58, height: 58)
             .contentShape(.circle)

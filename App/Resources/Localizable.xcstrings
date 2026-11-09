@@ -47145,83 +47145,6 @@
         }
       }
     },
-    "No macOS arm64 build was found in the latest releases." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "در آخرین انتشارها نسخه arm64 برای macOS پیدا نشد."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "В последних выпусках нет сборки для macOS arm64."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最新版本中没有找到 macOS arm64 构建。"
-          }
-        },
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "لم يُعثر على إصدار macOS arm64 في أحدث الإصدارات."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No macOS arm64 build đã found trong latest releases."
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最新版本中沒有找到 macOS arm64 構建。"
-          }
-        },
-        "my" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "နောက်ဆုံးထုတ်ဗားရှင်းများတွင် macOS arm64 build မတွေ့ပါ။"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Son sürümlerde macOS arm64 derlemesi bulunamadı."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucune compilation macOS arm64 trouvée dans les dernières versions."
-          }
-        },
-        "ur" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "تازہ ترین اجرا میں macOS arm64 کی کوئی بلڈ نہیں ملی۔"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não foi encontrada nenhuma compilação para macOS arm64 nas versões mais recentes."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "In den neuesten Versionen wurde kein Build für macOS arm64 gefunden."
-          }
-        }
-      }
-    },
     "No matches" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -102540,6 +102463,89 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "V2Mac hat diese Version nicht geprüft. Sie wird nur anhand des Hashs derselben Xray-Version geprüft. Eine manipulierte Veröffentlichung würde deshalb die Prüfung bestehen. Mitgelieferten Kern wiederherstellen macht dies rückgängig."
+          }
+        }
+      }
+    },
+    "No macOS build for this Mac was found in the latest releases." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "لم يتم العثور على إصدار macOS مناسب لهذا الـ Mac في أحدث الإصدارات."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In den neuesten Veröffentlichungen wurde keine macOS-Version für diesen Mac gefunden."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "در نسخه‌های اخیر، نسخه‌ای از macOS برای این مک پیدا نشد."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune version macOS pour ce Mac n’a été trouvée parmi les dernières versions."
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "နောက်ဆုံးထွက်များတွင် ဤ Mac အတွက် macOS ဗားရှင်းကို မတွေ့ပါ။"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi encontrada uma versão macOS para este Mac nos lançamentos mais recentes."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "В последних выпусках не найдена сборка macOS для этого Mac."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Son sürümlerde bu Mac için bir macOS derlemesi bulunamadı."
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تازہ ترین ریلیزز میں اس Mac کے لیے کوئی macOS بلڈ نہیں ملا۔"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Không tìm thấy bản dựng macOS cho máy Mac này trong các bản phát hành mới nhất."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在最新版本中未找到适用于这台 Mac 的 macOS 构建。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在最新版本中找不到適用於這台 Mac 的 macOS 組建。"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No macOS build for this Mac was found in the latest releases."
           }
         }
       }

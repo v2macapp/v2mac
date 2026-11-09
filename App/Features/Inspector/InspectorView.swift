@@ -75,7 +75,7 @@ struct InspectorView: View {
             Button(isActive ? "Active Server" : "Connect", systemImage: isActive ? "checkmark.circle.fill" : "power") {
                 model.activate(profile)
             }
-            .buttonStyle(.glassProminent)
+            .prominentButtonStyle()
             .controlSize(.large)
             .disabled(isActive)
             .contentTransition(.symbolEffect(.replace))

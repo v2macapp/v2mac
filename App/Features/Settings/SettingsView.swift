@@ -14,7 +14,7 @@ struct SettingsView: View {
             ConnectionSettings().tabItem { Label("Connection", systemImage: "bolt.horizontal") }.tag(SettingsTab.connection)
             WarpSettings().tabItem { Label("WARP", systemImage: "cloud") }.tag(SettingsTab.warp)
             SubscriptionSettings().tabItem { Label("Servers", systemImage: "tray.and.arrow.down") }.tag(SettingsTab.servers)
-            SandboxSettings().tabItem { Label("Sandbox (beta)", systemImage: "shield.lefthalf.filled") }.tag(SettingsTab.sandbox)
+            if SandboxService.isSupported { SandboxSettings().tabItem { Label("Sandbox (beta)", systemImage: "shield.lefthalf.filled") }.tag(SettingsTab.sandbox) }
             NotificationSettings().tabItem { Label("Notifications", systemImage: "bell") }.tag(SettingsTab.notifications)
             CoreSettings().tabItem { Label("Core", systemImage: "cpu") }.tag(SettingsTab.core)
             AboutSettings().tabItem { Label("About", systemImage: "info.circle") }.tag(SettingsTab.about)

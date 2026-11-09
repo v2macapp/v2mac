@@ -11,8 +11,8 @@ public struct GeoLists: Sendable {
 
     public private(set) var sites: [String: [SiteEntry]] = [:]
     /// Sorted, merged ranges per list.
-    private var ips: [String: [ClosedRange<UInt128>]] = [:]
-    private var v6Lists: [String: [ClosedRange<UInt128>]] = [:]
+    private var ips: [String: [ClosedRange<IPAddressBits>]] = [:]
+    private var v6Lists: [String: [ClosedRange<IPAddressBits>]] = [:]
 
     public init() {}
 
@@ -38,7 +38,7 @@ public struct GeoLists: Sendable {
         }
         for (file, data) in ipFiles {
             for (name, body) in Self.entries(data) {
-                var v4: [ClosedRange<UInt128>] = [], v6: [ClosedRange<UInt128>] = []
+                var v4: [ClosedRange<IPAddressBits>] = [], v6: [ClosedRange<IPAddressBits>] = []
                 var r = GeoIPIndex.Reader(bytes: body)
                 while let (field, cidr) = r.message() {
                     guard field == 2 else { continue }
@@ -51,9 +51,9 @@ public struct GeoLists: Sendable {
                     }
                     let bits = ip.count * 8
                     guard bits == 32 || bits == 128, (0...bits).contains(prefix) else { continue }
-                    let start = ip.reduce(UInt128(0)) { $0 << 8 | UInt128($1) }
+                    let start = ip.reduce(IPAddressBits(0)) { $0 << 8 | IPAddressBits($1) }
                     let host = bits - prefix
-                    let range = start...(host == 128 ? .max : start | ((UInt128(1) << host) - 1))
+                    let range = start...(host == 128 ? .max : start | ((IPAddressBits(1) << host) - 1))
                     if bits == 32 { v4.append(range) } else { v6.append(range) }
                 }
                 ips["\(file.lowercased()):\(name)"] = Self.merged(v4)
@@ -116,11 +116,13 @@ public struct GeoLists: Sendable {
 
     /// Whether every address of `cidr` (or the one address) is in the list `key`.
     func ipList(_ key: String, covers cidr: String) -> Bool {
-        let parts = cidr.split(separator: "/")
-        guard let first = parts.first, let (value, isV4) = Self.number(String(first)), let list = isV4 ? ips[key] : v6Lists[key] else { return false }
+        let parts = cidr.split(separator: "/", omittingEmptySubsequences: false)
+        guard parts.count <= 2, let first = parts.first, let (value, isV4) = Self.number(String(first)), let list = isV4 ? ips[key] : v6Lists[key] else { return false }
         let bits = isV4 ? 32 : 128
-        let host = bits - (parts.count == 2 ? Int(parts[1]) ?? bits : bits)
-        let mask = host == 128 ? UInt128.max : (UInt128(1) << host) - 1
+        let prefix = parts.count == 2 ? Int(parts[1]) ?? -1 : bits
+        guard (0...bits).contains(prefix) else { return false }
+        let host = bits - prefix
+        let mask = host == 128 ? IPAddressBits.max : (IPAddressBits(1) << host) - 1
         let low = value & ~mask, high = value | mask
         return list.contains { $0.lowerBound <= low && high <= $0.upperBound }
     }
@@ -133,11 +135,11 @@ public struct GeoLists: Sendable {
         return sites[key] != nil || ips[key] != nil || v6Lists[key] != nil
     }
 
-    static func number(_ address: String) -> (UInt128, Bool)? {
+    static func number(_ address: String) -> (IPAddressBits, Bool)? {
         var a4 = in_addr(), a6 = in6_addr()
-        if inet_pton(AF_INET, address, &a4) == 1 { return (UInt128(UInt32(bigEndian: a4.s_addr)), true) }
+        if inet_pton(AF_INET, address, &a4) == 1 { return (IPAddressBits(UInt32(bigEndian: a4.s_addr)), true) }
         guard inet_pton(AF_INET6, address, &a6) == 1 else { return nil }
-        return (withUnsafeBytes(of: a6) { $0.reduce(UInt128(0)) { $0 << 8 | UInt128($1) } }, false)
+        return (withUnsafeBytes(of: a6) { $0.reduce(IPAddressBits(0)) { $0 << 8 | IPAddressBits($1) } }, false)
     }
 
     /// The top-level entries of a geo file: name and the whole entry.
@@ -151,8 +153,8 @@ public struct GeoLists: Sendable {
         return out
     }
 
-    private static func merged(_ ranges: [ClosedRange<UInt128>]) -> [ClosedRange<UInt128>] {
-        var out: [ClosedRange<UInt128>] = []
+    private static func merged(_ ranges: [ClosedRange<IPAddressBits>]) -> [ClosedRange<IPAddressBits>] {
+        var out: [ClosedRange<IPAddressBits>] = []
         for r in ranges.sorted(by: { $0.lowerBound < $1.lowerBound }) {
             if let last = out.last, last.upperBound == .max || r.lowerBound <= last.upperBound + 1 {
                 out[out.count - 1] = last.lowerBound...max(last.upperBound, r.upperBound)

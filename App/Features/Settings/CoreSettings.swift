@@ -53,7 +53,7 @@ struct CoreSettings: View {
             DownloadProgressView(title: "Downloading core…", progress: updates.coreProgress, rate: updates.coreDownloadRate)
         case .installed(let version):
             Label("Installed \(version).", systemImage: "checkmark.circle.fill").foregroundStyle(.green)
-                .symbolEffect(.bounce, options: .nonRepeating)
+                .completionSymbolEffect()
         case .failed(let message):
             Label(message, systemImage: "exclamationmark.triangle.fill").foregroundStyle(.red).font(.callout)
         }

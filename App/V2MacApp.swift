@@ -28,7 +28,7 @@ struct V2MacApp: App {
                 .modelContainer(model.container)
         }
         .defaultSize(width: 980, height: 620)
-        .defaultLaunchBehavior(ProcessInfo.processInfo.arguments.contains("--cli-background") ? .suppressed : .presented)
+        .launchSuppressed(ProcessInfo.processInfo.arguments.contains("--cli-background"))
         .commands { AppCommands(model: model) }
 
         Window("Logs", id: "logs") {
@@ -36,7 +36,7 @@ struct V2MacApp: App {
                 .environment(model)
         }
         .defaultSize(width: 760, height: 460)
-        .defaultLaunchBehavior(.suppressed)
+        .launchSuppressed()
 
         Window("Rules", id: RulesWindow.windowID) {
             RulesWindow()
@@ -44,14 +44,14 @@ struct V2MacApp: App {
                 .modelContainer(model.container)
         }
         .defaultSize(width: 1040, height: 660)
-        .defaultLaunchBehavior(.suppressed)
+        .launchSuppressed()
 
         Window("Connections", id: ConnectionsView.windowID) {
             ConnectionsView()
                 .environment(model)
         }
         .defaultSize(width: 1040, height: 680)
-        .defaultLaunchBehavior(.suppressed)
+        .launchSuppressed()
 
         Settings {
             SettingsView()

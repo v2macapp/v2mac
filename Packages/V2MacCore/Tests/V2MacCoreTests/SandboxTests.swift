@@ -1,6 +1,6 @@
 import CryptoKit
 import Foundation
-import Synchronization
+import os
 import Testing
 @testable import V2MacCore
 
@@ -103,7 +103,7 @@ import Testing
         new += Data("tail".utf8)
 
         // A release: every file zipped on its own, its manifest, served by name. `broken` serves other bytes.
-        let served = Mutex<[String: Data]>([:]), requested = Mutex<[String]>([])
+        let served = OSAllocatedUnfairLock(initialState: [String: Data]()), requested = OSAllocatedUnfairLock(initialState: [String]())
         let server = try await TestHTTPServer.start { path in
             let name = String(path.dropFirst())
             requested.withLock { $0.append(name) }
@@ -132,7 +132,8 @@ import Testing
             }
             let manifest = try Self.manifestJSON(entries)
             bodies["files.json"] = manifest
-            served.withLock { $0 = bodies }
+            let responseBodies = bodies
+            served.withLock { $0 = responseBodies }
             requested.withLock { $0 = [] }
             return SandboxPin(url: URL(string: "http://127.0.0.1:\(server.port)/files.json")!, sha256: Self.hash(manifest),
                               executableSHA256: Self.hash(files["Contents/MacOS/V2Mac Sandbox"]!), size: 0)

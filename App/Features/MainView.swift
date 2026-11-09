@@ -30,7 +30,7 @@ struct MainView: View {
                     Text("Add a subscription URL, or paste configs with ⌘V.")
                 } actions: {
                     Button("Add Subscription") { model.showAddSheet = true }
-                        .buttonStyle(.glassProminent)
+                        .prominentButtonStyle()
                 }
             } else {
                 ServerListView(selection: model.sidebarSelection)
@@ -82,7 +82,7 @@ struct MainView: View {
         .sheet(isPresented: $model.showRegionsSheet) {
             RegionPacksView()
         }
-        .sheet(isPresented: Bindable(model.sandbox).showEntrySheet) { SandboxEntrySheet() }
+        .sheet(isPresented: Bindable(model.sandbox).showEntrySheet) { if SandboxService.isSupported { SandboxEntrySheet() } }
     }
 }
 
@@ -118,7 +118,7 @@ struct UpdateButton: View {
             pillLabel.hidden()
             if hovering {
                 pillLabel
-                    .glassEffect(.regular, in: .capsule)
+                    .glassSurface(in: .capsule)
                     .background { glow }
                     .contentShape(.capsule)
                     .onTapGesture(perform: open)

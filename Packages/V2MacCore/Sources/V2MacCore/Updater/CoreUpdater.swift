@@ -26,7 +26,7 @@ public enum CoreUpdateError: Error, Sendable, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .noRelease: String(localized: "No macOS arm64 build was found in the latest releases.")
+        case .noRelease: String(localized: "No macOS build for this Mac was found in the latest releases.")
         case .malformedResponse: String(localized: "GitHub's answer could not be read.")
         case .checksumMissing: String(localized: "The release has no SHA-256 checksum.")
         case .unpackFailed: String(localized: "The downloaded archive could not be unpacked.")
@@ -95,7 +95,11 @@ public enum CoreUpdater {
     /// Beside an installed `core/xray`: its version, so the app can pick a core without starting one.
     public static let versionFileName = "xray.version"
 
+    #if arch(x86_64)
+    public static let assetName = "Xray-macos-64.zip"
+    #else
     public static let assetName = "Xray-macos-arm64-v8a.zip"
+    #endif
     static let apiURL = URL(string: "https://api.github.com/repos/XTLS/Xray-core/releases?per_page=10")!
     static let atomURL = URL(string: "https://github.com/XTLS/Xray-core/releases.atom")!
 

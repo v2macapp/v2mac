@@ -7,6 +7,16 @@ import V2MacCore
 /// (the VM, the Sandbox window) is the helper's.
 @MainActor @Observable
 final class SandboxService {
+    static var isSupported: Bool {
+        #if DEBUG
+        if UserDefaults.standard.bool(forKey: "debugSandboxUnsupported") { return false }
+        #endif
+        #if arch(arm64)
+        if #available(macOS 26, *) { return true }
+        #endif
+        return false
+    }
+
     enum Phase: Equatable {
         case notInstalled
         case downloading(Double?)
@@ -22,7 +32,7 @@ final class SandboxService {
     var compatibility: SandboxCompatibility { SandboxCompatibility(installed: installed, latest: pin, link: SandboxLink.version) }
     /// A newer compatible release is out, or the installed one can't be used until it updates.
     /// Mini VMs and their data stay.
-    var updateAvailable: Bool { files.isInstalled && compatibility.offersUpdate }
+    var updateAvailable: Bool { Self.isSupported && files.isInstalled && compatibility.offersUpdate }
     let files = SandboxFiles(root: AppPaths.dataDirectory.appendingPathComponent("sandbox", isDirectory: true))
     private(set) var phase = Phase.notInstalled
     /// The helper's VM: "stopped", "booting", "running" or "stopping".
@@ -55,6 +65,7 @@ final class SandboxService {
     private var downloadTask: Task<Void, Never>?
 
     init() {
+        guard Self.isSupported else { return }
         if files.isInstalled { phase = .installed }
         installed = files.installedPin()
         #if DEBUG
@@ -74,6 +85,7 @@ final class SandboxService {
 
     /// The entry sheet's Download size for an update: fetches the manifest and checks the installed files.
     func planUpdate() async {
+        guard Self.isSupported else { return }
         guard let pin, updateAvailable, updateSize == nil else { return }
         guard let plan = try? await files.plan(pin, download: ResumableDownload(routes: downloadRoutes())) else { return }
         updateSize = BundleManifest.downloadSize(plan)
@@ -84,6 +96,7 @@ final class SandboxService {
     /// The Sandbox button: opens the helper's window, or the entry sheet when nothing is installed
     /// or it needs an update.
     func open() {
+        guard Self.isSupported else { return }
         guard phase == .installed, compatibility.canOpen else { return showEntrySheet = true }
         do {
             if helper == nil { isOpening = true }
@@ -99,6 +112,7 @@ final class SandboxService {
     /// Once at launch, after the app has wired `onUpdateFound`: hashes the installed helper off the main actor,
     /// then looks for a new sandbox hourly, independently of V2Mac's own updates.
     func checkForUpdate() {
+        guard Self.isSupported else { return }
         let files = files
         Task {
             if let installed, await Task.detached(operation: { (try? files.verify(installed)) == nil }).value { self.installed = nil }
@@ -111,6 +125,7 @@ final class SandboxService {
 
     /// Fetches the newest release's signed description. Keeps the last one on failure (no network, no route yet).
     func refresh() async {
+        guard Self.isSupported else { return }
         #if DEBUG
         if Self.debugPin != nil { return }
         #endif
@@ -124,6 +139,7 @@ final class SandboxService {
     /// Update Now, as for V2Mac itself: stops the sandbox (its apps close), then downloads the newest
     /// release and puts it in place of the old helper.
     func update() {
+        guard Self.isSupported else { return }
         guard updateAvailable, downloadTask == nil else { return }
         Task {
             await stop()
@@ -132,6 +148,7 @@ final class SandboxService {
     }
 
     func download() {
+        guard Self.isSupported else { return }
         guard let pin, compatibility.offersUpdate, downloadTask == nil else { return }
         let signed = signedPin
         let wasUpdate = updateAvailable
@@ -175,6 +192,7 @@ final class SandboxService {
     // MARK: Helper process
 
     private func launchIfNeeded() throws {
+        guard Self.isSupported else { return }
         guard helper == nil, let installed else { return }
         try files.verify(installed)
         var fds: [Int32] = [0, 0]

@@ -153,9 +153,14 @@ enum GeoFixture {
         Data(lists.flatMap { name, cidrs in
             field(1, field(1, Array(name.utf8)) + cidrs.flatMap { cidr -> [UInt8] in
                 let parts = cidr.split(separator: "/")
-                var a4 = in_addr()
-                inet_pton(AF_INET, String(parts[0]), &a4)
-                let bytes = withUnsafeBytes(of: a4) { Array($0) }
+                var a4 = in_addr(), a6 = in6_addr()
+                let bytes: [UInt8]
+                if inet_pton(AF_INET, String(parts[0]), &a4) == 1 {
+                    bytes = withUnsafeBytes(of: a4) { Array($0) }
+                } else {
+                    precondition(inet_pton(AF_INET6, String(parts[0]), &a6) == 1)
+                    bytes = withUnsafeBytes(of: a6) { Array($0) }
+                }
                 return field(2, field(1, bytes) + varint(2 << 3) + varint(Int(parts[1])!))
             })
         })

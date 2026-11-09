@@ -163,7 +163,7 @@ private struct SidebarRow: View {
             } icon: {
                 // The sync arrows appear, turning, only while this group is being fetched.
                 Image(systemName: isUpdating ? "arrow.triangle.2.circlepath" : (group.isManual ? "doc.on.clipboard" : "dot.radiowaves.up.forward"))
-                    .symbolEffect(.rotate, isActive: isUpdating)
+                    .rotatingSymbol(isActive: isUpdating)
                     .contentTransition(.symbolEffect(.replace))
                     .foregroundStyle(group.tint.color)
             }

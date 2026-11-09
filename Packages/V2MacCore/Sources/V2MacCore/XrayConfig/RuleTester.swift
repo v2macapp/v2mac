@@ -113,13 +113,14 @@ public enum RuleTester {
         var entry = entry.lowercased()
         if entry.hasPrefix("geoip:!") { entry = "geoip:" + entry.dropFirst(7); return !ipMatches(entry, address, geo: geo) }
         if let key = GeoLists.key(entry) { return geo.ipList(key, contains: address) }
-        let parts = entry.split(separator: "/")
-        guard let (base, isV4) = GeoLists.number(String(parts[0])), let (value, sameFamily) = GeoLists.number(address), isV4 == sameFamily else { return false }
+        let parts = entry.split(separator: "/", omittingEmptySubsequences: false)
+        guard parts.count <= 2, let first = parts.first, let (base, isV4) = GeoLists.number(String(first)), let (value, sameFamily) = GeoLists.number(address), isV4 == sameFamily else { return false }
         let bits = isV4 ? 32 : 128
         let prefix = parts.count == 2 ? Int(parts[1]) ?? bits : bits
+        guard (0...bits).contains(prefix), parts.count == 1 || Int(parts[1]) != nil else { return false }
         let host = bits - prefix
         guard host < 128 else { return true }
-        let mask = ~((UInt128(1) << host) - 1) & (isV4 ? UInt128(UInt32.max) : .max)
+        let mask = ~((IPAddressBits(1) << host) - 1) & (isV4 ? IPAddressBits(UInt32.max) : .max)
         return base & mask == value & mask
     }
 }

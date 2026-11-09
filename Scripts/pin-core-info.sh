@@ -3,6 +3,11 @@
 # Info.plist, where the app reads them at launch (spec 11.1, `CorePin`).
 set -euo pipefail
 source "$SRCROOT/Scripts/core.lock"
+case "${ARCHS:-arm64}" in
+  arm64) ;;
+  x86_64) SHA256="$SHA256_X86_64" ;;
+  *) echo "error: unsupported architecture: $ARCHS" >&2; exit 1 ;;
+esac
 PLIST="$TARGET_BUILD_DIR/$INFOPLIST_PATH"
 plutil -replace V2MacCoreVersion -string "$VERSION" "$PLIST"
 plutil -replace V2MacCoreSHA256 -string "$SHA256" "$PLIST"

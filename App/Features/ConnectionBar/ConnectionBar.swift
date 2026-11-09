@@ -11,7 +11,7 @@ struct ConnectionBar: View {
 
     var body: some View {
         let tier = tier
-        GlassEffectContainer(spacing: 14) {
+        CompatGlassGroup(spacing: 14) {
             content(rates: tier.rates, showAddress: tier.showsAddress)
                 // The bar must not ask for the width of the layout it is showing: the split
                 // view would then widen the column, a larger layout would fit and ask for
@@ -19,7 +19,7 @@ struct ConnectionBar: View {
                 .frame(minWidth: 0, maxWidth: .infinity)
                 .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { widthChanged(to: $0) }
                 .background { rulers }
-                .glassEffect(barGlass, in: .capsule)
+                .glassSurface(tint: barTint, in: .capsule)
         }
         .animation(.smooth(duration: 0.35), value: connection.phase)
         .padding(.horizontal, 16)
@@ -171,8 +171,8 @@ struct ConnectionBar: View {
                 .frame(width: Self.buttonWidth, height: Self.buttonWidth)
         }
         .buttonStyle(.plain)
-        .glassEffect(.regular.tint(stateColor).interactive(), in: .circle)
-        .glassEffectID("connect", in: glassNamespace)
+        .glassSurface(tint: stateColor, interactive: true, in: .circle)
+        .glassID("connect", in: glassNamespace)
         .disabled(connection.activeServer == nil)
         .opacity(connection.activeServer == nil ? 0.4 : 1)
         .help(connection.activeServer == nil ? "Select a server first" : (connection.phase == .connected ? "Disconnect" : "Connect"))
@@ -284,9 +284,9 @@ struct ConnectionBar: View {
         }
     }
 
-    private var barGlass: Glass {
-        if case .failed = connection.phase { return .regular.tint(.red.opacity(0.22)) }
-        return .regular
+    private var barTint: Color? {
+        if case .failed = connection.phase { return .red.opacity(0.22) }
+        return nil
     }
 }
 

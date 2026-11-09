@@ -286,32 +286,32 @@ public struct RuleMatchers: Sendable, Equatable {
         var start = low
         while true {
             // The biggest block aligned at `start` that ends at or before `high`.
-            func fits(_ k: Int) -> Bool { k == 128 ? start == 0 && high == .max : high - start >= (UInt128(1) << k) - 1 }
+            func fits(_ k: Int) -> Bool { k == 128 ? start == 0 && high == .max : high - start >= (IPAddressBits(1) << k) - 1 }
             var k = start == 0 ? bits : min(bits, start.trailingZeroBitCount)
             while !fits(k) { k -= 1 }
             out.append("\(text(start, bits: bits))/\(bits - k)")
             if k == 128 { break }
-            let last = start + (UInt128(1) << k) - 1
+            let last = start + (IPAddressBits(1) << k) - 1
             if last == high { break }
             start = last + 1
         }
         return out
     }
 
-    private static func number(_ address: String) -> (UInt128, Int)? {
+    private static func number(_ address: String) -> (IPAddressBits, Int)? {
         var v4 = in_addr(), v6 = in6_addr()
-        if inet_pton(AF_INET, address, &v4) == 1 { return (UInt128(UInt32(bigEndian: v4.s_addr)), 32) }
+        if inet_pton(AF_INET, address, &v4) == 1 { return (IPAddressBits(UInt32(bigEndian: v4.s_addr)), 32) }
         guard inet_pton(AF_INET6, address, &v6) == 1 else { return nil }
-        return (withUnsafeBytes(of: v6) { $0.reduce(UInt128(0)) { $0 << 8 | UInt128($1) } }, 128)
+        return (withUnsafeBytes(of: v6) { $0.reduce(IPAddressBits(0)) { $0 << 8 | IPAddressBits($1) } }, 128)
     }
 
-    private static func text(_ value: UInt128, bits: Int) -> String {
+    private static func text(_ value: IPAddressBits, bits: Int) -> String {
         var buffer = [CChar](repeating: 0, count: Int(INET6_ADDRSTRLEN))
         if bits == 32 {
-            var v4 = in_addr(s_addr: UInt32(value).bigEndian)
+            var v4 = in_addr(s_addr: UInt32(value.low).bigEndian)
             inet_ntop(AF_INET, &v4, &buffer, socklen_t(buffer.count))
         } else {
-            var bytes = (0..<16).map { UInt8(truncatingIfNeeded: value >> (8 * (15 - $0))) }
+            var bytes = (0..<16).map { UInt8(truncatingIfNeeded: (value >> (8 * (15 - $0))).low) }
             inet_ntop(AF_INET6, &bytes, &buffer, socklen_t(buffer.count))
         }
         return String(decoding: buffer.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }, as: UTF8.self)

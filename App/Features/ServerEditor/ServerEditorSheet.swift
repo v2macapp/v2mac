@@ -101,7 +101,7 @@ struct ServerEditorSheet: View {
                     Button("Cancel", role: .cancel) { dismiss() }
                     Button("Save") { save() }
                         .keyboardShortcut(.defaultAction)
-                        .buttonStyle(.glassProminent)
+                        .prominentButtonStyle()
                 }
             }
             .padding([.horizontal, .bottom], 20)

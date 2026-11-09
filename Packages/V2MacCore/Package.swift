@@ -3,7 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "V2MacCore",
-    platforms: [.macOS(.v26)],
+    platforms: [.macOS(.v14)],
     products: [
         .library(name: "V2MacCore", targets: ["V2MacCore"]),
     ],

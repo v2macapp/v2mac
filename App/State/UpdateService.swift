@@ -2,7 +2,7 @@ import AppKit
 import Foundation
 import CryptoKit
 import Observation
-import Synchronization
+import os
 import V2MacCore
 
 /// Core updates (manual, and the pinned range, spec 11.1) and app updates (spec 11.3).
@@ -326,7 +326,7 @@ final class UpdateService {
         let installed = URL(fileURLWithPath: defaults.string(forKey: "debugAppUpdateFrom") ?? "/Applications/V2Mac.app")
         let key = defaults.string(forKey: "debugAppUpdateKey").flatMap { Data(base64Encoded: $0) }
             .flatMap { try? Curve25519.Signing.PublicKey(rawRepresentation: $0) } ?? AppInstaller.updateKey
-        let downloaded = Mutex<Int64>(0)
+        let downloaded = OSAllocatedUnfairLock(initialState: Int64(0))
         do {
             let version = try BundleManifest(data: try await downloader.download(manifest)).version
             let prepared = try await AppInstaller.prepareDelta(

@@ -15,9 +15,9 @@ import Testing
 
     @Test func picksNewestReleaseIncludingPrereleases() throws {
         let json = """
-        [{"tag_name":"v1.0.0","published_at":"2026-01-01T00:00:00Z","draft":false,"assets":[{"name":"Xray-macos-arm64-v8a.zip","browser_download_url":"https://x/1.zip"}]},
-         {"tag_name":"v1.1.0-rc","published_at":"2026-03-01T00:00:00Z","prerelease":true,"draft":false,"assets":[{"name":"Xray-macos-arm64-v8a.zip","browser_download_url":"https://x/2.zip"},{"name":"Xray-macos-arm64-v8a.zip.dgst","browser_download_url":"https://x/2.dgst"}]},
-         {"tag_name":"v9","published_at":"2026-05-01T00:00:00Z","draft":true,"assets":[{"name":"Xray-macos-arm64-v8a.zip","browser_download_url":"https://x/9.zip"}]}]
+        [{"tag_name":"v1.0.0","published_at":"2026-01-01T00:00:00Z","draft":false,"assets":[{"name":"\(CoreUpdater.assetName)","browser_download_url":"https://x/1.zip"}]},
+         {"tag_name":"v1.1.0-rc","published_at":"2026-03-01T00:00:00Z","prerelease":true,"draft":false,"assets":[{"name":"\(CoreUpdater.assetName)","browser_download_url":"https://x/2.zip"},{"name":"\(CoreUpdater.assetName).dgst","browser_download_url":"https://x/2.dgst"}]},
+         {"tag_name":"v9","published_at":"2026-05-01T00:00:00Z","draft":true,"assets":[{"name":"\(CoreUpdater.assetName)","browser_download_url":"https://x/9.zip"}]}]
         """
         let release = try CoreUpdater.parseAPI(Data(json.utf8))
         #expect(release.tag == "v1.1.0-rc")
@@ -28,7 +28,7 @@ import Testing
     @Test func skipsReleasesWithoutTheMacAsset() throws {
         let json = """
         [{"tag_name":"v2","published_at":"2026-05-01T00:00:00Z","assets":[{"name":"Xray-linux-64.zip","browser_download_url":"https://x/l.zip"}]},
-         {"tag_name":"v1","published_at":"2026-01-01T00:00:00Z","assets":[{"name":"Xray-macos-arm64-v8a.zip","browser_download_url":"https://x/1.zip"}]}]
+         {"tag_name":"v1","published_at":"2026-01-01T00:00:00Z","assets":[{"name":"\(CoreUpdater.assetName)","browser_download_url":"https://x/1.zip"}]}]
         """
         #expect(try CoreUpdater.parseAPI(Data(json.utf8)).tag == "v1")
         #expect(throws: CoreUpdateError.malformedResponse) { try CoreUpdater.parseAPI(Data("{}".utf8)) }
@@ -41,7 +41,7 @@ import Testing
         """
         let release = try CoreUpdater.parseAtom(Data(atom.utf8))
         #expect(release.tag == "v1.2.0")
-        #expect(release.assetURL.absoluteString.hasSuffix("/download/v1.2.0/Xray-macos-arm64-v8a.zip"))
+        #expect(release.assetURL.absoluteString.hasSuffix("/download/v1.2.0/\(CoreUpdater.assetName)"))
     }
 
     @Test func parsesDigestFile() throws {
@@ -84,7 +84,7 @@ import Testing
     }
 
     @Test func buildsAppAssetURLsAndReadsChecksum() throws {
-        let urls = try #require(AppInstaller.assetURLs(repository: "o/r", tag: "v0.2.1"))
+        let urls = try #require(AppInstaller.assetURLs(repository: "o/r", tag: "v0.2.1", architecture: .arm64))
         #expect(urls.dmg.absoluteString == "https://github.com/o/r/releases/download/v0.2.1/V2Mac-0.2.1.dmg")
         #expect(urls.checksum.absoluteString == urls.dmg.absoluteString + ".sha256")
         let hex = String(repeating: "AB", count: 32)
