@@ -16,6 +16,9 @@ VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 и WireGuard в быстр
   <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="Звёзды на GitHub"></a>
 </p>
 
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
+
 <p align="center"><a href="README.md">English</a> | <a href="README.fa.md">فارسی</a> | <a href="README.zh.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | Русский | <a href="README.de.md">Deutsch</a></p>
 
 <p align="center">
@@ -32,19 +35,39 @@ VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 и WireGuard в быстр
 
 ## Установка
 
-Нужна **macOS 14 или новее** на **Apple Silicon или Intel**.
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
 
-Для Apple Silicon выберите обычный DMG, для Intel — **Intel DMG** (`-intel.dmg`). Для безопасной песочницы нужны Apple Silicon и macOS 26 или новее. Liquid Glass и Пункт управления требуют macOS 26; в macOS 14/15 используются стандартные элементы. Подсказки доменов Apple Intelligence требуют macOS 26 и доступную локальную модель; индексирование серверов в Spotlight требует macOS 15.
+<p align="center"><sub>Не знаете, какой выбрать? Меню Apple → <b>Об этом Mac</b>: строка <b>Чип</b> означает Apple Silicon, <b>Процессор</b> — Intel.</sub></p>
 
-<p><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="https://img.shields.io/badge/Apple_Silicon-Download_DMG-0A84FF?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Apple Silicon"></a> <a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="https://img.shields.io/badge/Intel-Download_DMG-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Intel"></a></p>
+Или установите через **Homebrew** — он сам выберет сборку для вашего Mac:
 
 ```sh
 brew install --cask v2macapp/tap/v2mac
 ```
 
-Или скачайте DMG из [последнего релиза](https://github.com/v2macapp/v2mac/releases/latest). Приложение не нотаризовано: при первом запуске нажмите **Всё равно открыть** в Системные настройки → Конфиденциальность и безопасность. Подробнее в [руководстве по установке](https://github.com/v2macapp/v2mac/wiki/ru-Installation). Дальше V2Mac обновляется сама: загружает только изменившиеся файлы и устанавливает их при выходе.
+> [!NOTE]
+> V2Mac пока не нотаризована, поэтому macOS блокирует первый запуск. Откройте **Системные настройки → Конфиденциальность и безопасность** и нажмите **Всё равно открыть**. Подробнее в [руководстве по установке](https://github.com/v2macapp/v2mac/wiki/ru-Installation).
 
-**Быстрый старт:** нажмите **Add Subscription** и вставьте ссылку, дважды щёлкните сервер, затем используйте `127.0.0.1:10808` (SOCKS5 / HTTP) или включите **System Proxy** или **TUN**.
+Дальше V2Mac обновляется сама: загружает только изменившиеся файлы и устанавливает их при выходе. Предыдущие версии — на странице [Releases](https://github.com/v2macapp/v2mac/releases).
+
+### Быстрый старт
+
+1. Нажмите **Add Subscription** и вставьте ссылку.
+2. Дважды щёлкните сервер, чтобы подключиться.
+3. Укажите в приложениях `127.0.0.1:10808` (SOCKS5 и HTTP) или включите **System Proxy** или **TUN**, чтобы пустить через него весь Mac.
+
+### Требования
+
+| | Apple Silicon | Intel |
+|---|:---:|:---:|
+| V2Mac (macOS 14 Sonoma или новее) | ✓ | ✓ |
+| Поиск серверов в Spotlight (macOS 15 или новее) | ✓ | ✓ |
+| Liquid Glass и Пункт управления (macOS 26) | ✓ | ✓ |
+| Подсказки доменов Apple Intelligence (macOS 26) | ✓ | — |
+| Безопасная песочница (macOS 26) | ✓ | — |
+
+В macOS 14 и 15 вместо Liquid Glass используются стандартные элементы управления.
 
 ## Возможности
 

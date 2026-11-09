@@ -16,6 +16,9 @@ VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 und WireGuard in einer sch
   <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="GitHub-Sterne"></a>
 </p>
 
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
+
 <p align="center"><a href="README.md">English</a> | <a href="README.fa.md">فارسی</a> | <a href="README.zh.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.ru.md">Русский</a> | Deutsch</p>
 
 <p align="center">
@@ -32,19 +35,39 @@ Fügen Sie einen Abonnementlink ein und wählen Sie einen Server, um einen lokal
 
 ## Installation
 
-Benötigt **macOS 14 oder neuer** auf **Apple Silicon oder Intel**.
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
 
-Wählen Sie das normale DMG für Apple Silicon oder das **Intel-DMG** (`-intel.dmg`) für Intel. Die sichere Sandbox benötigt Apple Silicon und macOS 26 oder neuer. Liquid Glass und das Kontrollzentrum benötigen macOS 26; macOS 14/15 verwenden Standardsteuerelemente. Domain-Vorschläge mit Apple Intelligence benötigen macOS 26 und ein verfügbares lokales Modell; die Spotlight-Serverindizierung benötigt macOS 15.
+<p align="center"><sub>Unsicher? Apple-Menü → <b>Über diesen Mac</b>: Steht dort <b>Chip</b>, ist es Apple Silicon, steht dort <b>Prozessor</b>, ist es Intel.</sub></p>
 
-[Apple Silicon DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg) · [Intel DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg)
+Oder installieren Sie V2Mac mit **Homebrew**, das automatisch die passende Version wählt:
 
 ```sh
 brew install --cask v2macapp/tap/v2mac
 ```
 
-Oder laden Sie das DMG der [neuesten Version](https://github.com/v2macapp/v2mac/releases/latest). Es ist nicht notarisiert: Klicken Sie beim ersten Start unter Systemeinstellungen → Datenschutz & Sicherheit auf **Dennoch öffnen**. Einzelheiten stehen in der [Installationsanleitung](https://github.com/v2macapp/v2mac/wiki/de-Installation). Danach aktualisiert sich V2Mac selbst: Es lädt nur geänderte Dateien herunter und installiert sie beim Beenden.
+> [!NOTE]
+> V2Mac ist noch nicht notarisiert, daher blockiert macOS den ersten Start. Öffnen Sie **Systemeinstellungen → Datenschutz & Sicherheit** und klicken Sie auf **Dennoch öffnen**. Einzelheiten in der [Installationsanleitung](https://github.com/v2macapp/v2mac/wiki/de-Installation).
 
-**Schnellstart:** Klicken Sie auf **Abonnement hinzufügen**, fügen Sie Ihren Link ein und doppelklicken Sie auf einen Server. Verwenden Sie dann `127.0.0.1:10808` (SOCKS5 / HTTP) oder aktivieren Sie **System-Proxy** oder **TUN**.
+Danach hält sich V2Mac selbst aktuell: Es lädt nur geänderte Dateien herunter und installiert sie beim Beenden. Ältere Versionen finden Sie unter [Releases](https://github.com/v2macapp/v2mac/releases).
+
+### Schnellstart
+
+1. Klicken Sie auf **Abonnement hinzufügen** und fügen Sie Ihren Link ein.
+2. Doppelklicken Sie auf einen Server, um sich zu verbinden.
+3. Verwenden Sie `127.0.0.1:10808` (SOCKS5 und HTTP) in Ihren Apps, oder aktivieren Sie **System-Proxy** oder **TUN**, um den ganzen Mac umzuleiten.
+
+### Systemvoraussetzungen
+
+| | Apple Silicon | Intel |
+|---|:---:|:---:|
+| V2Mac (macOS 14 Sonoma oder neuer) | ✓ | ✓ |
+| Serversuche in Spotlight (macOS 15 oder neuer) | ✓ | ✓ |
+| Liquid Glass und Kontrollzentrum (macOS 26) | ✓ | ✓ |
+| Domain-Vorschläge mit Apple Intelligence (macOS 26) | ✓ | — |
+| Sichere Sandbox (macOS 26) | ✓ | — |
+
+Unter macOS 14 und 15 verwendet die App Standardsteuerelemente statt Liquid Glass.
 
 ## Funktionen
 

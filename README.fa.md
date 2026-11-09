@@ -16,6 +16,9 @@ VLESS، REALITY، VMess، Trojan، Shadowsocks، Hysteria2 و WireGuard در ی�
   <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="ستاره‌های گیت‌هاب"></a>
 </p>
 
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
+
 <p align="center"><a href="README.md">English</a> | فارسی | <a href="README.zh.md">简体中文</a> | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.ru.md">Русский</a> | <a href="README.de.md">Deutsch</a></p>
 
 <p align="center" dir="rtl">
@@ -34,11 +37,12 @@ VLESS، REALITY، VMess، Trojan، Shadowsocks، Hysteria2 و WireGuard در ی�
 
 ## نصب
 
-به **macOS 14 یا جدیدتر** روی **Apple Silicon یا Intel** نیاز دارد.
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
 
-برای Apple Silicon فایل DMG معمولی و برای Intel فایل **Intel DMG** با پسوند `-intel.dmg` را بگیرید. سندباکس امن به Apple Silicon و macOS 26 یا جدیدتر نیاز دارد. Liquid Glass و مرکز کنترل به macOS 26 نیاز دارند؛ macOS 14 و 15 از کنترل‌های استاندارد استفاده می‌کنند. پیشنهاد دامنه با Apple Intelligence به macOS 26 و مدل محلی در دسترس نیاز دارد؛ نمایه‌سازی سرورها در Spotlight به macOS 15 نیاز دارد.
+<p align="center" dir="rtl"><sub>نمی‌دانید کدام؟ منوی Apple → <b>About This Mac</b>: اگر <b>Chip</b> نوشته Apple Silicon است و اگر <b>Processor</b> نوشته Intel.</sub></p>
 
-<p><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="https://img.shields.io/badge/Apple_Silicon-Download_DMG-0A84FF?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Apple Silicon"></a> <a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="https://img.shields.io/badge/Intel-Download_DMG-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Intel"></a></p>
+یا با **Homebrew** نصب کنید که نسخهٔ مناسب مک شما را خودش انتخاب می‌کند:
 
 </div>
 
@@ -48,9 +52,27 @@ brew install --cask v2macapp/tap/v2mac
 
 <div dir="rtl">
 
-یا DMG را از [آخرین نسخه](https://github.com/v2macapp/v2mac/releases/latest) دانلود کنید. برنامه notarize نشده: در اولین اجرا از **Open Anyway** در System Settings → Privacy & Security استفاده کنید. جزئیات در [راهنمای نصب](https://github.com/v2macapp/v2mac/wiki/fa-Installation). پس از آن V2Mac خودش را به‌روز می‌کند: فقط فایل‌های تغییرکرده را دانلود می‌کند و هنگام بستن برنامه نصب می‌کند.
+> **توجه:** V2Mac هنوز notarize نشده و macOS اولین اجرا را مسدود می‌کند. به **System Settings → Privacy & Security** بروید و روی **Open Anyway** بزنید. جزئیات در [راهنمای نصب](https://github.com/v2macapp/v2mac/wiki/fa-Installation).
 
-**شروع سریع:** روی **Add Subscription** بزنید و لینک را بچسبانید، روی یک سرور دوبار کلیک کنید، سپس از `127.0.0.1:10808` (SOCKS5 / HTTP) استفاده کنید یا **System Proxy** یا **TUN** را روشن کنید.
+از آن به بعد V2Mac خودش را به‌روز نگه می‌دارد: فقط فایل‌های تغییرکرده را دانلود می‌کند و هنگام بستن برنامه نصب می‌کند. نسخه‌های قبلی در صفحهٔ [Releases](https://github.com/v2macapp/v2mac/releases) هستند.
+
+### شروع سریع
+
+1. روی **Add Subscription** بزنید و لینک خود را بچسبانید.
+2. روی یک سرور دوبار کلیک کنید تا وصل شوید.
+3. در برنامه‌ها از `127.0.0.1:10808` (SOCKS5 و HTTP) استفاده کنید، یا **System Proxy** یا **TUN** را روشن کنید تا کل مک از آن عبور کند.
+
+### پیش‌نیازها
+
+| | Apple Silicon | Intel |
+|---|:---:|:---:|
+| V2Mac (macOS 14 Sonoma یا جدیدتر) | ✓ | ✓ |
+| جستجوی سرورها در Spotlight (macOS 15 یا جدیدتر) | ✓ | ✓ |
+| Liquid Glass و مرکز کنترل (macOS 26) | ✓ | ✓ |
+| پیشنهاد دامنه با Apple Intelligence (macOS 26) | ✓ | — |
+| سندباکس امن (macOS 26) | ✓ | — |
+
+در macOS 14 و 15 برنامه به‌جای Liquid Glass از کنترل‌های استاندارد استفاده می‌کند.
 
 ## امکانات
 

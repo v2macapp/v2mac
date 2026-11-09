@@ -16,6 +16,9 @@ VLESS、REALITY、VMess、Trojan、Shadowsocks、Hysteria2 和 WireGuard，集�
   <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="GitHub 星标"></a>
 </p>
 
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
+
 <p align="center"><a href="README.md">English</a> | <a href="README.fa.md">فارسی</a> | 简体中文 | <a href="README.zh-Hant.md">繁體中文</a> | <a href="README.ru.md">Русский</a> | <a href="README.de.md">Deutsch</a></p>
 
 <p align="center">
@@ -32,19 +35,39 @@ VLESS、REALITY、VMess、Trojan、Shadowsocks、Hysteria2 和 WireGuard，集�
 
 ## 安装
 
-需要 **macOS 14 或更高版本**，支持 **Apple Silicon 和 Intel**。
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="docs/images/download-apple-silicon.svg" alt="Download V2Mac for Apple Silicon" width="300"></a></p>
+<p align="center"><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="docs/images/download-intel.svg" alt="Download V2Mac for Intel" width="300"></a></p>
 
-Apple Silicon 请选择常规 DMG，Intel 请选择 **Intel DMG**（`-intel.dmg`）。安全沙盒需要 Apple Silicon 和 macOS 26 或更高版本。Liquid Glass 和控制中心需要 macOS 26；macOS 14/15 使用标准控件。Apple Intelligence 域名建议需要 macOS 26 和可用的本机模型；Spotlight 服务器索引需要 macOS 15。
+<p align="center"><sub>不确定选哪个？苹果菜单 → <b>关于本机</b>：显示<b>芯片</b>的是 Apple Silicon，显示<b>处理器</b>的是 Intel。</sub></p>
 
-<p><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="https://img.shields.io/badge/Apple_Silicon-Download_DMG-0A84FF?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Apple Silicon"></a> <a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="https://img.shields.io/badge/Intel-Download_DMG-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Intel"></a></p>
+也可以用 **Homebrew** 安装，它会自动选择适合你 Mac 的版本：
 
 ```sh
 brew install --cask v2macapp/tap/v2mac
 ```
 
-也可从[最新版本](https://github.com/v2macapp/v2mac/releases/latest)下载 DMG。应用未经公证：首次启动时在 系统设置 → 隐私与安全性 中点击 **仍要打开**。详见[安装指南](https://github.com/v2macapp/v2mac/wiki/zh-Installation)。之后 V2Mac 会自动更新：只下载有变化的文件，并在退出时安装。
+> [!NOTE]
+> V2Mac 尚未经过公证，macOS 会阻止首次启动。打开 **系统设置 → 隐私与安全性**，点击 **仍要打开**。详见[安装指南](https://github.com/v2macapp/v2mac/wiki/zh-Installation)。
 
-**快速开始：** 点击 **Add Subscription** 粘贴链接，双击服务器，然后使用 `127.0.0.1:10808`（SOCKS5 / HTTP），或打开 **System Proxy** 或 **TUN**。
+之后 V2Mac 会自动保持最新：只下载有变化的文件，并在退出时安装。旧版本见 [Releases](https://github.com/v2macapp/v2mac/releases) 页面。
+
+### 快速开始
+
+1. 点击 **Add Subscription** 并粘贴你的链接。
+2. 双击服务器进行连接。
+3. 在应用中使用 `127.0.0.1:10808`（SOCKS5 和 HTTP），或打开 **System Proxy** 或 **TUN** 让整台 Mac 走代理。
+
+### 系统要求
+
+| | Apple Silicon | Intel |
+|---|:---:|:---:|
+| V2Mac（macOS 14 Sonoma 或更高版本） | ✓ | ✓ |
+| Spotlight 服务器搜索（macOS 15 或更高版本） | ✓ | ✓ |
+| Liquid Glass 和控制中心（macOS 26） | ✓ | ✓ |
+| Apple Intelligence 域名建议（macOS 26） | ✓ | — |
+| 安全沙盒（macOS 26） | ✓ | — |
+
+在 macOS 14 和 15 上，应用使用标准控件代替 Liquid Glass。
 
 ## 功能
 
