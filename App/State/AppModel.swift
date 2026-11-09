@@ -844,13 +844,13 @@ final class AppModel {
         let key = "jmsHqm9I9NJN3d3cZmhU6iM3sFM0q9D9p1tBvXkQm2E"
         let groups: [(String, Int64, Int64, Int, [(String, String, Int?)])] = [
             ("Example Cloud", 38, 100, 21, [
-                ("🇩🇪 Frankfurt 01", "reality", 86), ("🇳🇱 Amsterdam 02", "ws", 112),
-                ("🇫🇮 Helsinki 01", "reality", 143), ("🇹🇷 Istanbul 03", "ws", 61),
-                ("🇦🇪 Dubai 01", "reality", 204), ("🇸🇪 Stockholm 01", "ws", nil),
-                ("🇺🇸 New York 02", "ws", 267), ("🇬🇧 London 01", "reality", 98),
+                ("🇩🇪 Frankfurt 01", "reality", 86), ("🇳🇱 Amsterdam 02", "vmess", 112),
+                ("🇫🇮 Helsinki 01", "xhttp", 143), ("🇹🇷 Istanbul 03", "trojan", 61),
+                ("🇦🇪 Dubai 01", "hysteria2", 204), ("🇸🇪 Stockholm 01", "ss", nil),
+                ("🇺🇸 New York 02", "wireguard", 267), ("🇬🇧 London 01", "grpc", 98),
             ]),
             ("Demo VPN", 12, 50, 48, [
-                ("🇫🇷 Paris 01", "ws", 121), ("🇯🇵 Tokyo 01", "reality", 231), ("🇨🇦 Toronto 01", "ws", 189),
+                ("🇫🇷 Paris 01", "ws", 121), ("🇯🇵 Tokyo 01", "socks", 231), ("🇨🇦 Toronto 01", "http", 189),
             ]),
         ]
         for (gi, g) in groups.enumerated() {
@@ -864,9 +864,20 @@ final class AppModel {
             context.insert(group)
             for (i, s) in g.4.enumerated() {
                 let host = "node\(gi)\(i).example.com"
-                let link = s.1 == "ws"
-                    ? "vless://\(uuid)@\(host):443?type=ws&security=tls&sni=\(host)&path=%2Fws#\(s.0)"
-                    : "vless://\(uuid)@\(host):443?type=tcp&security=reality&encryption=none&flow=xtls-rprx-vision&sni=www.microsoft.com&fp=chrome&pbk=\(key)&sid=ab12#\(s.0)"
+                // One server per supported protocol, so the list shows them all.
+                let link = switch s.1 {
+                case "ws": "vless://\(uuid)@\(host):443?type=ws&security=tls&sni=\(host)&path=%2Fws#\(s.0)"
+                case "xhttp": "vless://\(uuid)@\(host):443?type=xhttp&security=tls&sni=\(host)&path=%2Fx#\(s.0)"
+                case "grpc": "vless://\(uuid)@\(host):443?type=grpc&security=tls&sni=\(host)&serviceName=demo#\(s.0)"
+                case "vmess": "vmess://\(uuid)@\(host):443?type=ws&security=tls&sni=\(host)&path=%2Fvm#\(s.0)"
+                case "trojan": "trojan://demo-password@\(host):443?security=tls&sni=\(host)&type=tcp#\(s.0)"
+                case "ss": "ss://\(Data("chacha20-ietf-poly1305:demo-password".utf8).base64EncodedString())@\(host):8388#\(s.0)"
+                case "hysteria2": "hysteria2://demo-password@\(host):443/?sni=\(host)#\(s.0)"
+                case "wireguard": "wireguard://yAnz5TF%2BlXXJte14tji3zlMNq%2Bhd2rYUIgJBgB3fBmk%3D@\(host):51820?publickey=xTIBA5rboUvnH4htodjb6e697QjLERt1NAB4mZqp8Dg%3D&address=10.0.0.2%2F32#\(s.0)"
+                case "socks": "socks5://demo:demo-password@\(host):1080#\(s.0)"
+                case "http": "http://demo:demo-password@\(host):8080#\(s.0)"
+                default: "vless://\(uuid)@\(host):443?type=tcp&security=reality&encryption=none&flow=xtls-rprx-vision&sni=www.microsoft.com&fp=chrome&pbk=\(key)&sid=ab12#\(s.0)"
+                }
                 guard let parsed = try? ShareLinkParser.parse(link) else { continue }
                 let p = Profile(parsed: parsed, sortIndex: i, group: group)
                 if let ms = s.2 {
