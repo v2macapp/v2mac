@@ -56,7 +56,7 @@ brew install --cask v2macapp/tap/v2mac
 - **Proxifier 替代品：** 按应用分流并支持“仅当”条件、经由其他服务器或分组的规则、导入 `.ppx` 配置和实时连接视图。
 - **Cloudflare WARP：** 作为独立服务器或串接在你的服务器之后。
 - **安全沙盒（测试版）：** 在迷你虚拟机中运行应用，每个虚拟机使用自己的服务器，断线即断网，每个应用都是独立的 Mac 应用。仅在首次打开时下载。
-- **macOS 集成：** 菜单栏面板、快捷指令、Siri、Spotlight、控制中心、桌面小组件、Apple Intelligence 域名建议、Touch ID、通知、备份与恢复。支持英语、波斯语、中文和俄语。
+- **macOS 集成：** 菜单栏面板、快捷指令、Siri、Spotlight、控制中心、桌面小组件、Apple Intelligence 域名建议、Touch ID、通知、备份与恢复。界面支持 13 种语言。
 
 ## 截图
 

@@ -56,7 +56,7 @@ Oder laden Sie das DMG der [neuesten Version](https://github.com/v2macapp/v2mac/
 - **Proxifier-Alternative:** App-Regeln mit „Nur wenn“-Bedingungen, Regeln über andere Server oder Gruppen, Import von `.ppx`-Profilen und Live-Verbindungsansicht.
 - **Cloudflare WARP:** als eigener Server oder hinter Ihrem Server verkettet.
 - **Sichere Sandbox (Beta):** Apps in Mini-VMs mit jeweils eigenem Server ausführen. Bei Ausfall wird blockiert, jede App erscheint als eigene Mac-App. Eine Mini-VM besteht aus Containern mit gemeinsamem Linux-Kernel innerhalb einer VM ohne Netzwerkgerät. Wird erst beim ersten Öffnen heruntergeladen.
-- **macOS:** Menüleistenfenster, Kurzbefehle, Siri, Spotlight, Kontrollzentrum, Desktop-Widget, Domainvorschläge mit Apple Intelligence, Touch ID, Mitteilungen sowie Sicherung und Wiederherstellung. Mit deutscher Oberfläche.
+- **macOS:** Menüleistenfenster, Kurzbefehle, Siri, Spotlight, Kontrollzentrum, Desktop-Widget, Domainvorschläge mit Apple Intelligence, Touch ID, Mitteilungen sowie Sicherung und Wiederherstellung. Die Oberfläche ist in 13 Sprachen verfügbar.
 
 ## Bildschirmfotos
 
