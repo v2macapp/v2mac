@@ -43,7 +43,7 @@ jobs:
       - run: Scripts/fetch-core.sh
 
       - name: Package tests
-        run: swift test --no-parallel
+        run: swift test
         working-directory: Packages/V2MacCore
 
       - name: Build DMG

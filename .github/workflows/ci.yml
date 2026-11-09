@@ -13,7 +13,7 @@ jobs:
           NSUnbufferedIO: "YES"
         working-directory: Packages/V2MacCore
         run: |
-          swift test --no-parallel &
+          swift test &
           test_pid=$!
           (
             sleep 240
