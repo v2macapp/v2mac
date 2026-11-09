@@ -9,6 +9,41 @@ Written 2026-11-09, from a trial build of a copy of the repo with the deployment
 compiler stops after the first error in a SwiftUI body, so more sites may show up once these are
 fixed. Phase 1 keeps building until the errors stop.
 
+## Implementation status (2026-11-09)
+
+All changes are local on `macos14-intel` branches in app, homebrew-tap, site, wiki and the workspace. Nothing has been pushed, tagged or released. Runtime acceptance is **not complete**: the user confirmed no macOS 14/15 VMs or Intel test machine are available.
+
+| Tasks | Status and evidence |
+|---|---|
+| T0.1–T0.2 | Implemented and checked locally: baseline below; no readers of either duplicate Resources executable; signed helper and CLI remain in their used locations. `check-bundle.sh` checks both distributions. `BundleManifest.build` removes the target first and recreates only listed files, so removed files disappear; generated manifests omit both duplicates. Helper registration with a Developer ID signature is not checked (local builds are ad-hoc). |
+| T1.1–T1.2 | Implemented: app, CLI, helper, state tests and package target 14; extension targets 26. One two-word address type replaces UInt128 on every OS, with carry/borrow, IPv6 /0, /64, /96 and /128 tests for matching, geo ranges and range conversion. Invalid prefixes are rejected before shifting. |
+| T1.3–T1.6 | Implemented and compiled in Debug/Release. Glass branches retain their previous modifiers and arguments. SceneBuilder has no buildEither; the scene helper uses its public limited-availability builder functions, with a one-time auxiliary-window close on 14. Geocoding falls back to CLGeocoder. Actual Sonoma launch behavior remains unchecked. |
+| T1.7 | Both architectures build Debug and Release; all 383 core tests in 60 suites and 49 app-state tests pass on this Mac; the state-test target also builds in Release. Additional availability sites are listed below. Existing deprecation/concurrency warnings remain; no new availability warnings were found in the final build. |
+| T2.1–T2.4 | **Not checked on 14/15:** no test machines available. This includes SwiftData CRUD/backup, system proxy, TUN, kill switch, login items, notifications, Shortcuts, core and app updates on those OS versions. Never run the system-wide network checks beside the user's installed VPN. |
+| T3.1 | Implemented: one support check gates all Sandbox entries, downloads, update checks, launch and notifications through the service; reports omit Sandbox files on unsupported Macs. CLI exposes no Sandbox command. Forced-unsupported demo launch reported `sandbox supported: false` and redirected a Sandbox Settings request to General. |
+| T3.2 | ControlBridge publishing/requests and app Control Center wiring are guarded. Embedded-extension launch/log acceptance on 14/15 remains unchecked. |
+| T4.1–T4.3 | Implemented: Intel Info.plist pin and archive checksum are selected together; checksum fetched from the pinned release's `.dgst` and verified on download; separate core folders; architecture-specific core assets and app URLs; both app filename sets unit-tested; error text translated in all 13 catalog languages. |
+| T4.4 | Both thin Release bundles pass architecture and code-signature checks on every executable. Intel dev app launches under Rosetta and produces a snapshot; bundled Intel CLI and Xray run. Local HTTP/SOCKS5 proxy smoke uses the Intel bundled Xray under Rosetta. The dev app's `-debugConnect` path and real Intel TUN acceptance remain unchecked. |
+| T5.1 | Local packaging creates both manifests with distinct names: arm64 has patches from earlier releases; first Intel release has none. Release workflow builds, signs and publishes both sets and stable DMG aliases. Local asset-name/hash checks pass. Actions dry run is **pending a user-authorized push**; no existing-branch dispatch can test unpushed changes. |
+| T5.2 | Cask staged locally with architecture blocks; Homebrew style and strict offline audit pass for Sonoma/arm and Sonoma/Intel. Homebrew normalizes `macos: ">= :sonoma"` to `macos: :sonoma` (same minimum). The Intel hash is a local validation DMG hash: release CI must replace both hashes and the version before this branch is published. No released Intel asset exists yet, so online download audit cannot pass. |
+| T5.3 | Website includes the Intel download, translated requirements, FAQ and comparison corrections. All 13 site tests and the 151-page production build pass. |
+| T6.1 | CI builds both architectures on macos-26 and smoke-tests downloaded apps on macos-15 and macos-15-intel. Smoke script checks app identity, helper commands, crash detection, snapshot output and a 60-second deadline; its crash/timeout paths were exercised locally. Hosted runs are pending a user-authorized push. |
+| T7.1–T7.4 | Updated all six README files, SPEC, all 25 tracked wiki pages named by this plan, CLAUDE.md and workspace PLAN.md. Existing untracked German/Portuguese wiki drafts are untouched. |
+
+### Local verification notes
+
+- Core regression command: `cd Packages/V2MacCore && swift test --no-parallel` with the pinned core present. The final changed package passed all 383 tests in 60 suites (110.190 seconds). The untouched original package passed 379 tests. During changed-suite runs, the existing 100-target and custom-profile latency checks intermittently timed out against public sites; those two fixtures now redirect a public test destination inside Xray to the existing loopback HTTP server. URL safety validation, invalid configurations, blackhole outcomes and live-core process checks remain active.
+- Debug and Release app builds cover both architectures and their CLI/helper/extension dependencies; the state-test target builds in both configurations. Local signature checks are ad-hoc, not Developer ID registration or notarization.
+- Each final update manifest contains 59 files; arm64 has 30 patches and Intel has zero. Asset names are unique across architectures and zip SHA-256 values were rechecked. The complete local dry-run listing is generated at `reports/macos14-intel-assets.txt` (ignored build output); `.sig` names in that listing are produced only when CI has its signing key.
+
+### Acceptance gaps and plan corrections
+
+- GitHub retired `macos-14` on 2026-11-02. Use `macos-15` arm64 and `macos-15-intel` for hosted smoke tests; macOS 14 still requires a VM or a self-hosted runner. Source: [GitHub retirement notice](https://github.blog/changelog/2026-10-01-github-actions-macos-14-runner-image-retirement/).
+- Intel updater/IPv6 test fixtures compile as x86_64, but the Xcode 27 SwiftPM test-discovery helper is arm64-only and cannot load that test bundle, even when Swift is invoked through Rosetta. Execute those suites on an Intel runner; both explicit architecture filename sets are tested in the native suite.
+- Local host: macOS 27.0.1, Apple Silicon. No 14/15 behavior is inferred from successful deployment-target compilation.
+- Before/after main and Settings snapshots were captured from the original commit and the changed dev app. Pixel identity is **not established**: demo rows reorder between launches and glass capture has black/blank rendering artifacts; Settings differed slightly too. Native on-screen comparison and menu-bar-panel inspection were blocked because computer-use access to V2MacDev was not approved. These remain acceptance checks, rather than claimed visual equivalence.
+- Local tests never enabled TUN, system proxy or kill switch and never stopped the installed V2Mac or its core. Downloads and staging only; no app swap or helper registration was attempted.
+
 ## Decisions
 
 | Question | Decision | Why |
@@ -37,6 +72,11 @@ fixed. Phase 1 keeps building until the errors stop.
 | `ConnectionBar.swift:175` | `.glassEffectID` | 26 | Nothing (no morph before 26) |
 | `ServerListView.swift:141-188` | `ToolbarSpacer(.fixed)`, `.sharedBackgroundVisibility(.hidden)` | 26 | Nothing; on 14/15 toolbar items do not merge into capsules |
 | `RulePickers.swift:172-197` | `MKReverseGeocodingRequest`, `MKGeocodingRequest`, `addressRepresentations.region`, `MKMapItem.location` | 26 | `CLGeocoder.reverseGeocodeLocation` / `geocodeAddressString` and `placemark.isoCountryCode` / `placemark.location` |
+| `RulesSmartField.swift` | Foundation Models suggestion button, session and `@Generable` model | 26 | Hide suggestion action and annotate the model/session function; manual rules continue working |
+| `CoreSettings.swift` | Indefinite `.symbolEffect(.bounce, options:)` conformance | 15 | No completion effect on 14; preserve the existing effect on 15+ |
+| `AppModel.swift` | `ControlCenter.shared.reloadControls` | 26 | Do not wire or publish controls before 26 |
+| `AppModel.swift` | `CSSearchableIndex.deleteAppEntities` / `indexAppEntities` | 15 | Skip server Spotlight indexing before 15; Shortcuts queries still work |
+| Package update test fixtures | `Mutex.withLock` | 15 | `OSAllocatedUnfairLock`, including immutable snapshot of captured response bodies |
 | `Extensions/Control/*` | `ControlWidgetConfiguration`, `.containerBackground(for: .widget)` | 26 | None: the extension stays on 26 |
 
 Already fine on 14 (no change): `.symbolEffect(.bounce/.pulse)`, `.contentTransition(.symbolEffect(.replace))`,
@@ -50,6 +90,7 @@ Already fine on 14 (no change): `.symbolEffect(.bounce/.pulse)`, `.contentTransi
 | `project.yml` | `ARCHS: arm64` | Keep the default arm64; the Intel build passes `ARCHS=x86_64` on the command line |
 | `Scripts/core.lock` | One `ASSET` / `SHA256` (`Xray-macos-arm64-v8a.zip`) | Add `ASSET_X86_64=Xray-macos-64.zip` and `SHA256_X86_64` for the same `VERSION` |
 | `Scripts/fetch-core.sh` | Writes `Vendor/core` | `ARCH=x86_64` writes `Vendor/core-x86_64`; with no argument, nothing changes (tests and local builds keep `Vendor/core`) |
+| `Scripts/pin-core-info.sh` | Always embeds the arm64 archive hash in Info.plist | Select `SHA256_X86_64` for Intel; bundle validation checks the pin |
 | `Scripts/embed-core.sh` | Copies `Vendor/core/xray` | Picks `Vendor/core-x86_64` when `ARCHS` is `x86_64`, and fails if `lipo -archs` of the copied `xray` is not `$ARCHS` |
 | `CoreUpdater.assetName` + its `.noRelease` text | arm64 asset; the message says "arm64" | `#if arch(x86_64)` picks `Xray-macos-64.zip`; the message becomes "No macOS build for this Mac was found in the latest releases." in all 13 languages |
 | `AppInstaller.assetURLs` / `manifestURL` | `V2Mac-X.dmg`, `files.json` | `#if arch(x86_64)`: `V2Mac-X-intel.dmg`, `files-intel.json` |
@@ -151,7 +192,7 @@ Apple Silicon. Phase 4 adds Intel. They can ship separately.
 ### Phase 6: CI that keeps it working
 
 - **T6.1** `ci.yml`: keep the build on `macos-26`; also build `ARCHS=x86_64` (catches arch errors). Add a job that
-  downloads both Debug apps and smoke-tests on `macos-14` (arm64) and `macos-15-intel`: launch with
+  downloads both Debug apps and smoke-tests on `macos-15` (arm64; `macos-14` retired 2026-11-02) and `macos-15-intel`: launch with
   `-debugDemoData YES -debugSnapshot`, wait for the snapshot line, run `Helpers/xray version` and
   `Helpers/v2mac --help`. Upload the PNGs as an artifact.
 
@@ -192,9 +233,9 @@ repo does not change in this plan. When it is worth doing, the two steps are:
 
 | Build | App | DMG |
 |---|---|---|
-| 1.9.1 arm64 (installed, before) | 68 MB | |
-| after T0.2 arm64 | | |
-| Intel | | |
+| Release baseline, 2026-11-09 (0.1.0 local version) | 69,072 KiB | 27,716 KiB |
+| arm64 after duplicate removal + compatibility, local Release | 64,024 KiB | 26,012 KiB |
+| Intel, local Release | 66,968 KiB | 28,328 KiB |
 
 ## Agent prompts
 

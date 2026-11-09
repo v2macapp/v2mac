@@ -3,14 +3,14 @@
 <h1 align="center">V2Mac</h1>
 
 <p align="center" dir="rtl"><b>کلاینت بومی macOS برای Xray-core و V2Ray.</b><br>
-VLESS، REALITY، VMess، Trojan، Shadowsocks، Hysteria2 و WireGuard در یک برنامهٔ سریع منوبار با SwiftUI برای مک‌های Apple Silicon.</p>
+VLESS، REALITY، VMess، Trojan، Shadowsocks، Hysteria2 و WireGuard در یک برنامهٔ سریع منوبار با SwiftUI برای مک‌های Apple Silicon / Intel.</p>
 
 <p align="center">
   <a href="https://github.com/v2macapp/v2mac/releases/latest"><img src="https://img.shields.io/github/v/release/v2macapp/v2mac?label=release&color=0A84FF" alt="آخرین نسخه"></a>
   <a href="https://github.com/v2macapp/v2mac/releases"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fv2macapp%2Fv2mac%2Fbadges%2Fdownloads.json" alt="تعداد دانلود"></a>
   <a href="https://github.com/v2macapp/v2mac/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/v2macapp/v2mac/ci.yml?branch=main&label=CI" alt="وضعیت CI"></a>
-  <img src="https://img.shields.io/badge/macOS-26%2B-000000?logo=apple" alt="macOS 26 یا جدیدتر">
-  <img src="https://img.shields.io/badge/Apple%20Silicon-arm64-555555" alt="Apple Silicon">
+  <img src="https://img.shields.io/badge/macOS-14%2B-000000?logo=apple" alt="macOS 14 یا جدیدتر">
+  <img src="https://img.shields.io/badge/architecture-arm64%20%7C%20x86__64-555555" alt="Apple Silicon / Intel">
   <img src="https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white" alt="Swift 6">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/v2macapp/v2mac?color=blue" alt="مجوز GPL-3.0"></a>
   <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="ستاره‌های گیت‌هاب"></a>
@@ -34,7 +34,11 @@ VLESS، REALITY، VMess، Trojan، Shadowsocks، Hysteria2 و WireGuard در ی�
 
 ## نصب
 
-به **macOS 26 یا جدیدتر** روی **Apple Silicon** نیاز دارد.
+به **macOS 14 یا جدیدتر** روی **Apple Silicon یا Intel** نیاز دارد.
+
+برای Apple Silicon فایل DMG معمولی و برای Intel فایل **Intel DMG** با پسوند `-intel.dmg` را بگیرید. سندباکس امن به Apple Silicon و macOS 26 یا جدیدتر نیاز دارد. Liquid Glass و مرکز کنترل به macOS 26 نیاز دارند؛ macOS 14 و 15 از کنترل‌های استاندارد استفاده می‌کنند. پیشنهاد دامنه با Apple Intelligence به macOS 26 و مدل محلی در دسترس نیاز دارد؛ نمایه‌سازی سرورها در Spotlight به macOS 15 نیاز دارد.
+
+[Apple Silicon DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg) · [Intel DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg)
 
 </div>
 

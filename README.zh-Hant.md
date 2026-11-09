@@ -3,14 +3,14 @@
 <h1 align="center">V2Mac</h1>
 
 <p align="center"><b>原生 macOS Xray-core / V2Ray 客戶端。</b><br>
-VLESS、REALITY、VMess、Trojan、Shadowsocks、Hysteria2 和 WireGuard，集成在一個為 Apple Silicon 打造的快速 SwiftUI 菜單欄應用中。</p>
+VLESS、REALITY、VMess、Trojan、Shadowsocks、Hysteria2 和 WireGuard，集成在一個為 Apple Silicon / Intel 打造的快速 SwiftUI 菜單欄應用中。</p>
 
 <p align="center">
   <a href="https://github.com/v2macapp/v2mac/releases/latest"><img src="https://img.shields.io/github/v/release/v2macapp/v2mac?label=release&color=0A84FF" alt="最新版本"></a>
   <a href="https://github.com/v2macapp/v2mac/releases"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fv2macapp%2Fv2mac%2Fbadges%2Fdownloads.json" alt="下載量"></a>
   <a href="https://github.com/v2macapp/v2mac/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/v2macapp/v2mac/ci.yml?branch=main&label=CI" alt="CI 狀態"></a>
-  <img src="https://img.shields.io/badge/macOS-26%2B-000000?logo=apple" alt="macOS 26 或更高">
-  <img src="https://img.shields.io/badge/Apple%20Silicon-arm64-555555" alt="Apple Silicon">
+  <img src="https://img.shields.io/badge/macOS-14%2B-000000?logo=apple" alt="macOS 14 或更高">
+  <img src="https://img.shields.io/badge/architecture-arm64%20%7C%20x86__64-555555" alt="Apple Silicon / Intel">
   <img src="https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white" alt="Swift 6">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/v2macapp/v2mac?color=blue" alt="GPL-3.0 許可證"></a>
   <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="GitHub 星標"></a>
@@ -32,7 +32,11 @@ VLESS、REALITY、VMess、Trojan、Shadowsocks、Hysteria2 和 WireGuard，集�
 
 ## 安裝
 
-需要 **Apple Silicon** 上的 **macOS 26 或更高版本**。
+需要 **macOS 14 或更高版本**，支援 **Apple Silicon 和 Intel**。
+
+Apple Silicon 請選擇一般 DMG，Intel 請選擇 **Intel DMG**（`-intel.dmg`）。安全沙盒需要 Apple Silicon 和 macOS 26 或更高版本。Liquid Glass 和控制中心需要 macOS 26；macOS 14/15 使用標準控制項。Apple Intelligence 網域建議需要 macOS 26 和可用的本機模型；Spotlight 伺服器索引需要 macOS 15。
+
+[Apple Silicon DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg) · [Intel DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg)
 
 ```sh
 brew install --cask v2macapp/tap/v2mac

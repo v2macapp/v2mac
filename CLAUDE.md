@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-V2Mac is a native macOS (26+, Apple Silicon) menu bar client for Xray-core: SwiftUI + SwiftData app,
+V2Mac is a native macOS (14+, Apple Silicon and Intel) menu bar client for Xray-core: SwiftUI + SwiftData app,
 Swift 6 with strict concurrency, no third-party Swift dependencies. Spec: `docs/SPEC.md` (code
 comments cite it as "spec 6.4" etc.; read the section before changing the behavior it describes).
 
@@ -50,6 +50,7 @@ comments cite it as "spec 6.4" etc.; read the section before changing the behavi
   artifact and publishes nothing.
 
 ## Building and testing
+- `Scripts/fetch-core.sh` once for arm64; `ARCH=x86_64 Scripts/fetch-core.sh` for Intel (`Vendor/core-x86_64`). `ARCH=x86_64 Scripts/make-dmg.sh` packages the thin Intel app (`build-intel/`, `-intel.dmg`); the default stays arm64.
 - `Scripts/fetch-core.sh` once, then `xcodegen generate` (the `.xcodeproj` is generated and git-ignored;
   rerun `xcodegen generate` after adding, moving or deleting files under `App/` or `Extensions/`, or editing `project.yml`).
 - App: `xcodebuild -project v2mac.xcodeproj -scheme v2mac -configuration Debug -destination 'platform=macOS' build`
@@ -90,6 +91,7 @@ comments cite it as "spec 6.4" etc.; read the section before changing the behavi
     shows made-up v2 rules from that file without saving them, so no real rule appears in a screenshot.
     With `rules`, `-debugRulesDoctor YES` opens the Rules Doctor and prints its findings.
     With `connection`, `-debugFragmentTuner YES` opens Find Settings and prints the result.
+  - `-debugSandboxUnsupported YES` forces the unsupported Sandbox path for UI checks; no helper downloads or launches. The real requirement is Apple Silicon and macOS 26+.
   - `-debugSandbox install|boot|stop|probe|update|remove` with `-debugSandboxPin <pin.json>` (from `../sandbox`,
     `Scripts/package.sh <url of files.json>`, served with e.g. `python3 -m http.server` in `../sandbox/out/release`) drives
     the Secure Sandbox (spec 12.11); the helper's `[v2mac-sandbox]` lines share stdout.

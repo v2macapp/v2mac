@@ -2,7 +2,7 @@
 
 Status: agreed design, ready for implementation
 Date: 2026-10-09
-Target: macOS 26+, Apple Silicon, Swift 6 / SwiftUI, Xray-core v26.10.21
+Target: macOS 14+, Apple Silicon and Intel, Swift 6 / SwiftUI, Xray-core v26.10.21
 
 v2mac is a small, native macOS menu bar app that acts as a shell around
 [Xray-core](https://github.com/XTLS/Xray-core). It imports subscription links,
@@ -39,7 +39,7 @@ on the Mac through the same connection.
 | Viewing outbound JSON / exporting generated config | Not selected. |
 | Per-server usage history, speed text in the menu bar | Not selected. |
 | Localisation | Added later: English, Persian, Simplified Chinese and Russian (section 13, Language). |
-| Intel Macs, macOS 15 and earlier | arm64, macOS 26+ only. |
+| macOS 13 and earlier | Minimum deployment target is macOS 14. |
 | Developer ID signing, notarization, Sparkle | Planned after v1. |
 | Mux, global sniffing options | Outbounds are used as provided. TLS fragment, noise packets and DNS came later (section 8.4). |
 | Auto-select fastest server, global hotkeys | Auto-selection is optional (9.7); hotkeys through Shortcuts actions (12.4). |
@@ -77,7 +77,7 @@ Answers given during the design interview.
 | 23 | Add flow | "+" opens a sheet: URL, optional Name, "Fetch via proxy" switch; Enter adds. |
 | 24 | Inspector | Read-only summary + Copy share link + Show QR code. |
 | 25 | Storage | SwiftData. |
-| 26 | Platform | macOS 26+, Apple Silicon only. |
+| 26 | Platform | macOS 14+, separate Apple Silicon and Intel downloads. |
 | 27 | Visual style | Native Liquid Glass, colour only for state. |
 | 28 | Language | English only, hard-coded strings. |
 | 29 | Name | `v2mac`, bundle ID `io.github.lordversa.v2mac`. |
@@ -1736,6 +1736,8 @@ action such a link can ask for). An app that is not running reads as off.
 
 ### 12.5 Liquid Glass guidance
 
+These glass modifiers apply only on macOS 26+. On macOS 14/15, use regular material in the same shape, a translucent state tint, standard bordered buttons, and no glass grouping or morphing. Control Center and the embedded widget extension are macOS 26-only; Apple Intelligence needs macOS 26 and an available model. Spotlight server indexing needs macOS 15.
+
 - Build against the macOS 26+ SDK and let the system supply glass for the
   sidebar, toolbar, sheets, popovers and the menu bar panel. Do not add custom
   backgrounds that would defeat it.
@@ -1945,6 +1947,8 @@ A row never linked (very short connections close first; a TUN app may have used
 another address) has no app or bytes. At most 1,000 rows and 2,000 log lines are kept.
 
 ### 12.11 Secure Sandbox (beta)
+
+Requires Apple Silicon and macOS 26 or later. On other Macs the entry points, Settings tab, update row and Sandbox notification preferences are hidden, and the service never downloads or launches the helper.
 
 The sandbox's design and plan live in the sandbox repo (`../sandbox/docs/PLAN.md`); this
 section covers only V2Mac's part, which is all the sandbox code V2Mac has (`SandboxService`,

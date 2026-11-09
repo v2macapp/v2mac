@@ -3,14 +3,14 @@
 <h1 align="center">V2Mac</h1>
 
 <p align="center"><b>Нативный клиент Xray-core и V2Ray для macOS.</b><br>
-VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 и WireGuard в быстром приложении для строки меню на SwiftUI для Apple Silicon.</p>
+VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 и WireGuard в быстром приложении для строки меню на SwiftUI для Apple Silicon / Intel.</p>
 
 <p align="center">
   <a href="https://github.com/v2macapp/v2mac/releases/latest"><img src="https://img.shields.io/github/v/release/v2macapp/v2mac?label=release&color=0A84FF" alt="Последний релиз"></a>
   <a href="https://github.com/v2macapp/v2mac/releases"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fv2macapp%2Fv2mac%2Fbadges%2Fdownloads.json" alt="Загрузки"></a>
   <a href="https://github.com/v2macapp/v2mac/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/v2macapp/v2mac/ci.yml?branch=main&label=CI" alt="Статус CI"></a>
-  <img src="https://img.shields.io/badge/macOS-26%2B-000000?logo=apple" alt="macOS 26 или новее">
-  <img src="https://img.shields.io/badge/Apple%20Silicon-arm64-555555" alt="Apple Silicon">
+  <img src="https://img.shields.io/badge/macOS-14%2B-000000?logo=apple" alt="macOS 14 или новее">
+  <img src="https://img.shields.io/badge/architecture-arm64%20%7C%20x86__64-555555" alt="Apple Silicon / Intel">
   <img src="https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white" alt="Swift 6">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/v2macapp/v2mac?color=blue" alt="Лицензия GPL-3.0"></a>
   <a href="https://github.com/v2macapp/v2mac/stargazers"><img src="https://img.shields.io/github/stars/v2macapp/v2mac?style=flat&color=FFCC00" alt="Звёзды на GitHub"></a>
@@ -32,7 +32,11 @@ VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 и WireGuard в быстр
 
 ## Установка
 
-Нужна **macOS 26 или новее** на **Apple Silicon**.
+Нужна **macOS 14 или новее** на **Apple Silicon или Intel**.
+
+Для Apple Silicon выберите обычный DMG, для Intel — **Intel DMG** (`-intel.dmg`). Для безопасной песочницы нужны Apple Silicon и macOS 26 или новее. Liquid Glass и Пункт управления требуют macOS 26; в macOS 14/15 используются стандартные элементы. Подсказки доменов Apple Intelligence требуют macOS 26 и доступную локальную модель; индексирование серверов в Spotlight требует macOS 15.
+
+[Apple Silicon DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg) · [Intel DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg)
 
 ```sh
 brew install --cask v2macapp/tap/v2mac
