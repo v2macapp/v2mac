@@ -36,7 +36,7 @@ VLESS, REALITY, VMess, Trojan, Shadowsocks, Hysteria2 и WireGuard в быстр
 
 Для Apple Silicon выберите обычный DMG, для Intel — **Intel DMG** (`-intel.dmg`). Для безопасной песочницы нужны Apple Silicon и macOS 26 или новее. Liquid Glass и Пункт управления требуют macOS 26; в macOS 14/15 используются стандартные элементы. Подсказки доменов Apple Intelligence требуют macOS 26 и доступную локальную модель; индексирование серверов в Spotlight требует macOS 15.
 
-[Apple Silicon DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg) · [Intel DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg)
+<p><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="https://img.shields.io/badge/Apple_Silicon-Download_DMG-0A84FF?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Apple Silicon"></a> <a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="https://img.shields.io/badge/Intel-Download_DMG-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Intel"></a></p>
 
 ```sh
 brew install --cask v2macapp/tap/v2mac

@@ -38,7 +38,7 @@ VLESS، REALITY، VMess، Trojan، Shadowsocks، Hysteria2 و WireGuard در ی�
 
 برای Apple Silicon فایل DMG معمولی و برای Intel فایل **Intel DMG** با پسوند `-intel.dmg` را بگیرید. سندباکس امن به Apple Silicon و macOS 26 یا جدیدتر نیاز دارد. Liquid Glass و مرکز کنترل به macOS 26 نیاز دارند؛ macOS 14 و 15 از کنترل‌های استاندارد استفاده می‌کنند. پیشنهاد دامنه با Apple Intelligence به macOS 26 و مدل محلی در دسترس نیاز دارد؛ نمایه‌سازی سرورها در Spotlight به macOS 15 نیاز دارد.
 
-[Apple Silicon DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg) · [Intel DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg)
+<p><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="https://img.shields.io/badge/Apple_Silicon-Download_DMG-0A84FF?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Apple Silicon"></a> <a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="https://img.shields.io/badge/Intel-Download_DMG-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Intel"></a></p>
 
 </div>
 

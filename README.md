@@ -36,7 +36,7 @@ Requires **macOS 14 or later** on **Apple Silicon or Intel**.
 
 Choose the regular DMG for Apple Silicon or the **Intel DMG** (`-intel.dmg`) for Intel. Secure Sandbox requires Apple Silicon and macOS 26 or later. Liquid Glass and Control Center require macOS 26; macOS 14/15 use standard controls. Apple Intelligence domain suggestions require macOS 26 and an available on-device model; Spotlight server indexing requires macOS 15.
 
-[Apple Silicon DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg) · [Intel DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg)
+<p><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="https://img.shields.io/badge/Apple_Silicon-Download_DMG-0A84FF?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Apple Silicon"></a> <a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="https://img.shields.io/badge/Intel-Download_DMG-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Intel"></a></p>
 
 ```sh
 brew install --cask v2macapp/tap/v2mac

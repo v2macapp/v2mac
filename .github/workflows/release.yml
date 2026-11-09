@@ -110,6 +110,9 @@ jobs:
             echo
             echo "## Install"
             echo
+            DL="https://github.com/${{ github.repository }}/releases/download/$TAG/V2Mac-${{ steps.v.outputs.version }}"
+            echo "<p><a href=\"$DL.dmg\"><img src=\"https://img.shields.io/badge/Apple_Silicon-Download_DMG-0A84FF?style=for-the-badge&logo=apple&logoColor=white\" alt=\"Download for Apple Silicon\"></a> <a href=\"$DL-intel.dmg\"><img src=\"https://img.shields.io/badge/Intel-Download_DMG-555555?style=for-the-badge&logo=apple&logoColor=white\" alt=\"Download for Intel\"></a></p>"
+            echo
             echo "With Homebrew: \`brew install --cask v2macapp/tap/v2mac\` (or \`brew upgrade --cask v2mac\`)."
             echo
             echo "Requires macOS 14 or later. Choose \`V2Mac-${{ steps.v.outputs.version }}.dmg\` for Apple Silicon or \`V2Mac-${{ steps.v.outputs.version }}-intel.dmg\` for Intel. Check the matching \`.sha256\` file and follow the first-launch steps in the README."

@@ -36,7 +36,7 @@ VLESS、REALITY、VMess、Trojan、Shadowsocks、Hysteria2 和 WireGuard，集�
 
 Apple Silicon 请选择常规 DMG，Intel 请选择 **Intel DMG**（`-intel.dmg`）。安全沙盒需要 Apple Silicon 和 macOS 26 或更高版本。Liquid Glass 和控制中心需要 macOS 26；macOS 14/15 使用标准控件。Apple Intelligence 域名建议需要 macOS 26 和可用的本机模型；Spotlight 服务器索引需要 macOS 15。
 
-[Apple Silicon DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg) · [Intel DMG](https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg)
+<p><a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac.dmg"><img src="https://img.shields.io/badge/Apple_Silicon-Download_DMG-0A84FF?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Apple Silicon"></a> <a href="https://github.com/v2macapp/v2mac/releases/latest/download/V2Mac-Intel.dmg"><img src="https://img.shields.io/badge/Intel-Download_DMG-555555?style=for-the-badge&logo=apple&logoColor=white" alt="Download for Intel"></a></p>
 
 ```sh
 brew install --cask v2macapp/tap/v2mac
