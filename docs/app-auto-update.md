@@ -35,6 +35,12 @@ is available and when one is ready. Settings can turn automatic install off.
 - One `<file>.zip` per bundle file, `<file>.from-<old version>.bsdiff` per patch.
 - The DMG, `.sha256` and `.sig` stay: fresh installs, Homebrew, the fallback.
 
+Starting with 1.10.0, Intel builds use `files-intel.json` and its signature, `intel_` zip/patch
+names, and `V2Mac-<version>-intel.dmg`. Apple Silicon keeps the existing names so older
+installs continue updating. Each architecture builds patches only from its own older DMGs;
+the first Intel release therefore has no patches. The bundled core pin and standalone core
+download also use the current architecture's checksum and asset.
+
 ## Tasks
 | # | Task | Repo |
 |---|---|---|

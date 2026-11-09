@@ -37,16 +37,17 @@ comments cite it as "spec 6.4" etc.; read the section before changing the behavi
 ## Releasing
 - A release is made by pushing a tag, not by a normal commit. The user says when:
   `Scripts/release.sh X.Y.Z` (checks main is clean and pushed, shows the notes, tags `vX.Y.Z`,
-  pushes the tag). CI (`.github/workflows/release.yml`) then runs the package tests, builds the DMG
+  pushes the tag). CI (`.github/workflows/release.yml`) then runs the package tests, builds separate Apple Silicon and Intel DMGs
   with the version taken from the tag, and publishes a GitHub Release with the generated notes,
-  the DMG and its `.sha256`, and the in-app updater's file-by-file release (`Scripts/package-update.sh`:
-  per-file zips, bsdiff patches from the last 3 releases, signed `files.json`). It then bumps `version` and `sha256` in the Homebrew cask
+  both DMGs and their checksums/signatures, and the in-app updater's file-by-file releases
+  (`Scripts/package-update.sh`: per-file zips, bsdiff patches from the last 3 releases, signed
+  `files.json` for Apple Silicon and `files-intel.json` for Intel). It then bumps `version` and both architecture hashes in the Homebrew cask
   (`v2macapp/homebrew-tap`, `Casks/v2mac.rb`), which needs the `TAP_TOKEN` secret: a fine-grained
   token for `homebrew-tap` only, Contents read and write, expiring 2027-01-23. Renew it before then.
-  CI also uploads the DMG as `V2Mac.dmg` for the website's Download button and asks the website to rebuild, which
+  CI also uploads stable aliases `V2Mac.dmg` and `V2Mac-Intel.dmg` for the website's Download buttons and asks the website to rebuild, which
   needs the `SITE_TOKEN` secret (Contents write on `v2macapp/v2macapp.github.io`); without it the step only warns.
 - Never create or push release tags on your own. Run `Scripts/release.sh` only when asked.
-- "Actions → Release → Run workflow" is a dry run: it builds and attaches the DMG and notes as an
+- "Actions → Release → Run workflow" is a dry run: it builds and attaches both DMGs and notes as an
   artifact and publishes nothing.
 
 ## Building and testing
