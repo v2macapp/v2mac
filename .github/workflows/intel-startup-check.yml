@@ -1,0 +1,30 @@
+name: Intel startup check
+on:
+  push:
+    branches: [macos14-intel]
+    paths: [.github/workflows/intel-startup-check.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  smoke:
+    runs-on: macos-15-intel
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: debug-x86_64
+          run-id: 42670062531
+          github-token: ${{ github.token }}
+      - name: Smoke test
+        run: |
+          ditto -x -k x86_64.zip .
+          Scripts/smoke-macos.sh "$PWD/V2MacDev.app" "$PWD/intel-snapshot"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: intel-startup-snapshots
+          path: |
+            intel-snapshot*.png
+            intel-snapshot.log
