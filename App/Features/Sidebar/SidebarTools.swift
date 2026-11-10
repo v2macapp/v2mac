@@ -24,7 +24,9 @@ struct SidebarTools: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        // minWidth 0: hovering Sandbox while the update pill is still open makes the row wider than the
+        // sidebar, and a wider inset pushed the list's items out of the column. Now the row overflows instead.
+        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
         .padding(12)
     }
 }
