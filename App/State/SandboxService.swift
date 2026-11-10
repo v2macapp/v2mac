@@ -124,16 +124,19 @@ final class SandboxService {
     }
 
     /// Fetches the newest release's signed description. Keeps the last one on failure (no network, no route yet).
-    func refresh() async {
-        guard Self.isSupported else { return }
+    /// Returns false when it could not be fetched, for Check Now.
+    @discardableResult
+    func refresh() async -> Bool {
+        guard Self.isSupported else { return false }
         #if DEBUG
-        if Self.debugPin != nil { return }
+        if Self.debugPin != nil { return true }
         #endif
-        guard let signed = try? await files.fetchLatest(download: ResumableDownload(routes: downloadRoutes())) else { return }
+        guard let signed = try? await files.fetchLatest(download: ResumableDownload(routes: downloadRoutes())) else { return false }
         if signed.pin != pin { updateSize = nil }
         signedPin = signed
         pin = signed.pin
         if updateAvailable { onUpdateFound(signed.pin) }
+        return true
     }
 
     /// Update Now, as for V2Mac itself: stops the sandbox (its apps close), then downloads the newest

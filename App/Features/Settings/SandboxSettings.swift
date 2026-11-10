@@ -7,6 +7,9 @@ struct SandboxSettings: View {
     @AppStorage("sandboxRAMCapMB") private var ramCapMB = 2048
     @State private var confirmRemove = false
     @State private var usage: Int64 = 0
+    /// Check Now: nil before a check, then whether it reached the release list.
+    @State private var checked: Bool?
+    @State private var checking = false
 
     private var sandbox: SandboxService { model.sandbox }
     /// Up to half of the Mac's memory, in 1 GB steps from 2 GB.
@@ -21,7 +24,7 @@ struct SandboxSettings: View {
                 Section("Version") {
                     LabeledContent("Installed", value: installedVersion ?? String(localized: "Unknown"))
                         .flashTarget("sandbox")
-                    if sandbox.updateAvailable { SandboxUpdateRow().flashTarget("sandboxUpdate") }
+                    if sandbox.updateAvailable { SandboxUpdateRow().flashTarget("sandboxUpdate") } else { checkRow }
                 }
             }
             Section {
@@ -56,6 +59,31 @@ struct SandboxSettings: View {
             }
         } message: {
             Text("Every mini VM and its data will be deleted.")
+        }
+    }
+
+    private var checkRow: some View {
+        HStack {
+            if checking {
+                ProgressView().controlSize(.small)
+                Text("Checking…").foregroundStyle(.secondary)
+            } else if checked == true {
+                Label("The Secure Sandbox (beta) is up to date.", systemImage: "checkmark.circle").foregroundStyle(.secondary)
+            } else if checked == false {
+                Text("Could not check for the sandbox. Check your connection and try again.").font(.caption).foregroundStyle(.secondary)
+            } else {
+                Text("Updates")
+            }
+            Spacer()
+            Button("Check Now") {
+                checking = true
+                Task {
+                    checked = await sandbox.refresh()
+                    checking = false
+                }
+            }
+            .controlSize(.small)
+            .disabled(checking)
         }
     }
 

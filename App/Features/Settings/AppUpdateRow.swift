@@ -34,7 +34,7 @@ struct AppUpdateRow: View {
             case .unavailable(let message):
                 Text(message).font(.caption).foregroundStyle(.secondary)
             case .idle:
-                EmptyView()
+                Text("Version \(Prefs.appVersion)")
             }
             if model.updates.availableAppUpdate == nil {
                 Spacer()
