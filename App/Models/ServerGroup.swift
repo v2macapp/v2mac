@@ -27,6 +27,8 @@ final class ServerGroup {
     var colorName: String?
     var supportURL: String?
     var webPageURL: String?
+    /// Disabled subscriptions keep only their name and URL: no servers, no updates.
+    var isDisabled: Bool = false
     @Relationship(deleteRule: .cascade, inverse: \Profile.group)
     var profiles: [Profile] = []
 

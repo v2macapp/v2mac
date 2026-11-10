@@ -28,7 +28,7 @@ struct SidebarView: View {
             }
 
             Section("Subscriptions") {
-                let subscriptions = groups.filter { !$0.isManual }
+                let subscriptions = groups.filter { !$0.isManual && !$0.isDisabled }
                 ForEach(subscriptions) { group in
                     SidebarRow(group: group)
                         .tag(SidebarItem.group(group.id))
@@ -36,6 +36,18 @@ struct SidebarView: View {
                 }
                 .onMove { source, destination in
                     model.moveGroups(subscriptions, from: source, to: destination)
+                }
+            }
+
+            let disabled = groups.filter(\.isDisabled)
+            if !disabled.isEmpty {
+                Section("Disabled") {
+                    ForEach(disabled) { group in
+                        SidebarRow(group: group)
+                            .foregroundStyle(.secondary)
+                            .tag(SidebarItem.group(group.id))
+                            .contextMenu { menu(for: group) }
+                    }
                 }
             }
 
@@ -70,11 +82,24 @@ struct SidebarView: View {
             // The group itself stays; only its servers can go.
             Button("Delete All Configs…", role: .destructive) { pendingDelete = group }
                 .disabled(group.profiles.isEmpty)
+        } else if group.isDisabled {
+            Button("Enable") { model.setDisabled(group, false) }
+            Divider()
+            Button("Edit…") { editing = group }
+            Button("Copy URL") { copyURL(group) }
+            Divider()
+            Button("Delete…", role: .destructive) { pendingDelete = group }
         } else {
             subscriptionMenu(for: group)
             Divider()
+            Button("Disable") { withAnimation { model.setDisabled(group, true) } }
             Button("Delete…", role: .destructive) { pendingDelete = group }
         }
+    }
+
+    private func copyURL(_ group: ServerGroup) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(group.subscriptionURL, forType: .string)
     }
 
     @ViewBuilder
@@ -88,10 +113,7 @@ struct SidebarView: View {
         .disabled(!model.connection.isRunning)
         Divider()
         Button("Edit…") { editing = group }
-        Button("Copy URL") {
-            NSPasteboard.general.clearContents()
-            NSPasteboard.general.setString(group.subscriptionURL, forType: .string)
-        }
+        Button("Copy URL") { copyURL(group) }
         Toggle("Auto-update", isOn: Binding(
             get: { group.autoUpdateEnabled },
             set: { group.autoUpdateEnabled = $0; model.save() }

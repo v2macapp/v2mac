@@ -487,6 +487,28 @@ final class AppModel {
         save()
     }
 
+    /// Disabling removes a subscription's servers and keeps only its name and URL; enabling fetches them again.
+    func setDisabled(_ group: ServerGroup, _ disabled: Bool) {
+        if disabled {
+            if let active = connection.activeServer, group.profiles.contains(where: { $0.id == active.id }) {
+                connection.disconnect()
+                connection.setActive(nil)
+            }
+            selectedProfileIDs.subtract(group.profiles.map(\.id))
+            for profile in group.profiles { context.delete(profile) }
+            group.lastUpdatedAt = nil
+        }
+        group.isDisabled = disabled
+        save()
+        sandbox.serversChanged()
+        guard !disabled else { return }
+        let id = group.id
+        Task {
+            await subscriptions.update(groupID: id, viaProxy: Prefs.subscriptionUpdateViaProxy && connection.isRunning)
+            sandbox.serversChanged()
+        }
+    }
+
     /// Deletes a subscription. The Custom Configs group only loses its servers and stays in the sidebar.
     func deleteGroup(_ group: ServerGroup) {
         if let active = connection.activeServer, group.profiles.contains(where: { $0.id == active.id }) {

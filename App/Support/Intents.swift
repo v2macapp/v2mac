@@ -193,7 +193,7 @@ struct GroupQuery: EntityQuery {
     func suggestedEntities() async throws -> [GroupEntity] {
         await MainActor.run {
             let groups = (try? AppDelegate.model?.context.fetch(FetchDescriptor<ServerGroup>(sortBy: [SortDescriptor(\.sortIndex)]))) ?? []
-            return groups.map { GroupEntity(id: $0.id, name: $0.displayName) }
+            return groups.filter { !$0.isDisabled }.map { GroupEntity(id: $0.id, name: $0.displayName) }
         }
     }
 }

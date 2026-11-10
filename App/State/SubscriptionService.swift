@@ -131,7 +131,7 @@ final class SubscriptionService {
         guard !updatingGroupIDs.contains(groupID) else { return }
         guard let group = try? container.mainContext.fetch(
             FetchDescriptor<ServerGroup>(predicate: #Predicate { $0.id == groupID })
-        ).first, let url = URL(string: group.subscriptionURL) else { return }
+        ).first, !group.isDisabled, let url = URL(string: group.subscriptionURL) else { return }
 
         updatingGroupIDs.insert(groupID)
         defer { updatingGroupIDs.remove(groupID) }
@@ -189,7 +189,7 @@ final class SubscriptionService {
 
     /// An expiry date comes closer without any update, so every group is looked at on each tick.
     func checkAllUsage() {
-        for group in (try? container.mainContext.fetch(FetchDescriptor<ServerGroup>())) ?? [] where !group.isManual {
+        for group in (try? container.mainContext.fetch(FetchDescriptor<ServerGroup>())) ?? [] where !group.isManual && !group.isDisabled {
             checkUsage(groupID: group.id, name: group.name, used: group.usedBytes, total: group.totalBytes, expiresAt: group.expiresAt)
         }
     }
