@@ -13,7 +13,9 @@ public enum SandboxLink {
     public struct Server: Codable, Sendable, Equatable {
         public var id: String
         public var name: String
-        public init(id: String, name: String) { self.id = id; self.name = name }
+        /// The sidebar group it belongs to, for the helper's picker sections; nil from older apps.
+        public var group: String?
+        public init(id: String, name: String, group: String? = nil) { self.id = id; self.name = name; self.group = group }
     }
 
     /// V2Mac → helper.

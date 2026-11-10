@@ -152,7 +152,10 @@ final class AppModel {
         // Sandbox plan §4: mini VMs exit through share-link servers and standalone JSON configs; V2Mac lets the kill switch pass them.
         sandbox.serverList = { [weak self] in
             let profiles = ((try? self?.context.fetch(FetchDescriptor<Profile>(sortBy: [SortDescriptor(\.name)]))) ?? []).filter { p in p.config.flatMap { SandboxLink.exitOutbound($0, kind: p.kind) } != nil }
-            return (profiles.map { .init(id: $0.id.uuidString, name: $0.name) }, connection.activeServer?.id.uuidString)
+            // Sidebar order: custom configs first, then each subscription, servers by name within.
+            func key(_ p: Profile) -> (Int, Int, String) { p.group.map { ($0.isManual ? 0 : 1, $0.sortIndex, p.name) } ?? (2, 0, p.name) }
+            return (profiles.sorted { key($0) < key($1) }.map { .init(id: $0.id.uuidString, name: $0.name, group: $0.group?.name) },
+                    connection.activeServer?.id.uuidString)
         }
         sandbox.outboundJSON = { [weak self] id in
             guard let uuid = UUID(uuidString: id), let profile = self?.profile(id: uuid),

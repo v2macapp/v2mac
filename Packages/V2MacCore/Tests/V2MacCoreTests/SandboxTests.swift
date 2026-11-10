@@ -9,7 +9,7 @@ import Testing
         let sent: [SandboxLink.ToHelper] = [
             .hello(version: 2, ramCapMB: 4096, core: "/x/xray"),
             .probe,
-            .servers([.init(id: "a", name: "Frankfurt")], active: "a"),
+            .servers([.init(id: "a", name: "Frankfurt"), .init(id: "b", name: "Paris", group: "Custom Configs")], active: "a"),
             .outbound(id: "a", json: nil),
             .quitRequest,
         ]
