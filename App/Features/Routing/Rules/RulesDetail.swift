@@ -254,6 +254,8 @@ private struct Token: View {
     private var label: String {
         if case .country(let code) = item { return model.ruleCatalog.geo.country(code).map { "\($0.flag) \($0.name)" } ?? code.uppercased() }
         if case .app(let entry) = item { return model.ruleCatalog.apps.appName(for: entry) ?? entry }
+        // A keyword matches anywhere in the name, as the wildcard it was typed as.
+        if item.kind == .keyword { return "*\(item.text)*" }
         return item.text
     }
 
