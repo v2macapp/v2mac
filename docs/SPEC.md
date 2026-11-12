@@ -1995,6 +1995,50 @@ section covers only V2Mac's part, which is all the sandbox code V2Mac has (`Sand
   which after one confirm stops the helper and deletes `sandbox/` and
   `~/Applications/V2Mac Sandbox/`.
 
+### 12.12 Connection drivers (planned, Phase D)
+
+Connection types Xray does not speak (OpenVPN, OpenConnect, sing-box protocols, Tor, IPsec, …) run as
+downloaded *drivers*. Their design, catalogue, index format, wrapper protocol and confinement live in
+`../drivers/docs/PLAN.md`; this section covers only V2Mac's part.
+
+- **The registry rule.** No driver may be installed, indexed, or executed unless its exact signed binary
+  has an approved confinement profile, a verified execution privilege level, and passing security tests.
+  If confinement cannot be enforced, execution must fail closed.
+- **Index.** The drivers' `index.json`, signed with the store key; fetched through the usual routes
+  (section 11) at launch, daily and when **+** opens; the last good copy is kept in `<data>/drivers/`,
+  so the catalogue works when GitHub is unreachable. Built-in types always show.
+- **+ sheet.** A searchable grid of connection types, grouped Stealth, Corporate VPN, Anonymity, Tunnel,
+  Import. Each card: icon, name, one line, a badge (*Built in*, *Installed*, *Download <size>*), *Needs
+  approval* for `utun` drivers, *Direct only* for drivers that cannot be chained. A type that is not
+  installed downloads first (progress, Cancel), then opens its form. Dropping a `.ovpn`/`.conf` or pasting
+  a link picks the type. Share links of driver types are also recognised in subscriptions.
+- **Forms.** Drawn from the index's `form[]` by one renderer. `secret` fields go to the Keychain (Secret
+  storage); the rest is stored on the server model as kind `driver(id)` with its fields as JSON.
+  `prompt-at-connect` asks in a sheet when the driver asks; `open-url` opens the system browser.
+- **Install.** `<data>/drivers/<id>/<version>/`, checked against the index (sha256, cdhash, Team ID,
+  entitlements, profile sha256) before it is moved into place.
+- **Launch.** The same checks again before every launch, then `posix_spawn` with only stdin, stdout and
+  stderr; `sandbox_check(pid)` after launch as a second check. Any failure: no launch or SIGKILL.
+- **Outbounds.** Each running driver has the tag `drv-<serverId>`. It is a `blackhole` from the start and
+  becomes a `socks` outbound (or a `freedom` outbound bound to the driver's utun) only after `ready`.
+  On a crash it goes back to `blackhole` and the driver restarts with backoff (1, 2, 4 … 30 s). A rule that
+  names a driver never falls back to direct; a fallback must be another server or group.
+- **Egress.** A driver dials out only through its own inbound `driver-out-<id>` (loopback SOCKS5 with UDP,
+  random port and password per session). Its route is `direct` on the physical interface, or the server
+  or group chosen in the form's "Connect through".
+- **Several drivers.** At connect the active server and every driver a rule, Via or group names are
+  started; drivers with `prompt-at-connect` start when first needed, with a notification.
+- **Features.** TCP ping always; real delay only while running or for `cheapStart` drivers; automatic
+  selection and balancer groups only for `cheapStart` drivers without prompts; exit check, counters and
+  the kill switch as usual, since all traffic goes through Xray.
+- **Root drivers** use the helper's one fixed action `startDriver(id, version, config)` (section 9.5,
+  "Managed root helper"); the app never passes a path, and `.ovpn` configs pass the allowlist parser first.
+- **Settings → Drivers.** Installed drivers with version, size, Update, Remove (blocked or warned while a
+  server uses one) and licenses with source links. Updates download in the background and apply on the
+  next connect of that driver; the index's `minApp`/`maxAppExclusive` keep incompatible ones out.
+- **PPTP** is not supported, on purpose. A PPTP config shows "PPTP is insecure and isn't supported. Ask
+  your VPN provider for OpenVPN, IKEv2, or SSTP."
+
 ## 13. Settings
 
 **Reset.** Every tab with settings ends with "Reset to Defaults…", and General also has
