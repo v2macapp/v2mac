@@ -50,6 +50,8 @@ final class SubscriptionService {
     /// Favorites a manual update found missing from their subscription (spec 6.6). An automatic
     /// update keeps them without asking.
     @ObservationIgnored var onMissingFavorites: @MainActor ([UUID]) -> Void = { _ in }
+    /// A group's servers were written: an update, a new subscription or added custom servers.
+    @ObservationIgnored var onUpdated: @MainActor () -> Void = { }
 
     private let container: ModelContainer
     private let store: SubscriptionStore
@@ -102,6 +104,7 @@ final class SubscriptionService {
         let result = outcome.result
         let typed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         let groupName = !typed.isEmpty ? typed : (result.metadata.title ?? url.host ?? "Subscription")
+        defer { onUpdated() }
         return try await store.createGroup(url: trimmed, name: groupName, outcome: outcome, viaProxy: viaProxy)
     }
 
@@ -115,6 +118,7 @@ final class SubscriptionService {
         }
         let (groupID, added) = try await store.addManual(result.profiles, groupName: ServerGroup.manualName)
         guard added > 0 else { throw AddSubscriptionError.alreadyAdded }
+        onUpdated()
         return groupID
     }
 
@@ -122,6 +126,7 @@ final class SubscriptionService {
     func addCustom(_ profiles: [ParsedProfile]) async throws -> UUID {
         let (groupID, added) = try await store.addManual(profiles, groupName: ServerGroup.manualName)
         guard added > 0 else { throw AddSubscriptionError.alreadyAdded }
+        onUpdated()
         return groupID
     }
 
@@ -146,6 +151,7 @@ final class SubscriptionService {
                 favoriteIDs: Set(favorites.map(\.id))
             )
             guard let summary else { return }
+            onUpdated()
             if !scheduled {
                 // Those the user already chose to keep are not asked about again.
                 let kept = Set(favorites.filter(\.keptAfterRemoval).map(\.id))

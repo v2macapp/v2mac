@@ -53,6 +53,8 @@ final class SandboxService {
     var onUpdateFound: (SandboxPin) -> Void = { _ in }
     /// The servers a mini VM can pick as its exit, and the active one's id.
     var serverList: () -> ([SandboxLink.Server], String?) = { ([], nil) }
+    /// Each listed server's settings, in `serverList`'s order: a change there must reach the mini VMs too.
+    var serverSettings: () -> [Data] = { [] }
     /// A server's ready outbound JSON (sandbox plan §4), or nil for one that can't be an exit.
     var outboundJSON: (String) async -> String? = { _ in nil }
     /// Debug hooks follow the link.
@@ -62,6 +64,12 @@ final class SandboxService {
     private var link: FileHandle?
     private var exitSource: DispatchSourceProcess?
     private var quitReply: CheckedContinuation<Bool, Never>?
+    /// Which `appsOpen` call `quitReply` belongs to, so an earlier call's timeout can't end a later one.
+    private var quitRequest = 0
+    /// Layer downloads in progress by SHA-256: two mini VMs installing one plugin share one download.
+    private var layerDownloads: [String: Task<URL?, Never>] = [:]
+    /// What `serversChanged` last sent: the list and each server's settings.
+    private var sentServers: (list: [SandboxLink.Server], settings: [Data])?
     private var downloadTask: Task<Void, Never>?
 
     init() {
@@ -238,7 +246,7 @@ final class SandboxService {
         let link = FileHandle(fileDescriptor: fds[0], closeOnDealloc: true)
         self.link = link
         send(.hello(version: SandboxLink.version, ramCapMB: Prefs.sandboxRAMCapMB, core: AppPaths.coreExecutable.path))
-        serversChanged()
+        serversChanged(force: true)
         nonisolated(unsafe) var reader = SandboxLink.Reader<SandboxLink.ToApp>()
         link.readabilityHandler = { handle in
             let data = handle.availableData
@@ -274,7 +282,13 @@ final class SandboxService {
             Task { send(.outbound(id: id, json: await outboundJSON(id))) }
         case .probe: break // debug hooks read it from onEvent
         case .download(let request, let url, let sha256):
-            Task { send(.downloaded(request: request, path: await fetchLayer(url, sha256: sha256)?.path)) }
+            Task {
+                let download = layerDownloads[sha256] ?? Task { await fetchLayer(url, sha256: sha256) }
+                layerDownloads[sha256] = download
+                let file = await download.value
+                layerDownloads[sha256] = nil
+                send(.downloaded(request: request, path: file?.path))
+            }
         case .fetch(let request, let url):
             Task { send(.downloaded(request: request, path: await fetchSmall(url, request: request)?.path)) }
         }
@@ -295,6 +309,9 @@ final class SandboxService {
         try? FileManager.default.createDirectory(at: cache, withIntermediateDirectories: true)
         do {
             try await ResumableDownload(routes: downloadRoutes()).fetch(url, to: partial, expectedSize: Self.maxLayer)
+        } catch DownloadError.http(416) {
+            // The partial file is already whole (V2Mac quit before checking it): the Range asked for nothing.
+            // Checked below like any download; a wrong one is removed, so the next try starts over.
         } catch {
             return nil
         }
@@ -355,9 +372,15 @@ final class SandboxService {
     }
 
     /// Sends the server list again; the helper then asks for every exit anew, so a changed server,
-    /// TUN mode or network binding reaches the mini VMs without restarting them.
-    func serversChanged() {
+    /// TUN mode or network binding reaches the mini VMs without restarting them. Only when the list or a
+    /// server's settings changed, since the helper then ends the mini VMs' open connections; `force` for a
+    /// new network binding (TUN mode), which changes neither.
+    func serversChanged(force: Bool = false) {
+        guard link != nil else { return }
         let (servers, active) = serverList()
+        let settings = serverSettings()
+        guard force || sentServers.map({ $0.list != servers || $0.settings != settings }) ?? true else { return }
+        sentServers = (servers, settings)
         send(.servers(servers, active: active))
     }
 
@@ -372,11 +395,14 @@ final class SandboxService {
     func appsOpen() async -> Bool {
         guard helper != nil else { return false }
         send(.quitRequest)
+        quitRequest += 1
+        let request = quitRequest
         return await withCheckedContinuation { continuation in
             quitReply?.resume(returning: false)
             quitReply = continuation
             Task {
                 try? await Task.sleep(for: .seconds(2))
+                guard quitRequest == request else { return }
                 quitReply?.resume(returning: false)
                 quitReply = nil
             }

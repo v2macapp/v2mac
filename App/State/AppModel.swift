@@ -84,6 +84,17 @@ final class AppModel {
             logs.append("[v2mac] Could not save changes: \(error.localizedDescription)")
             saveError = error.localizedDescription
         }
+        // A server added, edited or deleted here; sent only when the sandbox's list or settings changed.
+        sandbox.serversChanged()
+    }
+
+    /// The servers a mini VM can exit through, in sidebar order: custom configs first, then each
+    /// subscription, servers by name within.
+    private func sandboxExits() -> [Profile] {
+        let profiles = ((try? context.fetch(FetchDescriptor<Profile>(sortBy: [SortDescriptor(\.name)]))) ?? [])
+            .filter { p in p.config.flatMap { SandboxLink.exitOutbound($0, kind: p.kind) } != nil }
+        func key(_ p: Profile) -> (Int, Int, String) { p.group.map { ($0.isManual ? 0 : 1, $0.sortIndex, p.name) } ?? (2, 0, p.name) }
+        return profiles.sorted { key($0) < key($1) }
     }
 
     init() {
@@ -151,12 +162,12 @@ final class AppModel {
         sandbox.downloadRoutes = routes
         // Sandbox plan §4: mini VMs exit through share-link servers and standalone JSON configs; V2Mac lets the kill switch pass them.
         sandbox.serverList = { [weak self] in
-            let profiles = ((try? self?.context.fetch(FetchDescriptor<Profile>(sortBy: [SortDescriptor(\.name)]))) ?? []).filter { p in p.config.flatMap { SandboxLink.exitOutbound($0, kind: p.kind) } != nil }
-            // Sidebar order: custom configs first, then each subscription, servers by name within.
-            func key(_ p: Profile) -> (Int, Int, String) { p.group.map { ($0.isManual ? 0 : 1, $0.sortIndex, p.name) } ?? (2, 0, p.name) }
-            return (profiles.sorted { key($0) < key($1) }.map { .init(id: $0.id.uuidString, name: $0.name, group: $0.group?.name) },
-                    connection.activeServer?.id.uuidString)
+            ((self?.sandboxExits() ?? []).map { .init(id: $0.id.uuidString, name: $0.name, group: $0.group?.name) },
+             connection.activeServer?.id.uuidString)
         }
+        sandbox.serverSettings = { [weak self] in (self?.sandboxExits() ?? []).map(\.configJSON) }
+        // A subscription update can add, remove or change servers a mini VM exits through.
+        subscriptions.onUpdated = { [weak self] in self?.sandbox.serversChanged() }
         sandbox.outboundJSON = { [weak self] id in
             guard let uuid = UUID(uuidString: id), let profile = self?.profile(id: uuid),
                   let server = ActiveServer(profile), let exit = SandboxLink.exitOutbound(server.config, kind: server.kind) else { return nil }
@@ -164,7 +175,7 @@ final class AppModel {
             let json = SandboxLink.outbound(exit, tag: "proxy", interface: connection.testInterface)
             return (try? json.data()).map { String(decoding: $0, as: UTF8.self) }
         }
-        connection.onTunChanged = { [weak self] in self?.sandbox.serversChanged() }
+        connection.onTunChanged = { [weak self] in self?.sandbox.serversChanged(force: true) }
         updates.isCoreRunning = { connection.isRunning }
         updates.restartCore = { connection.reconnectIfRunning() }
         warp.route = { routes().first ?? .localProxy(port: connection.port) }  // none: a closed port, nothing leaves
