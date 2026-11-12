@@ -366,7 +366,11 @@ struct MenuBarPanel: View {
             HStack(spacing: 8) {
                 if let flag = exit.flag { Text(flag).font(.title3) }
                 VStack(alignment: .leading, spacing: 1) {
-                    Text(exit.place() ?? String(localized: "Unknown place")).font(.callout)
+                    HStack(spacing: 4) {
+                        Text("Exit:").foregroundStyle(.secondary)
+                        Text(exit.place() ?? String(localized: "Unknown place"))
+                    }
+                    .font(.callout)
                     Text(exit.ip).font(.caption.monospaced()).foregroundStyle(.secondary).textSelection(.enabled)
                 }
                 Spacer()

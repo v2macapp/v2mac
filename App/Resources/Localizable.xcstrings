@@ -232,82 +232,6 @@
         }
       }
     },
-    "Blue: through the server. Green: direct. Thin line: upload." : {
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "الأزرق: عبر الخادم. الأخضر: مباشر. الخط الرفيع: الرفع."
-          }
-        },
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blau: über den Server. Grün: direkt. Dünne Linie: Upload."
-          }
-        },
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "آبی: از طریق سرور. سبز: مستقیم. خط نازک: آپلود."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bleu : via le serveur. Vert : direct. Ligne fine : envoi."
-          }
-        },
-        "my" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "အပြာ- ဆာဗာမှတစ်ဆင့်။ အစိမ်း- တိုက်ရိုက်။ မျဉ်းပါး- အပ်လုဒ်။"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Azul: pelo servidor. Verde: direto. Linha fina: envio."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Синий: через сервер. Зелёный: напрямую. Тонкая линия: отдача."
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mavi: sunucu üzerinden. Yeşil: doğrudan. İnce çizgi: yükleme."
-          }
-        },
-        "ur" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "نیلا: سرور کے ذریعے۔ سبز: براہِ راست۔ باریک لکیر: اپ لوڈ۔"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Xanh dương: qua máy chủ. Xanh lá: trực tiếp. Nét mảnh: tải lên."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "蓝色：经服务器。绿色：直连。细线：上传。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "藍色：經伺服器。綠色：直連。細線：上傳。"
-          }
-        }
-      }
-    },
     "Disable" : {
       "localizations" : {
         "ar" : {
@@ -17230,6 +17154,82 @@
         }
       }
     },
+    "Blue: through the server. Green: direct. Thin line: upload." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الأزرق: عبر الخادم. الأخضر: مباشر. الخط الرفيع: الرفع."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blau: über den Server. Grün: direkt. Dünne Linie: Upload."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "آبی: از طریق سرور. سبز: مستقیم. خط نازک: آپلود."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bleu : via le serveur. Vert : direct. Ligne fine : envoi."
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "အပြာ- ဆာဗာမှတစ်ဆင့်။ အစိမ်း- တိုက်ရိုက်။ မျဉ်းပါး- အပ်လုဒ်။"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Azul: pelo servidor. Verde: direto. Linha fina: envio."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Синий: через сервер. Зелёный: напрямую. Тонкая линия: отдача."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mavi: sunucu üzerinden. Yeşil: doğrudan. İnce çizgi: yükleme."
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نیلا: سرور کے ذریعے۔ سبز: براہِ راست۔ باریک لکیر: اپ لوڈ۔"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Xanh dương: qua máy chủ. Xanh lá: trực tiếp. Nét mảnh: tải lên."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "蓝色：经服务器。绿色：直连。细线：上传。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "藍色：經伺服器。綠色：直連。細線：上傳。"
+          }
+        }
+      }
+    },
     "Bluetooth" : {
       "localizations" : {
         "fa" : {
@@ -33147,6 +33147,82 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ausgangsadresse %@"
+          }
+        }
+      }
+    },
+    "Exit:" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المخرج:"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgang:"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "خروجی:"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sortie :"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ထွက်ပေါက်-"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saída:"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Выход:"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çıkış:"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اخراج:"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lối ra:"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出口："
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出口："
           }
         }
       }

@@ -122,13 +122,24 @@ struct ConnectionBar: View {
 
     private var titleBlock: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Button { model.revealActiveServer() } label: {
-                Text(title).font(.headline).lineLimit(1)
+            HStack(spacing: 8) {
+                Button { model.revealActiveServer() } label: {
+                    Text(title).font(.headline).lineLimit(1)
+                }
+                .buttonStyle(.plain)
+                // Not `disabled`, which would dim "No server selected".
+                .allowsHitTesting(connection.activeServer != nil)
+                .help(connection.activeServer == nil ? "" : "Show this server in its list")
+                if connection.phase == .connected {
+                    Text(connection.connectedTitle)
+                        .font(.caption2.weight(.medium))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 2)
+                        .background(.quaternary, in: .capsule)
+                }
             }
-            .buttonStyle(.plain)
-            // Not `disabled`, which would dim "No server selected".
-            .allowsHitTesting(connection.activeServer != nil)
-            .help(connection.activeServer == nil ? "" : "Show this server in its list")
             subtitle
         }
     }
@@ -210,14 +221,14 @@ struct ConnectionBar: View {
             switch connection.exit {
             case .known(let exit):
                 // The green button and the routing menu already say "connected" and the mode.
-                status([connection.connectedTitle, exit.flag, exit.place(), exit.ip].compactMap { $0 }.joined(separator: "  "))
+                status(String(localized: "Exit:") + " " + [exit.flag, exit.place(), exit.ip].compactMap { $0 }.joined(separator: "  "))
                     .help("Where your traffic comes out: \(exit.place() ?? String(localized: "unknown place")), \(exit.ip)")
             case .failed:
-                status("\(connection.connectedTitle) · \(routingTitle)")
+                status(routingTitle)
                 Text("No answer through this server").font(.caption).foregroundStyle(.orange).lineLimit(1)
                     .help("The core is running, but a test request through the server got no answer.")
             case .checking, .unknown:
-                status("\(connection.connectedTitle) · \(routingTitle)")
+                status(routingTitle)
             }
             if connection.healthFailed {
                 Text("No response through the running proxy").font(.caption).foregroundStyle(.orange)
