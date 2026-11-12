@@ -62,6 +62,13 @@ final class ConnectionController {
     private(set) var recentServerIDs: [UUID] = Prefs.recentServerIDs
     private(set) var downRate: Double = 0
     private(set) var upRate: Double = 0
+    /// The part of `downRate` and `upRate` that goes direct; the rest goes through a server.
+    private(set) var directDownRate: Double = 0
+    private(set) var directUpRate: Double = 0
+    var proxyDownRate: Double { max(downRate - directDownRate, 0) }
+    var proxyUpRate: Double { max(upRate - directUpRate, 0) }
+    /// The running config's direct outbounds, whose counters split the traffic.
+    @ObservationIgnored private var directTags: [String] = []
     /// Session and total traffic (spec 12.8); counted only while `Prefs.countTraffic` is on.
     private(set) var usage = Prefs.trafficUsage
     /// The running core's last counters, so each poll adds only what is new.
@@ -75,6 +82,8 @@ final class ConnectionController {
         let id: Int
         let down: Double
         let up: Double
+        var directDown: Double = 0
+        var directUp: Double = 0
     }
     private var sampleCounter = 0
 
@@ -729,6 +738,7 @@ final class ConnectionController {
             case .custom:
                 config = try ConfigBuilder.buildCustom(config: server.config, options: options(metrics: metrics, api: nil), routing: plan, custom: custom)
             }
+            directTags = StatsClient.directTags(of: config)
             if tunLink != nil { tun.requestApps(ConfigBuilder.tunApps(of: config)) }
             logs.append("[v2mac] Connecting to \(server.name)")
             watcher.routingMode = routingMode
@@ -816,6 +826,8 @@ final class ConnectionController {
             lastCounters = nil
             downRate = 0
             upRate = 0
+            directDownRate = 0
+            directUpRate = 0
             rateHistory = []
         }
     }
@@ -824,7 +836,7 @@ final class ConnectionController {
         guard let metricsPort else { return }
         statsTask?.cancel()
         statsTask = Task { [weak self] in
-            let client = StatsClient(port: metricsPort)
+            let client = StatsClient(port: metricsPort, directTags: self?.directTags ?? [])
             var previous: TrafficSnapshot?
             while !Task.isCancelled {
                 if let (snapshot, observatory) = try? await client.read() {
@@ -837,7 +849,10 @@ final class ConnectionController {
                         let rate = snapshot.rate(since: previous)
                         self?.downRate = rate.downBytesPerSecond
                         self?.upRate = rate.upBytesPerSecond
-                        self?.record(down: rate.downBytesPerSecond, up: rate.upBytesPerSecond)
+                        self?.directDownRate = rate.directDownBytesPerSecond
+                        self?.directUpRate = rate.directUpBytesPerSecond
+                        self?.record(RateSample(id: 0, down: rate.downBytesPerSecond, up: rate.upBytesPerSecond,
+                                                directDown: rate.directDownBytesPerSecond, directUp: rate.directUpBytesPerSecond))
                         self?.watchSpeed(rate.downBytesPerSecond)
                     }
                     previous = snapshot
@@ -853,13 +868,17 @@ final class ConnectionController {
         rateHistory = (1...60).map { i in
             let t = Double(i)
             let down = (2.2 + sin(t / 6) * 1.2 + sin(t / 2.3) * 0.5 + (i > 40 && i < 50 ? 2.5 : 0)) * 1_048_576
-            return RateSample(id: i, down: down, up: (0.4 + sin(t / 4) * 0.25) * 1_048_576)
+            let up = (0.4 + sin(t / 4) * 0.25) * 1_048_576
+            return RateSample(id: i, down: down, up: up, directDown: down * (0.25 + sin(t / 9) * 0.15), directUp: up * 0.3)
         }
         sampleCounter = 60
         downRate = rateHistory[59].down
         upRate = rateHistory[59].up
+        directDownRate = rateHistory[59].directDown
+        directUpRate = rateHistory[59].directUp
         usage.startSession(at: Date().addingTimeInterval(-4000))
-        usage.add(up: 88_000_000, down: 1_340_000_000)
+        usage.add(up: 88_000_000, down: 1_340_000_000, direct: 310_000_000)
+        coreState = .running  // display only: shows the bar's graph without a core
     }
     #endif
 
@@ -867,7 +886,7 @@ final class ConnectionController {
         let new = snapshot.bytes(since: lastCounters)
         lastCounters = snapshot
         guard Prefs.countTraffic, new.up > 0 || new.down > 0 else { return }
-        usage.add(up: new.up, down: new.down)
+        usage.add(up: new.up, down: new.down, direct: new.direct)
         guard ContinuousClock.now - usageSaved >= .seconds(30) else { return }
         saveUsage()
     }
@@ -898,9 +917,9 @@ final class ConnectionController {
         requestConnect(server, mayLiveSwitch: true, selection: .degraded)
     }
 
-    private func record(down: Double, up: Double) {
+    private func record(_ sample: RateSample) {
         sampleCounter += 1
-        rateHistory.append(RateSample(id: sampleCounter, down: down, up: up))
+        rateHistory.append(RateSample(id: sampleCounter, down: sample.down, up: sample.up, directDown: sample.directDown, directUp: sample.directUp))
         if rateHistory.count > 60 { rateHistory.removeFirst(rateHistory.count - 60) }
     }
 }

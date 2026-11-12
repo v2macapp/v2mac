@@ -155,8 +155,8 @@ private struct InspectorLive: View {
         VStack(alignment: .leading, spacing: 6) {
             TrafficSparkline(samples: connection.rateHistory).frame(height: 36)
             HStack(spacing: 14) {
-                Label(Format.rate(connection.downRate), systemImage: "arrow.down")
-                Label(Format.rate(connection.upRate), systemImage: "arrow.up")
+                Label { ProxyOfTotal(proxy: Format.rate(connection.proxyDownRate), total: Format.rate(connection.downRate)) } icon: { Image(systemName: "arrow.down") }
+                Label { ProxyOfTotal(proxy: Format.rate(connection.proxyUpRate), total: Format.rate(connection.upRate)) } icon: { Image(systemName: "arrow.up") }
             }
             .font(.caption.monospacedDigit())
             // No rolling digits: they change every second, and the transition blurs text on the CPU.

@@ -9,10 +9,10 @@ struct UsageDetails: View {
     var body: some View {
         let usage = connection.usage
         VStack(alignment: .leading, spacing: 12) {
-            section("This Session", up: usage.sessionUp, down: usage.sessionDown,
+            section("This Session", up: usage.sessionUp, down: usage.sessionDown, proxy: usage.sessionProxy,
                     note: usage.sessionStart.map { String(localized: "Since \($0.formatted(date: .abbreviated, time: .shortened))") })
             Divider()
-            section("Total", up: usage.totalUp, down: usage.totalDown,
+            section("Total", up: usage.totalUp, down: usage.totalDown, proxy: usage.totalProxy,
                     note: usage.totalSince.map { String(localized: "Since \($0.formatted(date: .abbreviated, time: .omitted))") })
             Button("Reset Total") { connection.resetTotalUsage() }
                 .controlSize(.small)
@@ -22,7 +22,8 @@ struct UsageDetails: View {
         .frame(width: 240, alignment: .leading)
     }
 
-    private func section(_ title: LocalizedStringKey, up: Int64, down: Int64, note: String?) -> some View {
+    /// `proxy`: what went through the server, when known (usage counted before 1.12 has no split).
+    private func section(_ title: LocalizedStringKey, up: Int64, down: Int64, proxy: Int64?, note: String?) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(title).font(.headline)
@@ -32,11 +33,21 @@ struct UsageDetails: View {
             Grid(alignment: .leading, horizontalSpacing: 8, verticalSpacing: 2) {
                 GridRow {
                     Label("Downloaded", systemImage: "arrow.down")
-                    Text(Format.bytes(down)).monospacedDigit().gridColumnAlignment(.trailing)
+                    Text(Format.bytes(down)).monospacedDigit().frame(maxWidth: .infinity, alignment: .trailing)
                 }
                 GridRow {
                     Label("Uploaded", systemImage: "arrow.up")
-                    Text(Format.bytes(up)).monospacedDigit()
+                    Text(Format.bytes(up)).monospacedDigit().frame(maxWidth: .infinity, alignment: .trailing)
+                }
+                if let proxy {
+                    GridRow {
+                        Label { Text("Proxy") } icon: { Image(systemName: "lock.shield").foregroundStyle(Color.accentColor) }
+                        Text(Format.bytes(proxy)).monospacedDigit().frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                    GridRow {
+                        Label { Text("Direct") } icon: { Image(systemName: "arrow.right.circle").foregroundStyle(.green) }
+                        Text(Format.bytes(max(up + down - proxy, 0))).monospacedDigit().frame(maxWidth: .infinity, alignment: .trailing)
+                    }
                 }
             }
             .font(.callout)
@@ -56,7 +67,13 @@ struct SessionUsageButton: View {
         Button { showsDetails.toggle() } label: {
             HStack(spacing: 4) {
                 if showsTitle { Text("This session") }
-                Label(Format.bytes(connection.usage.session), systemImage: "chart.bar")
+                Label {
+                    if let proxy = connection.usage.sessionProxy {
+                        ProxyOfTotal(proxy: Format.bytes(proxy), total: Format.bytes(connection.usage.session))
+                    } else {
+                        Text(Format.bytes(connection.usage.session))
+                    }
+                } icon: { Image(systemName: "chart.bar") }
                     .contentTransition(.numericText())
             }
             .contentShape(.rect)

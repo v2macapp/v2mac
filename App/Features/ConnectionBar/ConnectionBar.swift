@@ -303,7 +303,8 @@ private struct RateReadout: View {
         HStack(spacing: spacing) {
             TrafficSparkline(samples: connection.rateHistory)
                 .frame(width: sparklineWidth, height: 26)
-            RateLabels(down: connection.downRate, up: connection.upRate, layout: layout, connection: showsUsage ? connection : nil)
+            RateLabels(down: connection.downRate, up: connection.upRate, proxyDown: connection.proxyDownRate, proxyUp: connection.proxyUpRate,
+                       layout: layout, connection: showsUsage ? connection : nil)
                 .font(.caption.monospacedDigit())
                 // No rolling digits: they change every second, and the transition blurs text on the CPU.
                 .foregroundStyle(.secondary)
@@ -315,20 +316,22 @@ private struct RateReadout: View {
 private struct RateLabels: View {
     let down: Double
     let up: Double
+    var proxyDown: Double = 0
+    var proxyUp: Double = 0
     let layout: ConnectionBar.RateLayout
     /// Set when this session's usage is shown (inline only; the stacked layout has no room).
     var connection: ConnectionController?
 
     var body: some View {
-        let down = label(down, systemImage: "arrow.down")
-        let up = label(up, systemImage: "arrow.up")
+        let down = label(proxyDown, down, systemImage: "arrow.down")
+        let up = label(proxyUp, up, systemImage: "arrow.up")
         switch layout {
         case .inline:
             HStack(spacing: 10) {
                 down; up
                 if let connection {
                     // Reserves a wide amount, like the rates, so nothing moves as it grows.
-                    Label("1,023.9 MB", systemImage: "chart.bar").hidden()
+                    Label("1,023.9 MB / 1,023.9 MB", systemImage: "chart.bar").hidden()
                         .overlay(alignment: .leading) { SessionUsageButton(connection: connection) }
                 }
             }
@@ -338,9 +341,11 @@ private struct RateLabels: View {
 
     /// Reserves the width of the widest rate, so the graph and its neighbours hold still
     /// while the numbers change.
-    private func label(_ rate: Double, systemImage: String) -> some View {
-        Label("1,023 KB/s", systemImage: systemImage)
+    private func label(_ proxy: Double, _ total: Double, systemImage: String) -> some View {
+        Label("1,023 KB/s / 1,023 KB/s", systemImage: systemImage)
             .hidden()
-            .overlay(alignment: .leading) { Label(Format.rate(rate), systemImage: systemImage) }
+            .overlay(alignment: .leading) {
+                Label { ProxyOfTotal(proxy: Format.rate(proxy), total: Format.rate(total)) } icon: { Image(systemName: systemImage) }
+            }
     }
 }

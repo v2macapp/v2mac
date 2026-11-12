@@ -648,17 +648,23 @@ private struct PanelRates: View {
         VStack(alignment: .leading, spacing: 6) {
             TrafficSparkline(samples: connection.rateHistory)
                 .frame(height: 34)
-            HStack(spacing: 14) {
-                Label(Format.rate(connection.downRate), systemImage: "arrow.down")
-                Label(Format.rate(connection.upRate), systemImage: "arrow.up")
-                if countTraffic {
-                    Spacer()
-                    SessionUsageButton(connection: connection)
-                }
+            let down = Label { ProxyOfTotal(proxy: Format.rate(connection.proxyDownRate), total: Format.rate(connection.downRate)) } icon: { Image(systemName: "arrow.down") }
+            let up = Label { ProxyOfTotal(proxy: Format.rate(connection.proxyUpRate), total: Format.rate(connection.upRate)) } icon: { Image(systemName: "arrow.up") }
+            // One row when it fits; otherwise the rates stack, with the usage beside them.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 14) { down; up; usage }
+                HStack(alignment: .bottom) { VStack(alignment: .leading, spacing: 2) { down; up }; usage }
             }
             .font(.caption.monospacedDigit())
             // No rolling digits: they change every second, and the transition blurs text on the CPU.
             .foregroundStyle(.secondary)
+        }
+    }
+
+    @ViewBuilder private var usage: some View {
+        if countTraffic {
+            Spacer(minLength: 8)
+            SessionUsageButton(connection: connection)
         }
     }
 }

@@ -10,6 +10,32 @@ import Testing
         #expect(s.uplink == 3965)
     }
 
+    @Test func splitsDirectFromProxy() throws {
+        let json = #"{"stats":{"inbound":{"mixed-in":{"downlink":1000,"uplink":100}},"outbound":{"direct":{"downlink":300,"uplink":40},"proxy":{"downlink":700,"uplink":60}}}}"#
+        let t0 = Date(timeIntervalSince1970: 0)
+        let s = try StatsClient.parse(Data(json.utf8), inboundTags: ["mixed-in"], directTags: ["direct"], now: t0.addingTimeInterval(1))
+        #expect(s.directDownlink == 300 && s.directUplink == 40)
+        let r = s.rate(since: TrafficSnapshot(uplink: 0, downlink: 0, date: t0))
+        #expect(r.directDownBytesPerSecond == 300 && r.downBytesPerSecond == 1000)
+        var usage = TrafficUsage()
+        let d = s.bytes(since: nil)
+        usage.add(up: d.up, down: d.down, direct: d.direct)
+        #expect(usage.sessionProxy == 760 && usage.totalProxy == 760)
+        // Usage saved before the split decodes with an unknown proxy share.
+        let old = try JSONDecoder().decode(TrafficUsage.self, from: Data(#"{"sessionUp":1,"sessionDown":2,"totalUp":3,"totalDown":4}"#.utf8))
+        #expect(old.totalProxy == nil && old.total == 7)
+    }
+
+    @Test func directTagsSkipDialers() {
+        let config: JSONValue = ["outbounds": [
+            ["tag": "proxy", "protocol": "vless", "streamSettings": ["sockopt": ["dialerProxy": "frag"]]],
+            ["tag": "frag", "protocol": "freedom"],
+            ["tag": "direct", "protocol": "freedom"],
+            ["tag": "block", "protocol": "blackhole"],
+        ]]
+        #expect(StatsClient.directTags(of: config) == ["direct"])
+    }
+
     @Test func missingCountersAreZero() throws {
         let s = try StatsClient.parse(Data(#"{"cmdline":[]}"#.utf8), inboundTag: "mixed-in")
         #expect(s.downlink == 0 && s.uplink == 0)

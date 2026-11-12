@@ -171,10 +171,10 @@ extension ConfigBuilder {
             .setting("metrics", to: metricsSection(port: options.metricsPort))
             .setting("stats", to: config["stats"] ?? [:])
 
-        // Merge the two stats flags into any existing policy.
+        // Merge the stats flags into any existing policy.
         var policy = config["policy"] ?? [:]
         var system = policy["system"] ?? [:]
-        system = system.setting("statsInboundUplink", to: true).setting("statsInboundDownlink", to: true)
+        for flag in ["statsInboundUplink", "statsInboundDownlink", "statsOutboundUplink", "statsOutboundDownlink"] { system = system.setting(flag, to: true) }
         policy = policy.setting("system", to: system)
         out = out.setting("policy", to: policy)
 

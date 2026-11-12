@@ -127,7 +127,7 @@ public enum ConfigBuilder {
     }
 
     static var statsPolicy: JSONValue {
-        ["system": ["statsInboundUplink": true, "statsInboundDownlink": true]]
+        ["system": ["statsInboundUplink": true, "statsInboundDownlink": true, "statsOutboundUplink": true, "statsOutboundDownlink": true]]
     }
 
     /// Loopback and "this host" ranges: through these, a LAN client would reach the API, the
