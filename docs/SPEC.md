@@ -2009,7 +2009,10 @@ downloaded *drivers*. Their design, catalogue, index format, wrapper protocol an
   fetched through the usual routes (section 11) at launch, daily and when **+** opens. The last good copy
   and the highest accepted `version` are kept in `<data>/drivers/`; a lower version is refused. An expired
   index installs and updates nothing, but installed drivers keep running on it, with "Driver list out of
-  date" shown, since the user may need one to get online. Built-in types always show.
+  date" shown, since the user may need one to get online. Built-in types always show. An index whose
+  `schema` is higher than the app knows is refused and the last good copy kept. A driver revoked by an
+  accepted index is killed at once, its outbound goes to blackhole, it is removed and the user is told
+  why; its servers stay, marked as needing the next version.
 - **+ sheet.** A searchable grid of connection types, grouped Stealth, Corporate VPN, Anonymity, Tunnel,
   Import. Each card: icon, name, one line, a badge (*Built in*, *Installed*, *Download <size>*), *Needs
   approval* for `utun` drivers, *Direct only* for drivers that cannot be chained. A type that is not
@@ -2017,25 +2020,36 @@ downloaded *drivers*. Their design, catalogue, index format, wrapper protocol an
   a link picks the type. Share links of driver types are also recognised in subscriptions.
 - **Forms.** Drawn from the index's `form[]` by one renderer. `secret` fields go to the Keychain (Secret
   storage); the rest is stored on the server model as kind `driver(id)` with its fields as JSON.
-  `prompt-at-connect` asks in a sheet when the driver asks; `open-url` opens the system browser.
-- **Install.** `<data>/drivers/<id>/<version>/`, checked against the index (sha256, cdhash, Team ID,
-  entitlements, profile sha256) before it is moved into place.
-- **Launch.** The same checks again before every launch, then `posix_spawn` with only stdin, stdout and
-  stderr; `sandbox_check(pid)` after launch as a second check. Any failure: no launch or SIGKILL.
+  `prompt-at-connect` asks in a sheet when the driver asks (at most 5 per connect); `open-url` opens the
+  system browser, for `https` URLs only and after showing the host, since the URL comes from the server.
+- **Install.** Unpacked beside `<data>/drivers/<id>/<version>/` and checked against the index (archive
+  sha256, the cdhash of every executable for both architectures, Team ID, entitlements, profile sha256;
+  an executable the index does not list fails the install), then moved into place with one rename.
+- **Launch.** The same checks again before every launch, then `posix_spawn` with an empty environment
+  and only stdin, stdout and stderr. The folder is writable by the user's other processes, so the check
+  that counts is on the **running process**: its code identity (cdhash, Team ID, by audit token) must
+  match the index and `sandbox_check(pid)` must confirm the sandbox. Only then are the config and secrets
+  written to its stdin. Any failure: no launch or SIGKILL. A message over 64 KiB, an unknown event, or no
+  `ready` within 60 seconds (not counting an open prompt) also closes the driver.
 - **Outbounds.** Each running driver has the tag `drv-<serverId>`. It is a `blackhole` from the start and
   becomes a `socks` outbound (or a `freedom` outbound bound to the driver's utun) only after `ready`.
+  The `socks` outbound uses a random username and password per session, which the driver's listener
+  requires, and sends domain names unresolved, so a VPN's own DNS resolves them. UDP is not sent to a
+  driver whose protocol has `udp: false`.
   On a crash it goes back to `blackhole` and the driver restarts with backoff (1, 2, 4 … 30 s). A rule that
   names a driver never falls back to direct; a fallback must be another server or group.
 - **Egress.** A driver dials out only through its own inbound `driver-out-<id>` (loopback SOCKS5 with UDP,
   random port and password per session). Its route is `direct` on the physical interface, or the server
-  or group chosen in the form's "Connect through".
+  or group chosen in the form's "Connect through". The driver's sandbox allows loopback only, so this
+  holds even for a faulty driver.
 - **Several drivers.** At connect the active server and every driver a rule, Via or group names are
   started; drivers with `prompt-at-connect` start when first needed, with a notification.
 - **Features.** TCP ping always; real delay only while running or for `cheapStart` drivers; automatic
   selection and balancer groups only for `cheapStart` drivers without prompts; exit check, counters and
   the kill switch as usual, since all traffic goes through Xray.
 - **Root drivers** use the helper's one fixed action `startDriver(id, version, config)` (section 9.5,
-  "Managed root helper"); the app never passes a path, and `.ovpn` configs pass the allowlist parser first.
+  "Managed root helper"); the app never passes a path, the helper runs its own root-owned copy of the
+  driver, and `.ovpn` configs pass the allowlist parser first.
 - **Settings → Drivers.** Installed drivers with version, size, Update, Remove (blocked or warned while a
   server uses one) and licenses with source links. Updates download in the background and apply on the
   next connect of that driver; the index's `minApp`/`maxAppExclusive` keep incompatible ones out.
