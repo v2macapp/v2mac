@@ -19,6 +19,7 @@ struct ServerListView: View {
 
     @State private var sortOrder = [KeyPathComparator(\ServerRow.sortIndex)]
     @State private var rowCache = RowCache()
+    @AppStorage("inspectorWidth") private var inspectorWidth = 260.0
 
     private var selectedGroupID: UUID? {
         if case .group(let id) = model.sidebarSelection { return id }
@@ -119,8 +120,9 @@ struct ServerListView: View {
                 // run up behind the toolbar and show as an edge through the search field.
                 InspectorPane(profiles: profiles)
                     .scrollContentBackground(.hidden)
-                    .frame(width: 260)
+                    .frame(width: inspectorWidth)
                     .overlay(alignment: .leading) { Divider() }
+                    .overlay(alignment: .leading) { InspectorResizeHandle(width: $inspectorWidth) }
             }
         }
         .searchable(text: $model.searchText, prompt: "Search")
@@ -330,6 +332,28 @@ private struct ToolbarSplitButton<MenuContent: View>: View {
             .help(menuHelp)
         }
         .buttonStyle(.plain)
+    }
+}
+
+/// The inspector's left edge, dragged to change its width like the sidebar's.
+private struct InspectorResizeHandle: View {
+    @Binding var width: Double
+    @State private var start: Double?
+
+    var body: some View {
+        Color.clear
+            .frame(width: 8)
+            .contentShape(.rect)
+            .offset(x: -4)
+            .onHover { $0 ? NSCursor.resizeLeftRight.push() : NSCursor.pop() }
+            .gesture(DragGesture(minimumDistance: 1, coordinateSpace: .global)
+                .onChanged { drag in
+                    let from = start ?? width
+                    start = from
+                    width = min(max(from - drag.translation.width, 240), 440)
+                }
+                .onEnded { _ in start = nil })
+            .accessibilityHidden(true)
     }
 }
 
