@@ -2004,9 +2004,12 @@ downloaded *drivers*. Their design, catalogue, index format, wrapper protocol an
 - **The registry rule.** No driver may be installed, indexed, or executed unless its exact signed binary
   has an approved confinement profile, a verified execution privilege level, and passing security tests.
   If confinement cannot be enforced, execution must fail closed.
-- **Index.** The drivers' `index.json`, signed with the store key; fetched through the usual routes
-  (section 11) at launch, daily and when **+** opens; the last good copy is kept in `<data>/drivers/`,
-  so the catalogue works when GitHub is unreachable. Built-in types always show.
+- **Index.** The drivers' `index.json`, signed with the Driver Registry key (pinned in Info.plist as
+  `DriverRegistryKey`, rotated only through a `keys.json` signed by a trusted key; drivers plan §4.1);
+  fetched through the usual routes (section 11) at launch, daily and when **+** opens. The last good copy
+  and the highest accepted `version` are kept in `<data>/drivers/`; a lower version is refused. An expired
+  index installs and updates nothing, but installed drivers keep running on it, with "Driver list out of
+  date" shown, since the user may need one to get online. Built-in types always show.
 - **+ sheet.** A searchable grid of connection types, grouped Stealth, Corporate VPN, Anonymity, Tunnel,
   Import. Each card: icon, name, one line, a badge (*Built in*, *Installed*, *Download <size>*), *Needs
   approval* for `utun` drivers, *Direct only* for drivers that cannot be chained. A type that is not
