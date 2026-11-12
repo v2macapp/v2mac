@@ -118,7 +118,7 @@ private struct RuleEditor: View {
         Menu {
             Button("Proxy (connected server)", systemImage: Rule.Action.proxy.symbol) { edit { $0.action = .proxy } }
             Menu("Via") {
-                ForEach(groups) { group in
+                ForEach(groups.filter { !$0.isDisabled }) { group in
                     Menu(group.name) {
                         Button("Fastest of the group") { setVia(.group(group.id), group.name) }
                         Divider()
@@ -126,6 +126,12 @@ private struct RuleEditor: View {
                             Button(profile.name) { setVia(.server(profile.id), profile.name) }
                         }
                     }
+                }
+                // Disabled subscriptions have no servers: listed last, greyed out.
+                let disabled = groups.filter(\.isDisabled)
+                if !disabled.isEmpty {
+                    Divider()
+                    ForEach(disabled) { group in Button(group.name) {}.disabled(true) }
                 }
             }
             Button("Direct", systemImage: Rule.Action.direct.symbol) { edit { $0.action = .direct } }
