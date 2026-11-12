@@ -154,14 +154,6 @@ import Testing
         #expect(findings([via]) { $0.mode = .direct }.contains { $0.fixes.first?.edits == [.useGlobalMode] })
     }
 
-    @Test func tunModeOffersHostsForAnApp() throws {
-        let rule = Rule(name: "Chat", action: .proxy, items: [.app("com.example.chat")])
-        let found = try #require(findings([rule]) { $0.tun = true; $0.seenHosts = ["/Applications/Chat.app": ["a.chat.example", "b.chat.example"]] }.first { $0.title.contains("TUN") })
-        #expect(RuleDoctor.apply(fixes([found]), to: [rule])[0].items == [.host("domain:chat.example")])
-        let nothing = try #require(findings([rule]) { $0.tun = true }.first { $0.title.contains("TUN") })
-        #expect(nothing.fixes.isEmpty)
-    }
-
     @Test func trailingRulesMatchingTheDefaultAreOptional() throws {
         let block = Rule(name: "B", action: .block, items: [.host("domain:a.example")])
         let proxy = Rule(name: "P", action: .proxy, items: [.host("domain:b.example")])

@@ -15,7 +15,6 @@ extension AppModel {
         input.failingTargets = Set(connection.viaStatus.filter(\.value.allFailing).keys)
         input.mode = connection.routingMode
         input.blockQUIC = UserDefaults.standard.bool(forKey: "blockQUIC")
-        input.tun = connection.tun.isEnabled
         let unmatched = CustomRule.Action(rawValue: UserDefaults.standard.string(forKey: "unmatchedRoute") ?? "")
         input.defaultRoute = switch (connection.routingMode, unmatched) {
         case (.direct, _), (.bypassRegions, nil): nil

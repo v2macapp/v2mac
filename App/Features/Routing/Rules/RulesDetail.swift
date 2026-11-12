@@ -234,10 +234,6 @@ private struct Token: View {
         HStack(spacing: 4) {
             icon
             Text(label).lineLimit(1).truncationMode(.middle)
-            if item.kind == .app, model.connection.tun.isEnabled {
-                Image(systemName: "exclamationmark.triangle.fill").font(.caption2).foregroundStyle(.orange)
-                    .help("In TUN mode app entries match only apps that use the proxy port.")
-            }
             Button("Remove", systemImage: "xmark") { change(item, nil) }
                 .labelStyle(.iconOnly)
                 .buttonStyle(.plain)

@@ -12,7 +12,6 @@ public struct DoctorInput: Sendable {
     public var defaultRoute: Rule.Action?
     public var mode = RoutingMode.global
     public var blockQUIC = false
-    public var tun = false
     /// Hosts each app (its `.app` folder or executable) was seen connecting to.
     public var seenHosts: [String: Set<String>] = [:]
 
@@ -353,7 +352,6 @@ private struct Run {
         checkEntries(rule, label)
         checkConditions(rule, label)
         checkVia(rule, label)
-        if input.tun, rule.enabled, rule.needsApps { checkTun(rule, label) }
     }
 
     private mutating func checkPorts(_ rule: Rule, _ label: String) {
@@ -488,24 +486,6 @@ private struct Run {
         case (.server, .server), (.group, .group): true
         default: false
         }
-    }
-
-    /// In TUN mode the core cannot see apps: what an app reaches must be named by host instead.
-    private mutating func checkTun(_ rule: Rule, _ label: String) {
-        var edits: [DoctorEdit] = [], names: [String] = []
-        for item in rule.items {
-            guard case .app(let entry) = item else { continue }
-            var hosts = Set(seen(entry).compactMap { EntryGroups.registeredDomain(ofHost: $0) }.map { Rule.Item.host("domain:" + $0) })
-            if let stem = stem(entry), input.geo.containsList("geosite:" + stem) { hosts = [.host("geosite:" + stem)] }
-            guard !hosts.isEmpty else { continue }
-            edits.append(.replaceItems(rule.id, remove: [item], add: hosts.sorted { $0.text < $1.text }))
-            names.append(entry)
-        }
-        add(.warning, String(localized: "“\(label)” matches apps, which TUN mode cannot see"),
-            edits.isEmpty ? String(localized: "It applies only to apps set to use the proxy port. Use the app with this window open, then run the Doctor again to replace it with the hosts it reaches.")
-                : String(localized: "It applies only to apps set to use the proxy port. Hosts make it work for every connection."),
-            edits.isEmpty ? [] : [DoctorFix(title: String(localized: "Replace \(names.joined(separator: ", ")) with the hosts it reaches"), changesRouting: true, edits: edits)],
-            preselected: false)
     }
 
     /// The app's name as a brand ("Spotify.app" → "spotify"), when it is one word.

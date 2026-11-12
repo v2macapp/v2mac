@@ -273,9 +273,6 @@ extension AppModel {
         }
         let invalid = rule.items.filter { $0.kind == .invalid }
         if !invalid.isEmpty { out.append(String(localized: "Not understood, so ignored: \(invalid.map(\.text).joined(separator: ", "))")) }
-        if rule.needsApps, connection.tun.isEnabled {
-            out.append(String(localized: "In TUN mode app entries match only apps that use the proxy port: the core cannot see which app a TUN connection comes from."))
-        }
         if !rule.only.ports.isEmpty, !Rule.OnlyWhen.validPorts(rule.only.ports.replacingOccurrences(of: " ", with: "")) {
             out.append(String(localized: "The ports are not valid, so the rule is left out."))
         }
