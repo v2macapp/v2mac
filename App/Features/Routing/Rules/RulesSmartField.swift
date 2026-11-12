@@ -17,10 +17,13 @@ struct SmartField: View {
     @State private var highlighted = 0
     @State private var note: String?
     @State private var suggesting = false
+    /// Apple Intelligence's domains, checked by default, until added or dismissed.
+    @State private var proposed: [Rule.Item] = []
+    @State private var picked: Set<Rule.Item> = []
     @FocusState private var focused: Bool
 
     struct Suggestion: Identifiable, Hashable {
-        enum Section: Int { case typed, apps, services, countries }
+        enum Section: Int { case apps, sites, services, countries }
         let section: Section
         let item: Rule.Item
         let title: String
@@ -42,9 +45,16 @@ struct SmartField: View {
                 Button("Browse…", action: browse)
             }
             if let note { Text(note).font(.caption).foregroundStyle(.orange) }
-            if !suggestions.isEmpty {
+            if !proposed.isEmpty {
+                proposedList
+            } else if !suggestions.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
                     ForEach(Array(suggestions.enumerated()), id: \.element) { index, s in
+                        if index == 0 || suggestions[index - 1].section != s.section {
+                            sectionTitle(s.section)
+                                .font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                                .padding(.horizontal, 6).padding(.top, index == 0 ? 2 : 8).padding(.bottom, 2)
+                        }
                         Button { add([s.item]) } label: {
                             HStack(spacing: 8) {
                                 if let path = s.icon {
@@ -77,10 +87,51 @@ struct SmartField: View {
         }
         .task(id: text) {
             note = nil
+            proposed = []
             try? await Task.sleep(for: .milliseconds(120))
             suggestions = await Self.suggestions(for: text, catalog: model.ruleCatalog)
             highlighted = 0
         }
+    }
+
+    @ViewBuilder private func sectionTitle(_ section: Suggestion.Section) -> some View {
+        switch section {
+        case .apps: Text("Apps")
+        case .sites: Text("Sites")
+        case .services: Text("Services")
+        case .countries: Text("Countries")
+        }
+    }
+
+    /// The suggested domains as a checklist: all checked, Select All / None, then Add Selected.
+    private var proposedList: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                Text("Suggested domains").font(.caption.weight(.semibold)).foregroundStyle(.secondary)
+                Spacer()
+                Button {
+                    picked = picked.count == proposed.count ? [] : Set(proposed)
+                } label: {
+                    if picked.count == proposed.count { Text("Select None") } else { Text("Select All") }
+                }
+                .buttonStyle(.link)
+            }
+            ForEach(proposed, id: \.self) { item in
+                Toggle(item.text, isOn: Binding { picked.contains(item) } set: { on in
+                    if on { picked.insert(item) } else { picked.remove(item) }
+                })
+                .toggleStyle(.checkbox)
+            }
+            HStack {
+                Spacer()
+                Button("Cancel") { proposed = [] }
+                Button("Add Selected") { add(proposed.filter(picked.contains)) }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(picked.isEmpty)
+            }
+        }
+        .padding(8)
+        .background(.quaternary.opacity(0.5), in: .rect(cornerRadius: 6))
     }
 
     private func submit() {
@@ -91,6 +142,7 @@ struct SmartField: View {
         model.rules.add(items, to: ruleID, undo)
         text = ""
         suggestions = []
+        proposed = []
         focused = true
     }
 
@@ -106,14 +158,31 @@ struct SmartField: View {
         let query = raw.trimmingCharacters(in: .whitespaces)
         guard !query.isEmpty, !query.contains(where: \.isNewline) else { return [] }
         var out: [Suggestion] = []
-        // The text itself, as the kind it reads as.
+        // The text itself, first in the section of the kind it reads as.
         if let item = Rule.Item.parse(query).items.first {
-            out.append(Suggestion(section: .typed, item: item, title: item.text, detail: String(localized: "Add as \(String(localized: item.kind.titleResource))")))
+            let section: Suggestion.Section = switch item.kind {
+            case .app: .apps
+            case .country: .countries
+            case .service: .services
+            default: .sites
+            }
+            out.append(Suggestion(section: section, item: item, title: item.text, detail: String(localized: "Add as \(String(localized: item.kind.titleResource))")))
+        }
+        // Wildcards of the word: every app, and every site, whose name contains it.
+        let word = query.lowercased()
+        if !word.contains(where: \.isWhitespace), !word.contains("*"), !RuleMatchers.isIP(word) {
+            let app = Rule.Item.app("*\(word)*")
+            if !out.contains(where: { $0.item == app }) {
+                out.append(Suggestion(section: .apps, item: app, title: "*\(word)*", detail: String(localized: "Any app whose name contains “\(word)”")))
+            }
+            if let site = Rule.Item.item(word, as: .keyword), !out.contains(where: { $0.item == site }) {
+                out.append(Suggestion(section: .sites, item: site, title: "*\(word)*", detail: String(localized: "Any site whose name contains “\(word)”")))
+            }
         }
         for app in catalog.apps where app.name.localizedCaseInsensitiveContains(query) || app.bundleID.localizedCaseInsensitiveContains(query) {
             out.append(Suggestion(section: .apps, item: .app(app.bundleID), title: (app.path as NSString).lastPathComponent.replacingOccurrences(of: ".app", with: ""),
                                   detail: app.bundleID, icon: app.path))
-            if out.count > 6 { break }
+            if out.filter({ $0.section == .apps }).count >= 6 { break }
         }
         for country in catalog.geo.countries where country.ipFile == nil && (country.name.localizedStandardContains(query)
             || country.englishName.localizedStandardContains(query) || country.code.caseInsensitiveCompare(query) == .orderedSame) {
@@ -138,7 +207,8 @@ struct SmartField: View {
         for list in catalog.geo.lists where list.hasPrefix("geoip:") && list.localizedCaseInsensitiveContains(query) {
             out.append(Suggestion(section: .services, item: .host(list), title: list, detail: String(localized: "addresses")))
         }
-        return out.sorted { $0.section.rawValue < $1.section.rawValue }
+        // By section, keeping the order within each.
+        return out.enumerated().sorted { ($0.element.section.rawValue, $0.offset) < ($1.element.section.rawValue, $1.offset) }.map(\.element)
     }
 
     /// On-device Apple Intelligence names the domains a service uses.
@@ -152,7 +222,11 @@ struct SmartField: View {
                 let session = LanguageModelSession(instructions: Self.instructions)
                 let answer = try await session.respond(to: request, generating: SuggestedDomains.self).content
                 let items = answer.domains.compactMap { Rule.Item.item($0.lowercased(), as: .domain) }
-                if items.isEmpty { note = String(localized: "No domains were suggested. Try naming the service differently.") } else { add(items) }
+                // Each once, in the model's order.
+                var seen = Set<Rule.Item>()
+                let unique = items.filter { seen.insert($0).inserted }
+                if unique.isEmpty { note = String(localized: "No domains were suggested. Try naming the service differently.") }
+                else { proposed = unique; picked = Set(unique) }
             } catch {
                 note = error.localizedDescription
             }
