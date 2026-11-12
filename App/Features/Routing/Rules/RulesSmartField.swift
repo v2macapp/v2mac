@@ -115,8 +115,8 @@ struct SmartField: View {
                                   detail: app.bundleID, icon: app.path))
             if out.count > 6 { break }
         }
-        for country in catalog.geo.countries where country.name.localizedStandardContains(query)
-            || country.englishName.localizedStandardContains(query) || country.code.caseInsensitiveCompare(query) == .orderedSame {
+        for country in catalog.geo.countries where country.ipFile == nil && (country.name.localizedStandardContains(query)
+            || country.englishName.localizedStandardContains(query) || country.code.caseInsensitiveCompare(query) == .orderedSame) {
             out.append(Suggestion(section: .countries, item: .country(country.code), title: "\(country.flag) \(country.name)", detail: country.code.uppercased()))
             if out.filter({ $0.section == .countries }).count >= 3 { break }
         }
@@ -236,8 +236,10 @@ struct BrowseSheet: View {
                 Button("Add") {
                     // A country with every option on is one country token; otherwise its parts.
                     let countryItems: [Rule.Item] = countries.sorted().flatMap { code -> [Rule.Item] in
-                        countryOptions == CountryRuleOptions() ? [.country(code)]
-                            : countryOptions.rules(for: code, siteTags: model.ruleCatalog.geo.siteTags).map(Rule.Item.host)
+                        // A country token means `geoip:`, so one from the downloaded file is written out in parts.
+                        let ipFile = model.ruleCatalog.geo.country(code)?.ipFile
+                        return countryOptions == CountryRuleOptions() && ipFile == nil ? [.country(code)]
+                            : countryOptions.rules(for: code, siteTags: model.ruleCatalog.geo.siteTags, ipFile: ipFile).map(Rule.Item.host)
                     }
                     add(apps.sorted().map(Rule.Item.app) + services.sorted().map(Rule.Item.host) + countryItems)
                     dismiss()

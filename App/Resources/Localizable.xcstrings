@@ -29344,6 +29344,82 @@
         }
       }
     },
+    "Download the IP ranges of every country (about 16 MB)" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تنزيل نطاقات IP لكل الدول (نحو 16 ميغابايت)"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IP-Bereiche aller Länder herunterladen (etwa 16 MB)"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "دانلود محدوده‌های IP همه کشورها (حدود ۱۶ مگابایت)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Télécharger les plages IP de tous les pays (environ 16 Mo)"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "နိုင်ငံအားလုံး၏ IP အပိုင်းအခြားများကို ဒေါင်းလုဒ်လုပ်ရန် (16 MB ခန့်)"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baixar os intervalos de IP de todos os países (cerca de 16 MB)"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скачать диапазоны IP всех стран (около 16 МБ)"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tüm ülkelerin IP aralıklarını indir (yaklaşık 16 MB)"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تمام ممالک کی IP رینجز ڈاؤن لوڈ کریں (تقریباً 16 MB)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tải dải IP của mọi quốc gia (khoảng 16 MB)"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下载所有国家的 IP 段（约 16 MB）"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下載所有國家的 IP 範圍（約 16 MB）"
+          }
+        }
+      }
+    },
     "Downloaded" : {
       "localizations" : {
         "fa" : {

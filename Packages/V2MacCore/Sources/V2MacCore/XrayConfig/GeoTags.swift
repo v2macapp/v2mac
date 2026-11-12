@@ -55,10 +55,11 @@ public struct CountryRuleOptions: Sendable, Equatable {
         self.knownSites = knownSites
     }
 
-    public func rules(for code: String, siteTags: Set<String>) -> [String] {
+    /// `ipFile`: the country's ranges are in that extra file (`ext:<file>:<code>`), not in `geoip.dat`.
+    public func rules(for code: String, siteTags: Set<String>, ipFile: String? = nil) -> [String] {
         let code = code.lowercased()
         var out: [String] = []
-        if ipRanges { out.append("geoip:\(code)") }
+        if ipRanges { out.append(ipFile.map { "ext:\($0):\(code)" } ?? "geoip:\(code)") }
         if topLevelDomain { out.append("domain:\(Self.topLevelDomain(of: code))") }
         if knownSites {
             for tag in ["category-\(code)", code] where siteTags.contains(tag) { out.append("geosite:\(tag)") }

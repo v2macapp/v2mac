@@ -120,13 +120,24 @@ public enum RegionPackInstaller {
     public static func install(_ pack: RegionPackDefinition, assetDirectory: URL, downloader: FileDownloader) async throws {
         var verified: [(file: String, data: Data)] = []
         for source in [pack.geosite, pack.geoip] {
-            let data = try await downloader.download(source.url)
-            let sumURL = URL(string: source.url.absoluteString + ".sha256sum")!
-            let expected = try parseChecksum(try await downloader.download(sumURL))
-            guard sha256(data) == expected else { throw DownloadError.checksumMismatch(file: source.file) }
-            verified.append((source.file, data))
+            verified.append((source.file, try await verifiedDownload(source.url, file: source.file, downloader: downloader)))
         }
+        try write(verified, to: assetDirectory)
+    }
 
+    /// One file, checked against its published `.sha256sum`, then moved into `assetDirectory`.
+    public static func installFile(_ url: URL, as file: String, assetDirectory: URL, downloader: FileDownloader) async throws {
+        try write([(file, try await verifiedDownload(url, file: file, downloader: downloader))], to: assetDirectory)
+    }
+
+    private static func verifiedDownload(_ url: URL, file: String, downloader: FileDownloader) async throws -> Data {
+        let data = try await downloader.download(url)
+        let expected = try parseChecksum(try await downloader.download(URL(string: url.absoluteString + ".sha256sum")!))
+        guard sha256(data) == expected else { throw DownloadError.checksumMismatch(file: file) }
+        return data
+    }
+
+    private static func write(_ verified: [(file: String, data: Data)], to assetDirectory: URL) throws {
         let fm = FileManager.default
         try fm.createDirectory(at: assetDirectory, withIntermediateDirectories: true)
         for item in verified {

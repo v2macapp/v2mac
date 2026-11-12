@@ -8,6 +8,10 @@ struct GeoCatalog: Sendable {
         let code: String
         let name: String
         let englishName: String
+        /// `countriesFile` when only the downloaded file has the country's ranges.
+        var ipFile: String?
+        /// In neither file: shown with a download button.
+        var missing = false
         var id: String { code }
         /// Regional indicator letters, which every system font draws as the flag.
         var flag: String {
@@ -26,16 +30,25 @@ struct GeoCatalog: Sendable {
     /// The rules of `rules` that the files can satisfy, so a rule never names a missing list.
     func available(_ rules: [String]) -> Set<String> { Set(rules.filter(lists.contains)) }
 
+    /// Every country's address ranges, downloaded on request; the bundled `geoip.dat` has only a few.
+    static let countriesFile = "countries-geoip.dat"
+    static let countriesURL = URL(string: "https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/geoip.dat")!
+
     static func load() async -> GeoCatalog {
         let assets = AppPaths.assetsDirectory
         return await Task.detached {
             let ipTags = GeoTags.read(contentsOf: assets.appendingPathComponent("geoip.dat"))
             let siteTags = GeoTags.read(contentsOf: assets.appendingPathComponent("geosite.dat"))
+            let builtIn = Set(ipTags.filter(GeoTags.isCountry))
+            let downloaded = Set(GeoTags.read(contentsOf: assets.appendingPathComponent(countriesFile)).filter(GeoTags.isCountry))
+            let iso = Locale.Region.isoRegions.map { $0.identifier.lowercased() }.filter(GeoTags.isCountry)
             let english = Locale(identifier: "en")
-            let countries = ipTags.filter(GeoTags.isCountry).compactMap { code -> Country? in
+            let countries = builtIn.union(downloaded).union(iso).compactMap { code -> Country? in
                 guard let englishName = english.localizedString(forRegionCode: code.uppercased()) else { return nil }
                 let name = Locale.current.localizedString(forRegionCode: code.uppercased()) ?? englishName
-                return Country(code: code, name: name, englishName: englishName)
+                return Country(code: code, name: name, englishName: englishName,
+                               ipFile: builtIn.contains(code) ? nil : countriesFile,
+                               missing: !builtIn.contains(code) && !downloaded.contains(code))
             }
             .sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
             let lists = siteTags.map { "geosite:\($0)" } + ipTags.filter { !GeoTags.isCountry($0) }.map { "geoip:\($0)" }
@@ -47,6 +60,7 @@ struct GeoCatalog: Sendable {
 // MARK: - Countries
 
 struct CountryPicker: View {
+    @Environment(AppModel.self) private var model
     let catalog: GeoCatalog
     @Binding var selected: Set<String>
     @Binding var options: CountryRuleOptions
@@ -69,20 +83,27 @@ struct CountryPicker: View {
                 SearchField(prompt: "Search \(catalog.countries.count) countries", text: $search)
                     .padding(10)
                 List(shown) { country in
-                    Toggle(isOn: Binding(
-                        get: { selected.contains(country.code) },
-                        set: { on in if on { selected.insert(country.code) } else { selected.remove(country.code) } }
-                    )) {
+                    if country.missing {
+                        // No ranges for it yet: one download brings every country's.
                         HStack {
-                            Text(country.flag)
-                            Text(country.name).lineLimit(1)
-                            Spacer()
-                            Text(country.code.uppercased())
-                                .font(.caption.monospaced())
-                                .foregroundStyle(.secondary)
+                            Button {
+                                Task { await model.ruleCatalog.downloadCountries(routes: model.regionPacks.downloadRoutes()) }
+                            } label: {
+                                if model.ruleCatalog.downloadingCountries { ProgressView().controlSize(.mini) }
+                                else { Image(systemName: "arrow.down.circle").foregroundStyle(.tint) }
+                            }
+                            .buttonStyle(.borderless)
+                            .disabled(model.ruleCatalog.downloadingCountries)
+                            .help("Download the IP ranges of every country (about 16 MB)")
+                            row(country).foregroundStyle(.secondary)
                         }
+                    } else {
+                        Toggle(isOn: Binding(
+                            get: { selected.contains(country.code) },
+                            set: { on in if on { selected.insert(country.code) } else { selected.remove(country.code) } }
+                        )) { row(country) }
+                        .toggleStyle(.checkbox)
                     }
-                    .toggleStyle(.checkbox)
                 }
                 .listStyle(.inset)
                 .overlay {
@@ -90,6 +111,9 @@ struct CountryPicker: View {
                 }
                 Divider()
                 VStack(alignment: .leading, spacing: 6) {
+                    if let error = model.ruleCatalog.countriesError {
+                        Text(error).font(.caption).foregroundStyle(.red)
+                    }
                     HStack {
                         Toggle("Selected only", isOn: $onlySelected)
                         Spacer()
@@ -109,6 +133,17 @@ struct CountryPicker: View {
             .frame(width: 320)
             Divider()
             CountryMap(catalog: catalog, selected: $selected)
+        }
+    }
+
+    private func row(_ country: GeoCatalog.Country) -> some View {
+        HStack {
+            Text(country.flag)
+            Text(country.name).lineLimit(1)
+            Spacer()
+            Text(country.code.uppercased())
+                .font(.caption.monospaced())
+                .foregroundStyle(.secondary)
         }
     }
 }
@@ -179,7 +214,7 @@ private struct CountryMap: View {
             code = try? await CLGeocoder().reverseGeocodeLocation(location).first?.isoCountryCode?.lowercased()
         }
         guard let code,
-              let country = catalog.country(code) else {
+              let country = catalog.country(code), !country.missing else {
             notice = String(localized: "No country there")
             try? await Task.sleep(for: .seconds(2))
             notice = nil

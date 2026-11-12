@@ -268,6 +268,7 @@ import Testing
         let all = CountryRuleOptions()
         #expect(all.rules(for: "IR", siteTags: ["category-ir"]) == ["geoip:ir", "domain:ir", "geosite:category-ir"])
         #expect(all.rules(for: "GB", siteTags: []) == ["geoip:gb", "domain:uk"])
+        #expect(all.rules(for: "DE", siteTags: [], ipFile: "countries-geoip.dat") == ["ext:countries-geoip.dat:de", "domain:de"])
         #expect(CountryRuleOptions(ipRanges: false, topLevelDomain: false).rules(for: "cn", siteTags: ["cn", "category-cn"]) == ["geosite:category-cn", "geosite:cn"])
     }
 }

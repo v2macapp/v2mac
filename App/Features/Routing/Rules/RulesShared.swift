@@ -32,6 +32,24 @@ final class RuleCatalog {
         geo = GeoCatalog()
         await load()
     }
+
+    private(set) var downloadingCountries = false
+    private(set) var countriesError: String?
+
+    /// Fetches every country's address ranges (`GeoCatalog.countriesFile`), then rereads the lists.
+    func downloadCountries(routes: [FetchRoute]) async {
+        guard !downloadingCountries else { return }
+        downloadingCountries = true
+        countriesError = nil
+        defer { downloadingCountries = false }
+        do {
+            try await RegionPackInstaller.installFile(GeoCatalog.countriesURL, as: GeoCatalog.countriesFile,
+                                                      assetDirectory: AppPaths.assetsDirectory, downloader: FileDownloader(routes: routes))
+            await reload()
+        } catch {
+            countriesError = error.localizedDescription
+        }
+    }
 }
 
 extension Rule.Action {
