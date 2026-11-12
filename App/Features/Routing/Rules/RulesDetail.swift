@@ -347,9 +347,11 @@ struct FlowLayout: Layout {
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        // Each line ends at the right edge, in line with the form's other values.
         for row in arrange(bounds.width, subviews) {
+            let inset = max(bounds.width - row.width, 0)
             for (index, x) in row.items {
-                subviews[index].place(at: CGPoint(x: bounds.minX + x, y: bounds.minY + row.y), proposal: .unspecified)
+                subviews[index].place(at: CGPoint(x: bounds.minX + inset + x, y: bounds.minY + row.y), proposal: .unspecified)
             }
         }
     }
