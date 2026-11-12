@@ -102,7 +102,8 @@ struct EngineIntegrationTests {
         for host in ["127.0.0.1", "localhost"] {
             let curl = Process()
             curl.executableURL = URL(fileURLWithPath: "/usr/bin/curl")
-            curl.arguments = ["-s", "-o", "/dev/null", "-w", "%{http_code}", "-m", "3",
+            // Empty --noproxy: a NO_PROXY listing localhost would make curl skip the proxy.
+            curl.arguments = ["-s", "-o", "/dev/null", "-w", "%{http_code}", "-m", "3", "--noproxy", "",
                               "-x", "socks5h://127.0.0.1:\(options.inbound.port)", "http://\(host):\(server.port)/"]
             let pipe = Pipe()
             curl.standardOutput = pipe
