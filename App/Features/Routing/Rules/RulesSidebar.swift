@@ -155,9 +155,13 @@ private struct BuiltInRow: View {
     @Environment(AppModel.self) private var model
     @AppStorage("blockQUIC") private var blockQUIC = false
     @AppStorage("unmatchedRoute") private var unmatchedRoute = "mode"
+    @AppStorage("proxyClientsRoute") private var proxyClientsRoute = "proxy"
+    @AppStorage("proxyClientsKeepVia") private var proxyClientsKeepVia = false
     let kind: RulesStore.BuiltIn
 
     var body: some View {
+        // Read here so the proxy port's subtitle follows a change made in the detail or in Settings.
+        let _ = (proxyClientsRoute, proxyClientsKeepVia)
         HStack(spacing: 8) {
             Image(systemName: kind == .blockQUIC || kind == .everythingElse ? "slider.horizontal.3" : "lock.fill")
                 .font(.caption).foregroundStyle(.tertiary).frame(width: 12)

@@ -374,6 +374,9 @@ struct FlowLayout: Layout {
 private struct BuiltInDetail: View {
     @Environment(AppModel.self) private var model
     @Environment(\.openSettings) private var openSettings
+    // Same keys as Settings → Proxy, so either place changes it.
+    @AppStorage("proxyClientsRoute") private var proxyClientsRoute = "proxy"
+    @AppStorage("proxyClientsKeepVia") private var proxyClientsKeepVia = false
     let kind: RulesStore.BuiltIn
 
     var body: some View {
@@ -385,6 +388,18 @@ private struct BuiltInDetail: View {
             }
             switch kind {
             case .proxyPort:
+                Section {
+                    Picker("Apps using the proxy port", selection: $proxyClientsRoute) {
+                        Text("Proxy").tag("proxy")
+                        Text("Direct").tag("direct")
+                        Text("Follow rules").tag("rules")
+                    }
+                    .onChange(of: proxyClientsRoute) { model.connection.reconnectIfRunning() }
+                    Toggle("Via rules still apply to these apps", isOn: $proxyClientsKeepVia)
+                        .disabled(proxyClientsRoute == "rules")
+                        .onChange(of: proxyClientsKeepVia) { model.connection.reconnectIfRunning() }
+                }
+                .disabled(model.connection.systemProxy.isEnabled)
                 Button("Change in Settings → Proxy…") { model.openSettings(openSettings, tab: .proxy) }
             case .mode:
                 Picker("Routing mode", selection: Binding { model.connection.routingMode } set: { model.connection.setRoutingMode($0) }) {
