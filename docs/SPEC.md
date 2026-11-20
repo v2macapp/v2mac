@@ -2003,7 +2003,9 @@ section covers only V2Mac's part, which is all the sandbox code V2Mac has (`Sand
   which after one confirm stops the helper and deletes `sandbox/` and
   `~/Applications/V2Mac Sandbox/`.
 
-### 12.12 Connection drivers (planned, Phase D)
+### 12.12 Connection drivers (planned, Phase D, on hold)
+
+**On hold since 2026-11-12:** nothing below is built in the app yet; resume with drivers plan D1.
 
 Connection types Xray does not speak (OpenVPN, OpenConnect, sing-box protocols, Tor, IPsec, …) run as
 downloaded *drivers*. Their design, catalogue, index format, wrapper protocol and confinement live in
