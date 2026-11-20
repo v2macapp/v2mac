@@ -36,8 +36,9 @@ public enum ExitLookup {
     public static let sources: [URL] = [
         URL(string: "https://ipwho.is/")!,
         URL(string: "https://ipinfo.io/json")!,
-        URL(string: "https://www.cloudflare.com/cdn-cgi/trace")!,
+        trace,
     ]
+    public static let trace = URL(string: "https://www.cloudflare.com/cdn-cgi/trace")!
 
     /// Reads any of the sources: JSON with `ip`, `country_code` (or a two-letter `country`)
     /// and `city`, or Cloudflare's `key=value` lines with `ip` and `loc`.
@@ -62,6 +63,21 @@ public enum ExitLookup {
 
     private static func isAddress(_ text: String) -> Bool {
         !text.isEmpty && text.count <= 45 && text.allSatisfy { $0.isHexDigit || $0 == "." || $0 == ":" }
+    }
+
+    /// Spec 9.10: whether Cloudflare sees traffic through `route` arrive over WARP (its trace's
+    /// `warp` field is `on` or `plus`), or nil when the trace did not answer.
+    public static func arrivesOverWarp(route: FetchRoute, timeout: TimeInterval = 6) async -> Bool? {
+        let session = SessionFactory.make(route: route, timeout: timeout)
+        defer { session.invalidateAndCancel() }
+        guard let (data, response) = try? await session.data(from: trace),
+              (response as? HTTPURLResponse)?.statusCode == 200 else { return nil }
+        return warpField(data).map { $0 != "off" }
+    }
+
+    static func warpField(_ data: Data) -> String? {
+        String(decoding: data, as: UTF8.self).split(whereSeparator: \.isNewline)
+            .first { $0.hasPrefix("warp=") }.map { String($0.dropFirst(5)) }
     }
 
     /// Nil when no source answered through `route`: traffic is not getting out.

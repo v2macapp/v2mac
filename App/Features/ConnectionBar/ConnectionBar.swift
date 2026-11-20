@@ -233,6 +233,10 @@ struct ConnectionBar: View {
             if connection.healthFailed {
                 Text("No response through the running proxy").font(.caption).foregroundStyle(.orange)
             }
+            if connection.warpMissing {
+                Text("Traffic is not leaving through WARP").font(.caption).foregroundStyle(.orange).lineLimit(1)
+                    .help("WARP is on, but Cloudflare does not see this traffic arrive over WARP. Some servers block WARP.")
+            }
         case .off:
             status(connection.activeServer == nil ? String(localized: "Double-click a server to connect") : String(localized: "Off · \(routingTitle)"))
             if connection.killSwitch.isBlocking { KillSwitchNotice(connection: connection) }

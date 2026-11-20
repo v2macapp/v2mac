@@ -52,7 +52,7 @@ struct WarpSettings: View {
                 } header: {
                     Text("Use")
                 } footer: {
-                    note("With WARP as the exit, traffic goes through your server and then WARP, so sites see a Cloudflare address. It does not apply to full Xray configs, and some servers block WARP. As a server of its own, WARP connects directly over MASQUE.")
+                    note("With WARP as the exit, all traffic through a server, Via rules and full Xray configs included, goes through that server and then WARP, so sites see a Cloudflare address. Some servers block WARP. As a server of its own, WARP connects directly over MASQUE.")
                 }
             } else {
                 Section {

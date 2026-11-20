@@ -164,10 +164,34 @@ extension ConfigBuilder {
 
     /// The WARP exit, tagged `proxy` and dialled through the server.
     static func warpExitOutbound(_ options: RunOptions) -> JSONValue? {
-        guard let warp = options.warpExit else { return nil }
+        options.warpExit.map { warpOutbound($0, tag: proxyTag, through: warpUpstreamTag) }
+    }
+
+    static func warpOutbound(_ warp: JSONValue, tag: String, through upstream: String) -> JSONValue {
         let stream = warp["streamSettings"] ?? [:]
-        let sockopt = (stream["sockopt"] ?? [:]).setting("dialerProxy", to: .string(warpUpstreamTag))
-        return warp.setting("tag", to: .string(proxyTag)).setting("streamSettings", to: stream.setting("sockopt", to: sockopt))
+        let sockopt = (stream["sockopt"] ?? [:]).setting("dialerProxy", to: .string(upstream))
+        return warp.setting("tag", to: .string(tag)).setting("streamSettings", to: stream.setting("sockopt", to: sockopt))
+    }
+
+    /// Spec 9.10: with WARP as the exit, WARP takes `exit`'s tag and place and dials through it,
+    /// renamed `upstream`. An exit that is WARP itself stays as it is.
+    static func warpingExit(_ exit: JSONValue, upstream: String, options: RunOptions) -> [JSONValue] {
+        guard let warp = options.warpExit, exit["protocol"]?.stringValue != "masque" else { return [exit] }
+        return [warpOutbound(warp, tag: exit["tag"]?.stringValue ?? "", through: upstream), exit.setting("tag", to: .string(upstream))]
+    }
+
+    /// `warpingExit` for every proxy outbound of a full config that no other outbound dials through.
+    static func warpingExits(of config: JSONValue, options: RunOptions) -> JSONValue {
+        guard options.warpExit != nil, let outbounds = config["outbounds"]?.arrayValue else { return config }
+        let hops = Set(outbounds.flatMap { o in
+            [o["streamSettings"]?["sockopt"]?["dialerProxy"]?.stringValue, o["proxySettings"]?["tag"]?.stringValue].compactMap { $0 }
+        })
+        let exits = dialedProtocols.union(["wireguard"])
+        return config.setting("outbounds", to: .array(outbounds.enumerated().flatMap { i, o -> [JSONValue] in
+            let tag = o["tag"]?.stringValue ?? ""
+            guard exits.contains(o["protocol"]?.stringValue ?? ""), tag.isEmpty || !hops.contains(tag) else { return [o] }
+            return warpingExit(o, upstream: "warp-up-" + (tag.isEmpty ? String(i) : tag), options: options)
+        }))
     }
 
     /// API used to swap the proxy outbound without restarting the core. A Unix socket created 0600

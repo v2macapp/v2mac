@@ -86,4 +86,51 @@ import Testing
         #expect(ConfigBuilder.serverTag(options) == "warp-upstream")
         #expect(ConfigBuilder.serverTag(RunOptions(metricsPort: 1)) == "proxy")
     }
+
+    func tagged(_ c: JSONValue, _ tag: String) -> JSONValue? { c["outbounds"]?.arrayValue?.first { $0["tag"]?.stringValue == tag } }
+    func dialer(_ o: JSONValue?) -> String? { o?["streamSettings"]?["sockopt"]?["dialerProxy"]?.stringValue }
+
+    @Test func viaServersExitThroughWarpToo() throws {
+        let options = RunOptions(metricsPort: 1, warpExit: Self.account.outbound)
+        let c = try ConfigBuilder.build(outbound: ViaConfigTests.trojan.config, options: options, routing: .global, custom: ViaConfigTests.custom())
+        for tag in ["via-g0-m0", "via-g0-m1", "via-s1-m0", "via-s2-m0"] {
+            #expect(tagged(c, tag)?["protocol"] == "masque")
+            #expect(dialer(tagged(c, tag)) == "warp-up-" + tag)
+            #expect(tagged(c, "warp-up-" + tag) != nil)
+        }
+        // A full config's chain stays behind its exit, which WARP now dials through.
+        let chain = try #require(tagged(c, "warp-up-via-s2-m0"))
+        #expect(dialer(chain) == "via-hop-2-0-hop")
+        // The renamed servers are not balancer members or probed as such.
+        #expect(!(c["outbounds"]?.arrayValue ?? []).contains { $0["tag"]?.stringValue?.hasPrefix("via-") == true && $0["protocol"] == "socks" && dialer($0) == nil && $0["tag"] != "via-hop-2-0-hop" })
+    }
+
+    @Test func fullConfigExitsGoThroughWarp() throws {
+        let options = RunOptions(metricsPort: 1, warpExit: Self.account.outbound)
+        var config = ViaConfigTests.chainConfig
+        config = config.setting("outbounds", to: .array([["protocol": "vless", "settings": ["vnext": [["address": "a.example", "port": 443]]]]] + config["outbounds"]!.arrayValue!))
+        let c = try ConfigBuilder.buildCustom(config: config, options: options, routing: .global)
+        let outbounds = try #require(c["outbounds"]?.arrayValue)
+        // The untagged first outbound stays the default, now as WARP.
+        #expect(outbounds[0]["protocol"] == "masque")
+        #expect(dialer(outbounds[0]) == "warp-up-0")
+        #expect(tagged(c, "warp-up-0")?["protocol"] == "vless")
+        #expect(tagged(c, "exit")?["protocol"] == "masque")
+        #expect(dialer(tagged(c, "warp-up-exit")) == "hop")
+        // A hop is not an exit.
+        #expect(tagged(c, "hop")?["protocol"] == "socks")
+        #expect(tagged(c, "warp-up-hop") == nil)
+    }
+
+    @Test func warpServerIsNotWrappedInWarp() {
+        let options = RunOptions(metricsPort: 1, warpExit: Self.account.outbound)
+        let config: JSONValue = ["outbounds": [Self.account.outbound.setting("tag", to: "w")]]
+        #expect(ConfigBuilder.warpingExits(of: config, options: options) == config)
+    }
+
+    @Test func traceSaysWhetherTrafficArrivesOverWarp() {
+        #expect(ExitLookup.warpField(Data("ip=1.2.3.4\nwarp=off\ngateway=off\n".utf8)) == "off")
+        #expect(ExitLookup.warpField(Data("warp=plus\n".utf8)) == "plus")
+        #expect(ExitLookup.warpField(Data("ip=1.2.3.4\n".utf8)) == nil)
+    }
 }

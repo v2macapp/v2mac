@@ -1317,9 +1317,17 @@ the endpoint's public key (Xray pins it) and the tunnel addresses. It is used in
 - **Send traffic out through WARP** (`warpExit`, off by default) makes WARP the exit behind the
   active share-link server: `ConfigBuilder` tags the server `warp-upstream` and adds the WARP
   outbound as `proxy` with `sockopt.dialerProxy` set to it, so routing and custom rules are
-  unchanged. A live switch replaces `warp-upstream` (`ConfigBuilder.serverTag`). Full Xray
-  configs retain their own outbound chains (with app routing ahead of imported routing).
-  Changing the switch, or the device while it is on, restarts the core.
+  unchanged. A live switch replaces `warp-upstream` (`ConfigBuilder.serverTag`). Every other
+  exit gets WARP the same way (`ConfigBuilder.warpingExit`): each Via server's outbound
+  `<tag>` is renamed `warp-up-<tag>` and a WARP outbound takes `<tag>`, so balancers and the
+  observatory see WARP; in a full config, every proxy outbound that no other outbound dials
+  through (by `dialerProxy` or `proxySettings`) is wrapped the same way, an untagged one as
+  `warp-up-<index>`, keeping its place so the default outbound stays first. An exit that is
+  itself `masque` (WARP as a server) is left alone. Changing the switch, or the device while
+  it is on, restarts the core.
+- After each exit check with the switch on, `ExitLookup.arrivesOverWarp` reads Cloudflare's
+  trace through the local proxy. When its `warp` field is `off`, the connection bar says
+  "Traffic is not leaving through WARP" and the log says so (`warpMissing`).
 
 Some servers refuse WARP: one checked on 2026-10-16 reset every TLS connection whose SNI was
 under `cloudflareclient.com`, so traffic through WARP never started.

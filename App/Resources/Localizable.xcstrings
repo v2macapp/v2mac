@@ -48134,6 +48134,158 @@
         }
       }
     },
+    "Traffic is not leaving through WARP" : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حركة البيانات لا تخرج عبر WARP"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Verkehr geht nicht über WARP hinaus"
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ترافیک از WARP خارج نمی‌شود"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le trafic ne sort pas par WARP"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Traffic သည် WARP မှတစ်ဆင့် ထွက်မနေပါ"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O tráfego não está saindo pelo WARP"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Трафик не выходит через WARP"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trafik WARP üzerinden çıkmıyor"
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ٹریفک WARP سے باہر نہیں جا رہی"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lưu lượng không đi ra qua WARP"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "流量未通过 WARP 发出"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "流量未透過 WARP 發出"
+          }
+        }
+      }
+    },
+    "WARP is on, but Cloudflare does not see this traffic arrive over WARP. Some servers block WARP." : {
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WARP قيد التشغيل، لكن Cloudflare لا ترى هذه الحركة تصل عبر WARP. تحظر بعض الخوادم WARP."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WARP ist an, aber Cloudflare sieht diesen Verkehr nicht über WARP ankommen. Manche Server blockieren WARP."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WARP روشن است، اما Cloudflare نمی‌بیند که این ترافیک از WARP می‌رسد. بعضی سرورها WARP را مسدود می‌کنند."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WARP est activé, mais Cloudflare ne voit pas ce trafic arriver par WARP. Certains serveurs bloquent WARP."
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WARP ဖွင့်ထားသော်လည်း ဤ traffic သည် WARP မှတစ်ဆင့် ရောက်လာသည်ကို Cloudflare မမြင်ရပါ။ ဆာဗာအချို့က WARP ကို ပိတ်ထားသည်။"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O WARP está ativado, mas a Cloudflare não vê este tráfego chegar pelo WARP. Alguns servidores bloqueiam o WARP."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WARP включён, но Cloudflare не видит, что этот трафик приходит через WARP. Некоторые серверы блокируют WARP."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WARP açık, ancak Cloudflare bu trafiğin WARP üzerinden geldiğini görmüyor. Bazı sunucular WARP'ı engeller."
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WARP آن ہے، لیکن Cloudflare کو یہ ٹریفک WARP سے آتی نظر نہیں آتی۔ کچھ سرور WARP کو بلاک کرتے ہیں۔"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WARP đang bật, nhưng Cloudflare không thấy lưu lượng này đến qua WARP. Một số máy chủ chặn WARP."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WARP 已开启，但 Cloudflare 未看到此流量经由 WARP 到达。部分服务器会屏蔽 WARP。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WARP 已開啟，但 Cloudflare 未看到此流量經由 WARP 到達。部分伺服器會屏蔽 WARP。"
+          }
+        }
+      }
+    },
     "No rule · %@" : {
       "localizations" : {
         "fa" : {
@@ -92633,78 +92785,78 @@
         }
       }
     },
-    "With WARP as the exit, traffic goes through your server and then WARP, so sites see a Cloudflare address. It does not apply to full Xray configs, and some servers block WARP. As a server of its own, WARP connects directly over MASQUE." : {
+    "With WARP as the exit, all traffic through a server, Via rules and full Xray configs included, goes through that server and then WARP, so sites see a Cloudflare address. Some servers block WARP. As a server of its own, WARP connects directly over MASQUE." : {
       "localizations" : {
-        "fa" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "وقتی WARP خروجی باشد، ترافیک اول از سرور شما و بعد از WARP می‌گذرد و سایت‌ها یک آدرس Cloudflare می‌بینند. روی کانفیگ‌های کامل Xray اعمال نمی‌شود و بعضی سرورها WARP را مسدود می‌کنند. WARP به‌عنوان یک سرور جداگانه، مستقیم با MASQUE وصل می‌شود."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Когда WARP служит выходом, трафик идёт через ваш сервер, а затем через WARP, и сайты видят адрес Cloudflare. К полным конфигурациям Xray это не применяется, а некоторые серверы блокируют WARP. Как отдельный сервер WARP подключается напрямую по MASQUE."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将 WARP 作为出口时，流量先经过你的服务器再经过 WARP，网站看到的是 Cloudflare 地址。此设置不适用于完整的 Xray 配置，且部分服务器会屏蔽 WARP。作为独立服务器时，WARP 通过 MASQUE 直接连接。"
-          }
-        },
         "ar" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "عند استخدام WARP كمخرج، تمر حركة البيانات بخادمك ثم WARP، فترى المواقع عنوان Cloudflare. لا ينطبق على إعدادات Xray الكاملة، وتحظر بعض الخوادم WARP. كخادم مستقل، يتصل WARP مباشرة عبر MASQUE."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Khi dùng WARP làm đầu ra, lưu lượng đi qua máy chủ của bạn rồi qua WARP, nên trang web thấy địa chỉ Cloudflare. Không áp dụng cho cấu hình Xray đầy đủ và một số máy chủ chặn WARP. Khi dùng như máy chủ độc lập, WARP kết nối trực tiếp qua MASQUE."
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "將 WARP 作為出口時，流量先經過你的伺服器再經過 WARP，網站看到的是 Cloudflare 地址。此設定不適用於完整的 Xray 配置，且部分伺服器會屏蔽 WARP。作為獨立伺服器時，WARP 通過 MASQUE 直接連線。"
-          }
-        },
-        "my" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "WARP ကို အထွက်အဖြစ် သုံးလျှင် ဒေတာသည် သင့်ဆာဗာမှ WARP သို့ ဖြတ်သွားသဖြင့် ဆိုက်များက Cloudflare လိပ်စာကို မြင်မည်။ Xray ဖွဲ့စည်းပုံအပြည့်အစုံများတွင် အကျုံးမဝင်ဘဲ အချို့ဆာဗာများက WARP ကို ပိတ်ဆို့ထားသည်။ သီးခြားဆာဗာအဖြစ် သုံးလျှင် WARP သည် MASQUE ဖြင့် တိုက်ရိုက်ချိတ်ဆက်သည်။"
-          }
-        },
-        "tr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Çıkış WARP olduğunda trafik önce sunucunuzdan, sonra WARP'tan geçer; siteler Cloudflare adresi görür. Tam Xray yapılandırmalarına uygulanmaz ve bazı sunucular WARP'ı engeller. Bağımsız sunucu olarak WARP, MASQUE üzerinden doğrudan bağlanır."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Avec WARP en sortie, le trafic passe par votre serveur puis par WARP : les sites voient donc une adresse Cloudflare. Cela ne s’applique pas aux configurations Xray complètes, et certains serveurs bloquent WARP. Utilisé comme serveur autonome, WARP se connecte directement via MASQUE."
-          }
-        },
-        "ur" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "WARP کو خارجی راستہ بنانے پر ٹریفک پہلے آپ کے سرور اور پھر WARP سے گزرتی ہے، اس لیے ویب سائٹس کو Cloudflare کا پتہ نظر آتا ہے۔ یہ مکمل Xray کنفیگریشنز پر لاگو نہیں ہوتا، اور کچھ سرور WARP کو روکتے ہیں۔ الگ سرور کے طور پر WARP براہ راست MASQUE کے ذریعے جڑتا ہے۔"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Com WARP como saída, o tráfego passa pelo seu servidor e depois pelo WARP, pelo que os sites veem um endereço Cloudflare. Não se aplica a configurações Xray completas e alguns servidores bloqueiam WARP. Como servidor independente, WARP liga-se diretamente por MASQUE."
+            "value" : "عند استخدام WARP كمخرج، تمر كل حركة البيانات عبر الخادم، بما فيها قواعد Via وإعدادات Xray الكاملة، بذلك الخادم ثم WARP، فترى المواقع عنوان Cloudflare. تحظر بعض الخوادم WARP. كخادم مستقل، يتصل WARP مباشرة عبر MASQUE."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mit WARP als Ausgang läuft der Datenverkehr durch Ihren Server und anschließend durch WARP. Websites sehen dadurch eine Cloudflare-Adresse. Gilt nicht für vollständige Xray-Konfigurationen. Manche Server blockieren WARP. Als eigenständiger Server verbindet sich WARP direkt über MASQUE."
+            "value" : "Mit WARP als Ausgang läuft der gesamte Verkehr über einen Server, Via-Regeln und vollständige Xray-Konfigurationen eingeschlossen, erst über diesen Server und dann über WARP, sodass Websites eine Cloudflare-Adresse sehen. Manche Server blockieren WARP. Als eigener Server verbindet sich WARP direkt über MASQUE."
+          }
+        },
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "وقتی WARP خروجی باشد، همه ترافیکی که از یک سرور می‌گذرد، از جمله قانون‌های Via و کانفیگ‌های کامل Xray، اول از آن سرور و بعد از WARP می‌گذرد و سایت‌ها یک آدرس Cloudflare می‌بینند. بعضی سرورها WARP را مسدود می‌کنند. WARP به‌عنوان یک سرور جداگانه، مستقیم با MASQUE وصل می‌شود."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avec WARP en sortie, tout le trafic qui passe par un serveur, règles Via et configurations Xray complètes comprises, traverse ce serveur puis WARP, et les sites voient une adresse Cloudflare. Certains serveurs bloquent WARP. En tant que serveur à part, WARP se connecte directement via MASQUE."
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WARP ကို ထွက်ပေါက်အဖြစ် သုံးသောအခါ Via စည်းမျဉ်းများနှင့် Xray config အပြည့်အစုံများ အပါအဝင် ဆာဗာမှတစ်ဆင့် ဖြတ်သွားသော traffic အားလုံးသည် ထိုဆာဗာကို ဖြတ်ပြီးနောက် WARP ကို ဖြတ်သွားသဖြင့် ဆိုက်များက Cloudflare လိပ်စာကို မြင်ရသည်။ ဆာဗာအချို့က WARP ကို ပိတ်ထားသည်။ သီးခြားဆာဗာအဖြစ် WARP သည် MASQUE ဖြင့် တိုက်ရိုက်ချိတ်ဆက်သည်။"
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Com o WARP como saída, todo o tráfego por um servidor, incluindo regras Via e configurações Xray completas, passa por esse servidor e depois pelo WARP, e os sites veem um endereço da Cloudflare. Alguns servidores bloqueiam o WARP. Como servidor próprio, o WARP conecta-se diretamente por MASQUE."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Когда WARP служит выходом, весь трафик через сервер, включая правила Via и полные конфигурации Xray, идёт через этот сервер, а затем через WARP, и сайты видят адрес Cloudflare. Некоторые серверы блокируют WARP. Как отдельный сервер WARP подключается напрямую по MASQUE."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Çıkış WARP olduğunda, Via kuralları ve tam Xray yapılandırmaları dahil bir sunucudan geçen tüm trafik önce o sunucudan, sonra WARP'tan geçer; siteler bir Cloudflare adresi görür. Bazı sunucular WARP'ı engeller. Ayrı bir sunucu olarak WARP doğrudan MASQUE ile bağlanır."
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "جب WARP ایگزٹ ہو تو کسی سرور سے گزرنے والی تمام ٹریفک، بشمول Via قواعد اور مکمل Xray کنفیگز، پہلے اس سرور اور پھر WARP سے گزرتی ہے، اس لیے سائٹس Cloudflare کا پتہ دیکھتی ہیں۔ کچھ سرور WARP کو بلاک کرتے ہیں۔ الگ سرور کے طور پر WARP براہ راست MASQUE پر جڑتا ہے۔"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Khi dùng WARP làm đầu ra, mọi lưu lượng qua máy chủ, kể cả quy tắc Via và cấu hình Xray đầy đủ, đi qua máy chủ đó rồi qua WARP, nên trang web thấy địa chỉ Cloudflare. Một số máy chủ chặn WARP. Khi dùng như máy chủ độc lập, WARP kết nối trực tiếp qua MASQUE."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "将 WARP 作为出口时，经过服务器的所有流量（包括 Via 规则和完整的 Xray 配置）都会先经过该服务器再经过 WARP，网站看到的是 Cloudflare 地址。部分服务器会屏蔽 WARP。作为独立服务器时，WARP 通过 MASQUE 直接连接。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "將 WARP 作為出口時，經過伺服器的所有流量（包括 Via 規則和完整的 Xray 配置）都會先經過該伺服器再經過 WARP，網站看到的是 Cloudflare 地址。部分伺服器會屏蔽 WARP。作為獨立伺服器時，WARP 通過 MASQUE 直接連線。"
           }
         }
       }

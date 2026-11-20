@@ -25,6 +25,8 @@ final class ConnectionController {
     }
     private(set) var exit: ExitState = .unknown
     @ObservationIgnored private var exitTask: Task<Void, Never>?
+    /// WARP is the exit, but Cloudflare does not see the traffic arrive over it (spec 9.10).
+    private(set) var warpMissing = false
 
     /// Events worth a notification (spec 12.6); `AppModel` turns them into one.
     enum Notice: Equatable {
@@ -413,7 +415,9 @@ final class ConnectionController {
             return
         }
         exit = .checking
+        warpMissing = false
         let route = FetchRoute.localProxy(port: port)
+        let wantsWarp = Prefs.warpExit != nil
         exitTask = Task { [weak self] in
             for attempt in 0..<3 {
                 if attempt > 0 { try? await Task.sleep(for: .seconds(2)) }
@@ -421,6 +425,10 @@ final class ConnectionController {
                 if Task.isCancelled { return }
                 if let info {
                     self?.exit = .known(info)
+                    if wantsWarp, await ExitLookup.arrivesOverWarp(route: route) == false, !Task.isCancelled {
+                        self?.warpMissing = true
+                        self?.logs.append("[v2mac] WARP is on, but Cloudflare does not see traffic arrive over WARP")
+                    }
                     #if DEBUG
                     print("[v2mac-debug] exit: \(info.countryCode ?? "??") \(info.city ?? "-")")
                     #endif

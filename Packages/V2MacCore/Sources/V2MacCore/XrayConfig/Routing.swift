@@ -178,6 +178,8 @@ extension ConfigBuilder {
         policy = policy.setting("system", to: system)
         out = out.setting("policy", to: policy)
 
+        // The config's own exits only: Via servers get WARP from `viaSections`.
+        out = warpingExits(of: out, options: options)
         // Via servers join before the dialer and interface settings, which then cover them too.
         var via = ViaSections()
         if let plan {

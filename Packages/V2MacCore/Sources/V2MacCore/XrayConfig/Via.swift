@@ -83,7 +83,10 @@ extension ConfigBuilder {
             let dialed = dialing(InsecureTLS.stripping(o), through: options.dialer)
             return options.boundInterface.map { binding(dialed, to: $0) } ?? dialed
         }
-        guard server.kind == .custom else { return [prepared(server.config.setting("tag", to: .string(tag)))] }
+        func warped(_ out: [JSONValue]) -> [JSONValue] {
+            out.first.map { warpingExit($0, upstream: "warp-up-" + tag, options: options) + out.dropFirst() } ?? []
+        }
+        guard server.kind == .custom else { return warped([prepared(server.config.setting("tag", to: .string(tag)))]) }
         let all = server.config["outbounds"]?.arrayValue ?? []
         guard let first = all.first(where: { !["freedom", "blackhole", "dns", "loopback"].contains($0["protocol"]?.stringValue ?? "") }) else { return [] }
         let byTag = Dictionary(all.compactMap { o in o["tag"]?.stringValue.map { ($0, o) } }, uniquingKeysWith: { a, _ in a })
@@ -108,7 +111,7 @@ extension ConfigBuilder {
             out.append(renamed(o, as: hopPrefix + hop))
             current = o
         }
-        return out
+        return warped(out)
     }
 }
 
