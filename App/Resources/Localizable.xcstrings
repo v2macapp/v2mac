@@ -104673,6 +104673,82 @@
           }
         }
       }
+    },
+    "Set both a username and a password, or neither." : {
+      "localizations" : {
+        "fa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نام کاربری و رمز را هر دو وارد کنید، یا هیچ‌کدام."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请同时设置用户名和密码，或都不设置。"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Укажите и имя пользователя, и пароль, или ни то, ни другое."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請同時設定使用者名稱與密碼，或都不設定。"
+          }
+        },
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عيّن اسم المستخدم وكلمة المرور معًا، أو لا شيء منهما."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Benutzername und Passwort beide setzen oder keines von beiden."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Définissez à la fois un nom d'utilisateur et un mot de passe, ou aucun des deux."
+          }
+        },
+        "pt" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Defina nome de usuário e senha juntos, ou nenhum dos dois."
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hem kullanıcı adı hem parola belirleyin ya da hiçbirini."
+          }
+        },
+        "ur" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "صارف نام اور پاس ورڈ دونوں سیٹ کریں، یا کوئی بھی نہیں۔"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đặt cả tên người dùng và mật khẩu, hoặc không đặt cái nào."
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "အသုံးပြုသူအမည်နှင့် စကားဝှက် နှစ်ခုလုံးသတ်မှတ်ပါ၊ သို့မဟုတ် တစ်ခုမှမသတ်မှတ်ပါနှင့်။"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -21,6 +21,9 @@ struct ProxyServersSheet: View {
             .filter { model.proxyServers.proxy(for: $0.id) == nil }
     }
 
+    /// Only one of the two set: the proxy would silently ask for nothing.
+    private var halfCredentials: Bool { username.isEmpty != password.isEmpty }
+
     var body: some View {
         let servers = servers
         let ports = model.proxyServers.plannedPorts(count: servers.count, from: firstPort, allowLAN: allowLAN)
@@ -34,6 +37,13 @@ struct ProxyServersSheet: View {
                 if allowLAN {
                     TextField("Username (optional)", text: $username)
                     SecureField("Password (optional)", text: $password)
+                    if halfCredentials {
+                        Text("Set both a username and a password, or neither.").font(.caption).foregroundStyle(.red)
+                    } else if username.isEmpty {
+                        Label("Anyone on your network can use this proxy. Set a username and password.",
+                              systemImage: "exclamationmark.triangle.fill")
+                            .font(.caption).foregroundStyle(.orange)
+                    }
                 }
             }
             .formStyle(.grouped)
@@ -66,7 +76,7 @@ struct ProxyServersSheet: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .keyboardShortcut(.defaultAction)
-                .disabled(servers.isEmpty || ports.count < servers.count)
+                .disabled(servers.isEmpty || ports.count < servers.count || (allowLAN && halfCredentials))
             }
         }
         .padding(24)
