@@ -100,6 +100,7 @@ comments cite it as "spec 6.4" etc.; read the section before changing the behavi
     installed V2Mac, only read) in `v2mac-dev/updates/building`, checked with `-debugAppUpdateKey <base64 public key>`
     (make one with `Scripts/sign-update.swift keygen`); it never stages or swaps. `-debugUpdateBadge available|ready`
     shows an update badge on the menu bar icon.
+  - `-debugProxyServers <n>` tests the first 80 servers, starts a proxy server (spec 12.13) for each of the n fastest from port 20800 and prints their states.
   - `-debugIntent servers|test|fastest|exit` runs that Shortcuts action (or its query) on the dev data and prints the result.
   - `-debugCleanIP YES|<transport>` opens Find Clean IP on the first server it applies to and prints the best results.
   - `-debugBackupRoundTrip <path>` (with demo data) writes a backup there, removes the servers, restores

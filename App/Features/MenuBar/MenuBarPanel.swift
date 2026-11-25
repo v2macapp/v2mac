@@ -229,6 +229,21 @@ struct MenuBarPanel: View {
                 }
             }
 
+            if !model.proxyServers.proxies.isEmpty {
+                PanelCard {
+                    HStack {
+                        PanelSectionTitle(String(localized: "Proxy Servers"))
+                        Spacer()
+                        Button("Stop All") { Task { await model.proxyServers.stopAll() } }
+                            .buttonStyle(.borderless).font(.caption)
+                    }
+                    ForEach(model.proxyServers.proxies) { proxy in
+                        ProxyServerRow(proxy: proxy) { model.proxyServers.stop(proxy.id) }
+                    }
+                }
+                .font(.callout)
+            }
+
             if let group = active?.group, PanelSubscription.hasContent(group) {
                 PanelCard { PanelSubscription(group: group) }
             }

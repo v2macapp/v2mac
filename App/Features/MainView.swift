@@ -76,6 +76,7 @@ struct MainView: View {
             Text("They will be lost when V2Mac quits. \(model.saveError ?? "")")
         }
         .sheet(item: $model.cleanIPScan) { CleanIPSheet(profileID: $0.id) }
+        .sheet(item: $model.proxyServersRequest) { ProxyServersSheet(request: $0) }
         .sheet(item: $model.serverEditor) { request in
             ServerEditorSheet(request: request, profile: profile(for: request))
         }

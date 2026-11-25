@@ -2066,6 +2066,26 @@ downloaded *drivers*. Their design, catalogue, index format, wrapper protocol an
 - **PPTP** is not supported, on purpose. A PPTP config shows "PPTP is insecure and isn't supported. Ask
   your VPN provider for OpenVPN, IKEv2, or SSTP."
 
+### 12.13 Proxy servers
+
+Extra local proxies beside the main connection, one per server, for apps that should each leave
+through a different server. Select one or more servers, then right-click → **Create Proxy
+Servers…**. The sheet asks for the first port (remembered; ports in use, the main port and ports
+of running proxies are skipped, so the servers get the next free ones in list order), whether other
+devices on the network may connect, and, if so, an optional username and password. It lists each
+server with the address it will get.
+
+Each proxy is its own Xray process (`ProxyServerService`, run directory `run/proxy-<port>/`) built
+like the main connection in Global mode: a `mixed` inbound (SOCKS5 and HTTP) on its port, the
+server's outbound (or its full config), the fragment/noise dialer, the DNS setting and the chosen
+network interface (the physical one in TUN mode). Its servers are let through the kill switch
+before it starts. A server has at most one proxy. Proxies do not reconnect after a crash, are not
+restored at launch, and stop when V2Mac quits.
+
+Running proxies show as a port badge on their server's row (green running, red failed), as a
+toolbar button with their count that opens the list (copy address, stop, Copy All, Stop All), and
+as a **Proxy Servers** card in the menu bar panel.
+
 ## 13. Settings
 
 **Reset.** Every tab with settings ends with "Reset to Defaults…", and General also has

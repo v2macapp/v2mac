@@ -134,8 +134,9 @@ struct ServerListView: View {
         .onChange(of: rows.map(\.id), initial: true) { _, ids in model.visibleProfileIDs = ids }
     }
 
+    /// Shown only while there is something to show: an update, running proxy servers.
     @ToolbarContentBuilder
-    private func toolbar(model: AppModel, latency: LatencyService, isTesting: Bool, isUpdating: Bool) -> some ToolbarContent {
+    private func statusItems(model: AppModel) -> some ToolbarContent {
         if model.updates.availableAppUpdate != nil {
             ToolbarItem {
                 UpdateButton()
@@ -143,6 +144,17 @@ struct ServerListView: View {
             .compatHiddenBackground()
             CompatToolbarSpacer()
         }
+        if !model.proxyServers.proxies.isEmpty {
+            ToolbarItem {
+                ProxyServersButton(service: model.proxyServers)
+            }
+            CompatToolbarSpacer()
+        }
+    }
+
+    @ToolbarContentBuilder
+    private func toolbar(model: AppModel, latency: LatencyService, isTesting: Bool, isUpdating: Bool) -> some ToolbarContent {
+        statusItems(model: model)
         ToolbarItem {
             NotificationsButton(notifications: model.notifications) { model.windowRequest = $0 }
         }
@@ -513,6 +525,9 @@ private struct ServerTable: View {
                             Image(systemName: "star.fill").font(.caption).foregroundStyle(.yellow)
                                 .accessibilityLabel("Favorite")
                         }
+                        if let proxy = model.proxyServers.proxy(for: row.id) {
+                            ProxyPortBadge(proxy: proxy)
+                        }
                         if row.isStale {
                             Text("Removed from subscription").font(.caption).foregroundStyle(.secondary)
                         }
@@ -617,6 +632,14 @@ private struct ServerTable: View {
             Button(only.group?.isManual == true ? "Edit…" : "Edit a Copy…") { model.editServer(only.id) }
             if only.kind == .outbound, let config = only.config, CleanIPScanner.hostName(of: config) != nil {
                 Button("Find Clean IP…") { model.cleanIPScan = CleanIPRequest(id: only.id) }
+            }
+        }
+        if !selected.isEmpty {
+            Button(ids.count == 1 ? "Create Proxy Server…" : "Create Proxy Servers (\(ids.count))…") {
+                model.proxyServersRequest = ProxyServersRequest(profileIDs: rows.map(\.id).filter(ids.contains))
+            }
+            if let proxy = selected.count == 1 ? model.proxyServers.proxy(for: selected[0].id) : nil {
+                Button("Stop Proxy Server") { model.proxyServers.stop(proxy.id) }
             }
         }
         if !selected.isEmpty {
@@ -893,5 +916,20 @@ struct CompactLabelStyle: LabelStyle {
             configuration.icon
             configuration.title
         }
+    }
+}
+
+/// The port of a server's running proxy, on its row.
+private struct ProxyPortBadge: View {
+    let proxy: ProxyServerService.Proxy
+
+    var body: some View {
+        let failed = if case .failed = proxy.state { true } else { false }
+        Text(verbatim: ":\(proxy.port)")
+            .font(.caption.monospacedDigit().weight(.medium))
+            .foregroundStyle(failed ? .red : .green)
+            .padding(.horizontal, 5).padding(.vertical, 1)
+            .background((failed ? Color.red : Color.green).opacity(0.15), in: .capsule)
+            .help(failed ? String(localized: "Proxy server failed") : String(localized: "Proxy server on \(proxy.address)"))
     }
 }

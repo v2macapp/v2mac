@@ -23,6 +23,7 @@ final class AppModel {
     let connection: ConnectionController
     let subscriptions: SubscriptionService
     let latency: LatencyService
+    let proxyServers: ProxyServerService
     let regionPacks = RegionPackService()
     let updates = UpdateService()
     let warp = WarpService()
@@ -64,6 +65,7 @@ final class AppModel {
     /// The server editor's sheet (spec 12.7).
     var serverEditor: ServerEditorRequest?
     var cleanIPScan: CleanIPRequest?
+    var proxyServersRequest: ProxyServersRequest?
     /// The Add sheet's "Enter Details Manually": the editor opens once that sheet has closed.
     var opensEditorAfterAddSheet = false
     /// A server the table should scroll to; `ServerTable` clears it once it has.
@@ -122,11 +124,15 @@ final class AppModel {
         #endif
         subscriptions = SubscriptionService(container: container, connection: connection)
         latency = LatencyService(container: container)
+        proxyServers = ProxyServerService(logs: logs)
         ensureManualGroup()
         subscriptions.onMissingFavorites = { [weak self] ids in self?.missingFavoriteIDs.formUnion(ids) }
         let connection = self.connection
         latency.physicalInterface = { connection.testInterface }
         latency.beforeTesting = { hosts in await connection.killSwitch.allow(hosts) }
+        proxyServers.outboundInterface = { connection.testInterface }
+        proxyServers.beforeStarting = { hosts in await connection.killSwitch.allow(hosts) }
+        proxyServers.mainPort = { connection.port }
         connection.automaticCandidates = { [weak self] activeID in
             guard let self, let active = profile(id: activeID), let group = active.group else { return [] }
             return group.profiles.filter { !$0.isStale || $0.id == activeID }
@@ -1140,6 +1146,22 @@ final class AppModel {
         setvbuf(stdout, nil, _IOLBF, 0)
         let defaults = UserDefaults.standard
         snapshotHook()
+        // `-debugProxyServers <n>`: the first 80 servers tested, then a proxy server
+        // for each of the n fastest; prints their states.
+        let proxyCount = defaults.integer(forKey: "debugProxyServers")
+        if proxyCount > 0 {
+            Task {
+                try? await Task.sleep(for: .seconds(2))
+                let all: [Profile] = (try? container.mainContext.fetch(FetchDescriptor<Profile>())) ?? []
+                latency.testReal(all.prefix(80).map(\.id))
+                while latency.isRunning { try? await Task.sleep(for: .seconds(1)) }
+                let fastest = all.filter { $0.delayState == .ok }.sorted { ($0.delayMs ?? .max) < ($1.delayMs ?? .max) }
+                let servers = fastest.prefix(proxyCount).compactMap(ActiveServer.init)
+                proxyServers.create(Array(servers), options: .init(firstPort: 20800, allowLAN: false, username: "", password: ""))
+                try? await Task.sleep(for: .seconds(3))
+                for proxy in proxyServers.proxies { print("[v2mac-debug] proxy \(proxy.port) \(proxy.state)") }
+            }
+        }
         // `-debugIntent servers|test|fastest|exit`: runs that Shortcuts action and prints what it found.
         if let name = defaults.string(forKey: "debugIntent") {
             Task {
@@ -1412,6 +1434,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 guard alert.runModal() == .alertFirstButtonReturn else { return sender.reply(toApplicationShouldTerminate: false) }
             }
             await model.sandbox.stop()
+            await model.proxyServers.stopAll()
             await model.connection.shutdown()
             model.updates.swapOnQuit()
             sender.reply(toApplicationShouldTerminate: true)
